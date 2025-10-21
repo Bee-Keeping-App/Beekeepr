@@ -24,7 +24,7 @@ server.post('/login', async (req, res) => {
 
     try {
         // Login is a client that gets a user from the database
-        const dbUser = await Login.getUser(username);
+        const dbUser = await DB.getUser(username);
         
         // compares the salted + hashed attempt with the stored value
         if (dbUser.password == password) {
