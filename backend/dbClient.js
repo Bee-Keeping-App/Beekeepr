@@ -29,7 +29,7 @@ class MongoClient {
         this.db = this.client("beekeepR");
     }
 
-
+    
     // given a username, check the database for a user entry. Throw an error if you can't find one (or return null?)
     async getUser(username) {
         const collection = this.db.collection('login');
@@ -49,8 +49,8 @@ class MongoClient {
 
     
     // compare hashes
-    async comparePasswords(attempt, hash) {
-        if (await argon.verify(hash, attempt)) {
+    async comparePasswords(attempt, user) {
+        if (await argon.verify(user.password, attempt)) {
             return true;
         } else {
             return false;
