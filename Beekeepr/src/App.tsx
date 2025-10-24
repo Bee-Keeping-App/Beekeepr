@@ -5,8 +5,7 @@ import { createURL } from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
-import { Navigation } from './navigation';
-
+import { Navigation } from './navigation/AppNavigator';
 Asset.loadAsync([
   ...NavigationAssets,
   require('./assets/newspaper.png'),
