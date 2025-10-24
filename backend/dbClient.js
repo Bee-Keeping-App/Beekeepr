@@ -1,4 +1,5 @@
 const { mongodb } = require('mongodb')
+const { argon } = require('argon2')
 
 class MongoClient {
 
@@ -21,6 +22,7 @@ class MongoClient {
         }
     }
 
+
     // make the connection
     async connect() {
         await this.client.connect();
@@ -33,15 +35,25 @@ class MongoClient {
         const collection = this.db.collection('login');
         
         try {
-            
+
             // find command on the login collection
-            const res = await collection.findOne({
-                username: username
-            });
+            const res = await collection.findOne({ username: username });
+            
+            // return the object
             return res;
 
         } catch(error) {
             throw err('Could not process query');
+        }
+    }
+
+    
+    // compare hashes
+    async comparePasswords(attempt, hash) {
+        if (await argon.verify(hash, attempt)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
