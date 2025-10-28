@@ -1,14 +1,18 @@
+/* Import dotenv First */
+require('dotenv').config();
+
+/* Package Imports */
 const { express } = require('express');
 const { MongoClient } = require('./dbClient');
 
 /* DB Client */
-const DB = MongoClient('connectionStringHere');
+const DB = MongoClient(process.env.DB_CONN);
 
 /* Port */
-const PORT = 3000
+const PORT = 3000;
 
 /* Middlewares */
-const server = express()
+const server = express();
 
 /* endpoint list */
 /*
@@ -42,6 +46,6 @@ server.post('/login', async (req, res) => {
             return res.status(400).json({msg: 'passwords do not match'});
         }
     } catch(error) {
-        return res.status(500).json({msg: 'internal server error. try again'})
+        return res.status(500).json({msg: 'internal server error. try again'});
     }
 });

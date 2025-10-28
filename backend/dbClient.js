@@ -1,7 +1,7 @@
-const { mongodb } = require('mongodb')
-const { argon } = require('argon2')
+const { mongodb } = require('mongodb');
+const { argon } = require('argon2');
 
-class MongoClient {
+class MongoBongo {
 
     // should initialize core vars, but not connect (construct can't be async)
     constructor(connectionString) {
@@ -59,4 +59,4 @@ class MongoClient {
 }
 
 // export the client
-export {MongoClient};
+export { MongoBongo };
