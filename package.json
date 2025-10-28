@@ -9,6 +9,9 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "argon2": "^0.44.0",
+    "dotenv": "^17.2.3",
+    "mongodb": "^6.20.0",
     "@expo/metro-runtime": "~6.1.2",
     "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/elements": "^2.6.4",
