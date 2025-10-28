@@ -1,7 +1,11 @@
-const { express } = require('express')
+const { express } = require('express');
+const { MongoClient } = require('./dbClient');
+
+/* DB Client */
+const DB = MongoClient('connectionStringHere');
 
 /* Port */
-const port = 3000
+const PORT = 3000
 
 /* Middlewares */
 const server = express()
@@ -22,20 +26,22 @@ server.post('/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
+    // Login is a client that gets a user from the database
+    const dbUser = await DB.getUser(username);
+    
+    // catches user not in db
+    if (dbUser == null) {
+        return res.status(400).json({msg: 'username not in db'});
+    }
+
+    // compares the salted + hashed attempt with the stored value
     try {
-        // Login is a client that gets a user from the database
-        const dbUser = await DB.getUser(username);
-        
-        // compares the salted + hashed attempt with the stored value
-        if (dbUser.password == password) {
+        if (await DB.comparePasswords(dbUser, password)) {
             return res.status(200);
         } else {
             return res.status(400).json({msg: 'passwords do not match'});
         }
-
-    // Login throws an error if username not in database
     } catch(error) {
-        return res.status(400).json({msg: 'username not in db'});
+        return res.status(500).json({msg: 'internal server error. try again'})
     }
-
 });
