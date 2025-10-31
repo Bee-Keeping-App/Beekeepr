@@ -3,10 +3,10 @@ require('dotenv').config();
 
 /* Package Imports */
 const { express } = require('express');
-const { MongoClient } = require('./dbClient');
+const MongoClient = require('./dbClient');
 
 /* DB Client */
-const DB = MongoClient(process.env.DB_CONN);
+const DB = new MongoClient(process.env.DB_CONN);
 
 /* Port */
 const PORT = 3000;
@@ -21,6 +21,8 @@ const server = express();
 */
 
 server.post('/login', async (req, res) => {
+
+    await DB.becomeConnected();
 
     // ensure the login request is correctly formatted
     if (!Validator.login(req)) {
@@ -49,3 +51,7 @@ server.post('/login', async (req, res) => {
         return res.status(500).json({msg: 'internal server error. try again'});
     }
 });
+
+server.listen(PORT, () => {
+    console.log('server is connected on port ' + PORT);
+})

@@ -11,6 +11,12 @@ class MongoBongo {
         this.db = null;
     }
 
+    // becomes connected
+    async becomeConnected() {
+        if (!this.isConnected()) {
+            await this.connect();
+        }
+    }
 
     // returns t/f if the client is connected
     async isConnected() {
@@ -25,7 +31,7 @@ class MongoBongo {
     // make the connection
     async connect() {
         await this.client.connect();
-        this.db = this.client.db("test-database");
+        this.db = this.client.db('test-database');
     }
 
 
