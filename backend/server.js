@@ -42,6 +42,10 @@ server.post('/login', async (req, res) => {
             return res.status(400).json({msg: 'passwords do not match'});
         }
     } catch(error) {
-        return res.status(500).json({msg: 'internal server error. try again'})
+        return res.status(500).json({msg: 'internal server error. try again'});
     }
+});
+
+server.listen(PORT, () => {
+    console.log(`Server live on port ${PORT}`);
 });
