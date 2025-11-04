@@ -1,14 +1,14 @@
-const { express } = require('express');
+const express = require('express');
 const { MongoClient } = require('./dbClient');
 
 /* DB Client */
 const DB = MongoClient('connectionStringHere');
 
 /* Port */
-const PORT = 3000
+const PORT = 3000;
 
 /* Middlewares */
-const server = express()
+const server = express();
 
 /* endpoint list */
 /*
@@ -37,6 +37,7 @@ server.post('/login', async (req, res) => {
     // compares the salted + hashed attempt with the stored value
     try {
         if (await DB.comparePasswords(dbUser, password)) {
+            
             return res.status(200);
         } else {
             return res.status(400).json({msg: 'passwords do not match'});
