@@ -1,15 +1,19 @@
 /* Load env */
-require('dotenv').config();
+import 'dotenv/config';
 
 /* Import Packages */
-const express = require('express');
-const { MongoClient } = require('mongodb')
-const argon2 = require('argon2');
+import express from 'express';
+import { MongoClient } from 'mongodb';
+import argon2 from 'argon2';
 
 /* Consts / Vars */
 const server = express();
 const CLIENT = new MongoClient(process.env.DB_CONN);
 const PORT = 3000;
+const Validator = {
+    register: (req) => req.body.username && req.body.password,
+    login: (req) => req.body.username && req.body.password
+};
 
 /* Middlewares */
 server.use(express.json());
@@ -32,9 +36,10 @@ server.post('/register', async (req, res) => {
 
     try {
 
-        const users = CLIENT.db('test-database').collection('test-collection');
+        const users = CLIENT.db('test-database').collection('test-login');
         const result = await users.insertOne({
             'user': username,
+            'pass': password,
             'hash': await argon2.hash(password)
         });
 
@@ -60,7 +65,7 @@ server.post('/login', async (req, res) => {
 
     try {
         // Login is a client that gets a user from the database
-        const users = CLIENT.db('test-database').collection('test-collection');
+        const users = CLIENT.db('test-database').collection('test-login');
         
         // catches user not in db
         const match = await users.findOne({ user: username });
@@ -79,6 +84,7 @@ server.post('/login', async (req, res) => {
     }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
+    await CLIENT.connect();
     console.log(`Server live on port ${PORT}`);
 });
