@@ -48,12 +48,14 @@ server.post('/register', async (req, res) => {
 
     try {
 
+        // connect and check for duplicate usernames
         const users = DbClient.db('test-database').collection('test-login');
         const conflictingUsername = await users.findOne({ user: username });
         if (conflictingUsername != null) {
             return res.status(400).send('Choose a different username');
         }
 
+        // inserts
         const result = await users.insertOne({
             'user': username,
             'pass': password,
@@ -64,6 +66,7 @@ server.post('/register', async (req, res) => {
             const refreshToken = generateRefreshToken({ username });
             const accessToken = generateAccessToken({ username });
 
+            // adds refresh and access tokens and responds
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken }).send('Successfully registered');
         } else {
@@ -77,9 +80,9 @@ server.post('/register', async (req, res) => {
 server.post('/login', async (req, res) => {
 
     // ensure the login request is correctly formatted
-    /*if (!Validator.login(req)) {
-        return res.status(400);
-    } */
+    if (!Validator.login(req)) {
+        return res.status(400).send('missing a parameter');
+    }
 
     const username = req.body.username;
     const password = req.body.password;
@@ -87,24 +90,21 @@ server.post('/login', async (req, res) => {
     try {
         // Login is a client that gets a user from the database
         const users = DbClient.db('test-database').collection('test-login');
-        console.log('found table');
+
         // catches user not in db
         const match = await users.findOne({ user: username });
         if (match == null) {
-            console.log('username not in db');
             return res.status(400).json({msg: 'username not in db'});
         }
 
-        console.log('found match');
         if (await argon2.verify(match.hash, password)) {
-            console.log('passwords match');
+
             const refreshToken = generateRefreshToken({ username });
             const accessToken = generateAccessToken({ username });
 
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken });
         } else {
-            console.log('password was incorrect');
             return res.status(403).send('user did not authenticate');
         }
 
