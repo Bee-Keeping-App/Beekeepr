@@ -5,7 +5,7 @@ import 'dotenv/config';
 import express from 'express';
 import { MongoClient } from 'mongodb';
 import argon2 from 'argon2';
-import jwt from 'jwt';
+import jwt from 'jsonwebtoken';
 
 /* Consts / Vars */
 const server = express();
@@ -39,13 +39,13 @@ server.post('/register', async (req, res) => {
     if (!Validator.register(req)) {
         return res.status(400).send('Request did not validate');
     }
-
+    
     const username = req.body.username;
     const password = req.body.password;
 
     try {
 
-        const users = Database.db('test-database').collection('test-login');
+        const users = DbClient.db('test-database').collection('test-login');
         const result = await users.insertOne({
             'user': username,
             'pass': password,
@@ -53,7 +53,11 @@ server.post('/register', async (req, res) => {
         });
 
         if (result.insertedId) {
-            return res.status(200).send('Successfully registered');
+            const refreshToken = generateRefreshToken({ result });
+            const accessToken = generateAccessToken({ result });
+
+            res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
+            return res.status(200).json({ accessToken }).send('Successfully registered');
         } else {
             return res.status(500).send('Failed to register');
         }
