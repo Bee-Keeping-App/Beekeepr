@@ -6,6 +6,8 @@ import express from 'express';
 import { MongoClient } from 'mongodb';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
+
 
 /* Consts / Vars */
 const server = express();
@@ -18,6 +20,7 @@ const Validator = {
 
 /* Middlewares */
 server.use(express.json());
+server.use(cookieParser());
 
 /* Functions */
 function generateAccessToken(user) {
@@ -46,6 +49,11 @@ server.post('/register', async (req, res) => {
     try {
 
         const users = DbClient.db('test-database').collection('test-login');
+        const conflictingUsername = await users.findOne({ user: username });
+        if (conflictingUsername != null) {
+            return res.status(400).send('Choose a different username');
+        }
+
         const result = await users.insertOne({
             'user': username,
             'pass': password,
@@ -107,8 +115,8 @@ server.post('/login', async (req, res) => {
 });
 
 server.get('/refresh', async (req, res) => {
-    const token = req.cookies.refreshToken;
     
+    const token = req.cookies?.refreshToken ?? null;
     if (!token) { return res.status(400).send('no refresh token'); }
 
     jwt.verify(token, process.env.REFRESH_SECRET, (err, user) => {
