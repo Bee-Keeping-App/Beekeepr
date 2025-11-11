@@ -61,8 +61,8 @@ server.post('/register', async (req, res) => {
         });
 
         if (result.insertedId) {
-            const refreshToken = generateRefreshToken({ result });
-            const accessToken = generateAccessToken({ result });
+            const refreshToken = generateRefreshToken({ username });
+            const accessToken = generateAccessToken({ username });
 
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken }).send('Successfully registered');
@@ -98,8 +98,8 @@ server.post('/login', async (req, res) => {
         console.log('found match');
         if (await argon2.verify(match.hash, password)) {
             console.log('passwords match');
-            const refreshToken = generateRefreshToken({ match });
-            const accessToken = generateAccessToken({ match });
+            const refreshToken = generateRefreshToken({ username });
+            const accessToken = generateAccessToken({ username });
 
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken });
