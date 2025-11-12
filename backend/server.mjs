@@ -58,7 +58,6 @@ server.post('/register', async (req, res) => {
         // inserts
         const result = await users.insertOne({
             'user': username,
-            'pass': password,
             'hash': await argon2.hash(password)
         });
 
@@ -68,11 +67,12 @@ server.post('/register', async (req, res) => {
 
             // adds refresh and access tokens and responds
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
-            return res.status(200).json({ accessToken }).send('Successfully registered');
+            return res.status(200).json({ accessToken });
         } else {
             return res.status(500).send('Failed to register');
         }
     } catch(error) {
+        console.log(error);
         return res.status(500).send('Failed to register');
     }
 });
@@ -121,9 +121,11 @@ server.get('/refresh', async (req, res) => {
 
     jwt.verify(token, process.env.REFRESH_SECRET, (err, user) => {
         
+        // check if token is valid
         if (err) { return res.status(400).send('invalid refresh token'); }
         
-        const accessToken = generateAccessToken(user);
+        // generate fresh token, respond
+        const accessToken = generateAccessToken({ username: user.username });
         return res.json({ accessToken });
     });
 
