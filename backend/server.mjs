@@ -36,6 +36,7 @@ function generateRefreshToken(user) {
 
 */
 
+
 server.post('/register', async (req, res) => {
 
     // validate request
@@ -77,6 +78,7 @@ server.post('/register', async (req, res) => {
     }
 });
 
+
 server.post('/login', async (req, res) => {
 
     // ensure the login request is correctly formatted
@@ -114,6 +116,7 @@ server.post('/login', async (req, res) => {
     }
 });
 
+
 server.get('/refresh', async (req, res) => {
     
     const token = req.cookies?.refreshToken ?? null;
@@ -130,6 +133,8 @@ server.get('/refresh', async (req, res) => {
     });
 
 });
+
+
 
 server.listen(PORT, async () => {
     await DbClient.connect();
