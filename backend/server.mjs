@@ -30,6 +30,8 @@ function generateAccessToken(user) {
 function generateRefreshToken(user) {
     return jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 }
+
+
 /* endpoint list */
 /*
     /login: validates user credentials 
@@ -134,6 +136,42 @@ server.get('/refresh', async (req, res) => {
 
 });
 
+
+server.get('/almanac', async (req, res) => {
+    
+    // checks for a token
+    const token = req.cookies?.accessToken ?? null;
+    if (!token) { return res.status(400).send('no access token'); }
+
+    // validates token
+    var userId = null;
+    try {
+        const user = jwt.verify(token, process.env.ACCESS_SECRET);
+        userId = user.userId;
+    } catch(error) {
+        return res.status(400).send('invalid refresh token');
+    }
+    
+    // responds with data
+    const getAllData = req.query.summary ? false : true;
+    try {
+
+        // gets user zip code
+        const accounts = DbClient.db('test-database').collection('accounts');
+        const userSettings = await accounts.findOne({ userId: userId });
+        const location = userSettings.zip;
+        
+        // collect data via function call
+        res.status(200).json({
+            'weather': await weatherFunc(getAllData, location),
+            'historical': await historicalFunc(getAllData, location)
+        });
+    }
+    catch(error) {
+        
+    }
+
+});
 
 
 server.listen(PORT, async () => {
