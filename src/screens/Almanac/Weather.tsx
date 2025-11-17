@@ -6,7 +6,7 @@ import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View,} from '
 import { WebView } from 'react-native-webview';
 
 //Placeholder 
-const OPENWEATHER_KEY = '369022b85255429a2b68cf5169dfda1f';
+const OPENWEATHER_KEY = '';
 
 //Hard-coded coordinates for troy
 const TROY_LAT = 42.7284;
