@@ -57,7 +57,10 @@ function validateToken(token) {
 }
 /* endpoint list */
 /*
-    /login: validates user credentials 
+    /login:             gives user credentials upon successful login
+    /register:          adds user to the database, gives credentials
+    /refresh:           re-validates credentials until refresh token expires (forces login on expiry)
+    /almanac:           returns with data for various APIs
 
 */
 
@@ -81,13 +84,15 @@ server.post('/register', async (req, res) => {
             return res.status(400).send('Choose a different username');
         }
 
-        // inserts
+        // adds user to the database
         const result = await users.insertOne({
             'user': username,
             'hash': await argon2.hash(password)
         });
 
         if (result.insertedId) {
+            
+            // grant access tokens
             const refreshToken = generateRefreshToken({ username });
             const accessToken = generateAccessToken({ username });
 
@@ -167,8 +172,6 @@ server.get('/almanac', async (req, res) => {
     if (!isValid) {
         return res.status(400).json({msg: res});
     }
-
-    
     
     // responds with data
     var userId = res.id;
