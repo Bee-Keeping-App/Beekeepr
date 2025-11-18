@@ -163,20 +163,16 @@ server.get('/refresh', async (req, res) => {
 server.get('/almanac', async (req, res) => {
     
     // checks for a token
-    const token = req.cookies?.accessToken ?? null;
-    if (!token) { return res.status(400).send('no access token'); }
-
-    // validates token
-    var userId = null;
-    try {
-        const user = jwt.verify(token, process.env.ACCESS_SECRET);
-        userId = user.userId;
-    } catch(error) {
-        return res.status(400).send('invalid refresh token');
+    const { isValid, res } = validateToken(req.cookies?.accessToken ?? null);
+    if (!isValid) {
+        return res.status(400).json({msg: res});
     }
+
+    
     
     // responds with data
-    const getAllData = req.query.summary ? false : true;
+    var userId = res.id;
+    const getSummary = req.query.summary ? true : false;
     try {
 
         // gets user zip code
@@ -185,13 +181,13 @@ server.get('/almanac', async (req, res) => {
         const location = userSettings.zip;
         
         // collect data via function call
-        res.status(200).json({
-            'weather': await weatherFunc(getAllData, location),
-            'historical': await historicalFunc(getAllData, location)
+        return res.status(200).json({
+            'weather': await weatherFunc(getSummary, location),
+            'historical': await historicalFunc(getSummary, location)
         });
     }
     catch(error) {
-        
+        return res.status(500).json({'error': 'internal server error'});
     }
 
 });
