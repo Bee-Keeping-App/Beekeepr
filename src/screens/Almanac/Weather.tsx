@@ -8,6 +8,9 @@ import { WebView } from 'react-native-webview';
 //Placeholder 
 const OPENWEATHER_KEY = '';
 
+//im writing this to allow merging again
+
+
 //Hard-coded coordinates for troy
 const TROY_LAT = 42.7284;
 const TROY_LON = -73.6918;
