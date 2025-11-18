@@ -182,6 +182,9 @@ server.get('/almanac', async (req, res) => {
         
         // collect data via function call
         return res.status(200).json({
+
+            // Complexity: numAPIs x numCalls, too much
+            // Optimization: use a redis cache mapping request zip code to region data
             'weather': await weatherFunc(getSummary, location),
             'historical': await historicalFunc(getSummary, location)
         });
