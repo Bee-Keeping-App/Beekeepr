@@ -9,10 +9,11 @@ import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 
 
-/* Consts / Vars */
+/* Consts and Vars */
 const server = express();
-const DbClient = new MongoClient(process.env.DB_CONN);
-const PORT = 3000;
+const DB_CLIENT = new MongoClient(process.env.DB_CONN);
+const DATABASE = process.env.IN_PROD ? process.env.PROD_DB : 'test-database'
+const PORT = process.env.IN_PROD ? process.env.PROD_URL : 3000;
 const Validator = {
     register: (req) => req.body.username && req.body.password,
     login: (req) => req.body.username && req.body.password
@@ -61,7 +62,6 @@ function validateToken(token) {
     /register:          adds user to the database, gives credentials
     /refresh:           re-validates credentials until refresh token expires (forces login on expiry)
     /almanac:           returns with data for various APIs
-
 */
 
 
@@ -78,7 +78,7 @@ server.post('/register', async (req, res) => {
     try {
 
         // connect and check for duplicate usernames
-        const users = DbClient.db('test-database').collection('test-login');
+        const users = DB_CLIENT.db(DATABASE).collection('users');
         const conflictingUsername = await users.findOne({ user: username });
         if (conflictingUsername != null) {
             return res.status(400).send('Choose a different username');
@@ -121,7 +121,7 @@ server.post('/login', async (req, res) => {
 
     try {
         // Login is a client that gets a user from the database
-        const users = DbClient.db('test-database').collection('test-login');
+        const users = DB_CLIENT.db(DATABASE).collection('users');
 
         // catches user not in db
         const match = await users.findOne({ user: username });
@@ -179,8 +179,8 @@ server.get('/almanac', async (req, res) => {
     try {
 
         // gets user zip code
-        const accounts = DbClient.db('test-database').collection('accounts');
-        const userSettings = await accounts.findOne({ userId: userId });
+        const users = DB_CLIENT.db(DATABASE).collection('users');
+        const userSettings = await users.findOne({ userId: userId });
         const location = userSettings.zip;
         
         // collect data via function call
@@ -200,6 +200,6 @@ server.get('/almanac', async (req, res) => {
 
 
 server.listen(PORT, async () => {
-    await DbClient.connect();
+    await DB_CLIENT.connect();
     console.log(`Server live on port ${PORT}`);
 });
