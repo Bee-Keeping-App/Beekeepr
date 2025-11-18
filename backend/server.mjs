@@ -31,7 +31,30 @@ function generateRefreshToken(user) {
     return jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 }
 
+function validateToken(token) {
+    
+    // checks for a token
+    if (!token) {
+        return {
+            'isValid': false,
+            'msg': 'token not present'
+        };
+    }
 
+    try {
+        const user = jwt.verify(token, process.env.ACCESS_SECRET);
+        return {
+            'isValid': true,
+            'tok': user,
+        };
+    } catch(error) {
+        return {
+            'isValid': false,
+            'msg': 'token did not verify'
+        };
+    }
+    
+}
 /* endpoint list */
 /*
     /login: validates user credentials 
