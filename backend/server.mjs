@@ -43,6 +43,7 @@ function authenticate(req, res, next) {
         req.user = payload;
         next();
     } catch(error) {
+        console.log(error);
         return res.status(500).json({ msg: 'Invalid or expired token.' });
     }
 }
@@ -50,10 +51,23 @@ function authenticate(req, res, next) {
 /* endpoint list */
 /*
     /login:             gives user credentials upon successful login
-    /register:          adds user to the database, gives credentials
-    /account:           delete account, get account info
+        
+        - POST      Given username & password, it grants tokens if credentials match in db
+
+    /account:           make account, read account, update account, delete account
+        
+        - GET       Returns user doc from mongo associated with jwt if jwt validates
+        - POST      Returns jwts after successfully making account
+        - DELETE    **NEEDS WORK: REVOKE ACCOUNT JWTS** Deletes account from mongo
+        - PATCH     Updates password if JWT is valid
+
     /refresh:           re-validates credentials until refresh token expires (forces login on expiry)
+
+        - GET       grants new access token if refresh token alive. else, rejects
+
     /almanac:           returns with data for various APIs
+
+        - NONE IMPLEMENTED
 */
 
 
@@ -70,6 +84,7 @@ server.get('/account', authenticate, async (req, res) => {
         // TODO: Return a securely-partitioned version of this?
         return res.status(200).json(user);
     } catch(error) {
+        console.log(error);
         return res.status(500).json({'msg': 'Internal Server Error'});
     }
 });
@@ -182,6 +197,37 @@ server.post('/login', async (req, res) => {
 });
 
 
+server.patch('/account', authenticate, async (req, res) => {
+
+    try {
+
+        const userId = req.user.userId;
+        const users = DB_CLIENT.db(DATABASE).collection('users');
+
+        const user = await users.findOne({ _id: new ObjectId(`${userId}`)});
+        if (!user) return res.status(400).json({ msg: 'not a valid user'});
+
+        // TODO: Restrict which values can be updated
+        // THIS IS ONLY HERE TO SHOW IT WORKS
+        const result = await users.updateOne(
+        {
+            _id: new ObjectId(`${userId}`)
+        }, { 
+            $set: {
+                'user': req.body.username,
+                'hash': await argon2.hash(req.body.password)
+            } 
+        });
+        return res.status(200).json({ msg: 'successfully updated account.'});
+
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'Internal server error.' });
+    }
+    
+});
+
+
 // refreshes access tokens
 server.get('/refresh', authenticate, async (req, res) => {
     
@@ -215,6 +261,7 @@ server.get('/almanac', authenticate, async (req, res) => {
         });
     }
     catch(error) {
+        console.log(error);
         return res.status(500).json({'error': 'internal server error'});
     }
 
