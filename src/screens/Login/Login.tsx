@@ -1,6 +1,6 @@
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
-import { ImageBackground, StyleSheet, View, Dimensions } from 'react-native';
+import { ImageBackground, TextInput, Button, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
 
  
 
@@ -8,9 +8,26 @@ export function Login() {
     return (
         //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
         <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
+            <View style={styles.container}></View>
             <View style={styles.container}>
-                <Text style={styles.text}>Test Text</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder=" Username"
+                >
+                </TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder=" Password"
+                >
+                </TextInput>
+                <TouchableOpacity style={styles.loginButton}>
+                    Login
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.registerButton}>
+                    Create an account
+                </TouchableOpacity>
             </View>
+            <View style={styles.container}></View>
         </ImageBackground>
     );
 }
@@ -24,21 +41,49 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 10,
+        marginBottom: 0,
+
     },
     background: {
-        flex: 1, // Ensures the ImageBackground fills the entire screen/container
-        resizeMode: 'cover', // Or 'contain', 'stretch', 'repeat', 'center'
+        flex: 1,
+        resizeMode: 'contain', // Or 'contain', 'stretch', 'repeat', 'center'
         justifyContent: 'center',
         alignItems: 'center',
         //width: width,
-        height: '100%',
+        width: width,
+        height: '100%'
     },
     overlayContent: {
         // Styles for the content placed on top of the image
     },
-      text: {
+    text: {
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold',
     },
+    input: {
+        width: width * .6,
+        borderColor: 'darkgray',
+        backgroundColor: 'gray',
+        borderWidth: 2,
+        borderRadius: 5,
+        color: 'lightgray',
+    },
+    loginButton: {
+        width: width * .6,
+        backgroundColor: 'darkorange',
+        color: 'lightgray',
+        borderColor: 'darkgray',
+        borderWidth: 2,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    registerButton: {
+        width: width * .6,
+        color: 'darkorange',
+        borderColor: 'darkorange',
+        borderWidth: 2,
+        borderRadius: 5,
+        alignItems: 'center',
+    } 
 });
