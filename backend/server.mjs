@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 /* Import Packages */
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
@@ -12,8 +12,8 @@ import cookieParser from 'cookie-parser';
 /* Consts and Vars */
 const server = express();
 const DB_CLIENT = new MongoClient(process.env.DB_CONN);
-const DATABASE = process.env.IN_PROD ? process.env.PROD_DB : 'test-database'
-const PORT = process.env.IN_PROD ? process.env.PROD_URL : 3000;
+const DATABASE = (process.env.USE_PROD == 'true') ? process.env.PROD_DB : 'test-database'
+const PORT = (process.env.USE_PROD == 'true') ? process.env.PROD_URL : 3000;
 const Validator = {
     register: (req) => req.body.username && req.body.password,
     login: (req) => req.body.username && req.body.password
@@ -32,40 +32,66 @@ function generateRefreshToken(user) {
     return jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 }
 
-function validateToken(token) {
-    
-    // checks for a token
-    if (!token) {
-        return {
-            'isValid': false,
-            'msg': 'token not present'
-        };
-    }
+function authenticate(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token) return res.status(400).json({ msg: 'No access token.' });
 
     try {
-        const user = jwt.verify(token, process.env.ACCESS_SECRET);
-        return {
-            'isValid': true,
-            'tok': user,
-        };
+        const payload = jwt.verify(token, process.env.ACCESS_SECRET);
+        req.user = payload;
+        next();
     } catch(error) {
-        return {
-            'isValid': false,
-            'msg': 'token did not verify'
-        };
+        return res.status(500).json({ msg: 'Invalid or expired token.' });
     }
-    
 }
+
 /* endpoint list */
 /*
     /login:             gives user credentials upon successful login
     /register:          adds user to the database, gives credentials
+    /account:           delete account, get account info
     /refresh:           re-validates credentials until refresh token expires (forces login on expiry)
     /almanac:           returns with data for various APIs
 */
 
 
-server.post('/register', async (req, res) => {
+// load account data
+server.get('/account', authenticate, async (req, res) => {
+
+    try {
+        const userId = req.user.userId;
+        const users = DB_CLIENT.db(DATABASE).collection('users');
+        const user = await users.findOne({ _id: new ObjectId(`${userId}`) });
+        
+        // TODO: Return a securely-partitioned version of this?
+        return res.status(200).json(user);
+    } catch(error) {
+        return res.status(500).json({'msg': 'Internal Server Error'});
+    }
+});
+
+
+// account deletion
+server.delete('/account', authenticate, async (req, res) => {
+
+    try {
+        const userId = req.user.userId;
+        const users = DB_CLIENT.db(DATABASE).collection('users');
+        const res = await users.deleteOne({ _id: new ObjectId(`${userId}`) });
+        
+        // TODO: Return a securely-partitioned version of this?
+        return res.status(200).json({'msg': 'Successful delete'});
+    } catch(error) {
+        return res.status(500).json({'msg': 'Internal Server Error'});
+    }
+
+});
+
+
+// account registration, no auth here
+server.post('/account', async (req, res) => {
 
     // validate request
     if (!Validator.register(req)) {
@@ -93,11 +119,16 @@ server.post('/register', async (req, res) => {
         if (result.insertedId) {
             
             // grant access tokens
-            const refreshToken = generateRefreshToken({ username });
-            const accessToken = generateAccessToken({ username });
+            const refreshToken = generateRefreshToken({userId: result.insertedId.toString()});
+            const accessToken = generateAccessToken({userId: result.insertedId.toString()});
 
             // adds refresh and access tokens and responds
-            res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true, 
+                secure: (process.env.USE_PROD == 'true') ? true : false,
+                sameSite: 'strict' 
+            });
+
             return res.status(200).json({ accessToken });
         } else {
             return res.status(500).send('Failed to register');
@@ -109,6 +140,7 @@ server.post('/register', async (req, res) => {
 });
 
 
+// validates login attempt. grants jwts, no auth here
 server.post('/login', async (req, res) => {
 
     // ensure the login request is correctly formatted
@@ -131,8 +163,8 @@ server.post('/login', async (req, res) => {
 
         if (await argon2.verify(match.hash, password)) {
 
-            const refreshToken = generateRefreshToken({ username });
-            const accessToken = generateAccessToken({ username });
+            const refreshToken = generateRefreshToken({userId: match._id.toString()});
+            const accessToken = generateAccessToken({userId: match._id.toString()});
 
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken });
@@ -147,40 +179,27 @@ server.post('/login', async (req, res) => {
 });
 
 
-server.get('/refresh', async (req, res) => {
+// refreshes access tokens
+server.get('/refresh', authenticate, async (req, res) => {
     
-    const token = req.cookies?.refreshToken ?? null;
-    if (!token) { return res.status(400).send('no refresh token'); }
-
-    jwt.verify(token, process.env.REFRESH_SECRET, (err, user) => {
-        
-        // check if token is valid
-        if (err) { return res.status(400).send('invalid refresh token'); }
-        
-        // generate fresh token, respond
-        const accessToken = generateAccessToken({ username: user.username });
-        return res.json({ accessToken });
-    });
+    const accessToken = generateAccessToken({ userId: req.user.userId });
+    return res.json({ accessToken });
 
 });
 
 
-server.get('/almanac', async (req, res) => {
+// retrieves data from apis
+server.get('/almanac', authenticate, async (req, res) => {
     
-    // checks for a token
-    const { isValid, res } = validateToken(req.cookies?.accessToken ?? null);
-    if (!isValid) {
-        return res.status(400).json({msg: res});
-    }
-    
-    // responds with data
-    var userId = res.id;
-    const getSummary = req.query.summary ? true : false;
     try {
 
+        // defines data scope
+        var userId = req.user.userId;
+        const getSummary = req.query.summary ? true : false;
+        
         // gets user zip code
         const users = DB_CLIENT.db(DATABASE).collection('users');
-        const userSettings = await users.findOne({ userId: userId });
+        const userSettings = await users.findOne({ _id: new ObjectId(`${userId}`) });
         const location = userSettings.zip;
         
         // collect data via function call
