@@ -65,6 +65,8 @@ server.get('/account', authenticate, async (req, res) => {
         const users = DB_CLIENT.db(DATABASE).collection('users');
         const user = await users.findOne({ _id: new ObjectId(`${userId}`) });
         
+        if (!user) return res.status(400).json({ msg: 'user does not exist'});
+        
         // TODO: Return a securely-partitioned version of this?
         return res.status(200).json(user);
     } catch(error) {
@@ -79,11 +81,12 @@ server.delete('/account', authenticate, async (req, res) => {
     try {
         const userId = req.user.userId;
         const users = DB_CLIENT.db(DATABASE).collection('users');
-        const res = await users.deleteOne({ _id: new ObjectId(`${userId}`) });
+        const result = await users.deleteOne({ _id: new ObjectId(`${userId}`) });
         
         // TODO: Return a securely-partitioned version of this?
         return res.status(200).json({'msg': 'Successful delete'});
     } catch(error) {
+        console.log(error);
         return res.status(500).json({'msg': 'Internal Server Error'});
     }
 
@@ -95,7 +98,7 @@ server.post('/account', async (req, res) => {
 
     // validate request
     if (!Validator.register(req)) {
-        return res.status(400).send('Request did not validate');
+        return res.status(400).json({msg: 'Request did not validate'});
     }
     
     const username = req.body.username;
@@ -107,7 +110,7 @@ server.post('/account', async (req, res) => {
         const users = DB_CLIENT.db(DATABASE).collection('users');
         const conflictingUsername = await users.findOne({ user: username });
         if (conflictingUsername != null) {
-            return res.status(400).send('Choose a different username');
+            return res.status(400).json({msg: 'Choose a different username'});
         }
 
         // adds user to the database
@@ -131,11 +134,11 @@ server.post('/account', async (req, res) => {
 
             return res.status(200).json({ accessToken });
         } else {
-            return res.status(500).send('Failed to register');
+            return res.status(500).json({msg: 'Failed to register'});
         }
     } catch(error) {
         console.log(error);
-        return res.status(500).send('Failed to register');
+        return res.status(500).json({msg: 'Failed to register'});
     }
 });
 
@@ -145,7 +148,7 @@ server.post('/login', async (req, res) => {
 
     // ensure the login request is correctly formatted
     if (!Validator.login(req)) {
-        return res.status(400).send('missing a parameter');
+        return res.status(400).json({'msg': 'missing a parameter'});
     }
 
     const username = req.body.username;
@@ -169,12 +172,12 @@ server.post('/login', async (req, res) => {
             res.cookie("refreshToken", refreshToken, {httpOnly: true, secure: false});
             return res.status(200).json({ accessToken });
         } else {
-            return res.status(403).send('user did not authenticate');
+            return res.status(403).json({msg: 'user did not authenticate'});
         }
 
     } catch(error) {
         console.log(error);
-        return res.status(500).send('server-side error during login');
+        return res.status(500).json({msg: 'server-side error during login'});
     }
 });
 

@@ -1,5 +1,16 @@
 import 'dotenv/config';
 
+/* HOW TO USE ME */
+/* 
+
+            I take 2 command line args
+            1. A username
+            2. A password
+
+            Thats it. It just has to match something in the db
+
+*/
+
 // constants
 const URL = (process.env.USE_PROD == 'true') ? process.env.PROD_URL : `http://localhost:3000`;
 const args = process.argv;
@@ -19,7 +30,7 @@ if (args.length != 4) {
             'password': process.argv[3]
         };
 
-        const res = await fetch(`${URL}/register`, {
+        const res = await fetch(`${URL}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -27,8 +38,10 @@ if (args.length != 4) {
             },
             body: JSON.stringify(payload)
         });
-
+        
+        const data = await res.json();
         console.log(res);
+        console.log(data);
         console.log(`User: ${args[2]}\nPass: ${args[3]}`);
     }
 })();
