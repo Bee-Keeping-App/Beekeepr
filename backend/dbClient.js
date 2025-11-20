@@ -34,7 +34,7 @@ class MongoBongo {
         this.db = this.client.db('test-database');
     }
 
-
+    
     // given a username, check the database for a user entry. Throw an error if you can't find one (or return null?)
     async getUser(username) {
         const collection = this.db.collection('login');
