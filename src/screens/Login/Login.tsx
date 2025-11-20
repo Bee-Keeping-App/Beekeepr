@@ -1,10 +1,23 @@
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
+import React, { useState } from 'react';
 import { ImageBackground, TextInput, Button, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
 
- 
 
 export function Login() {
+    
+    const [userValue, setUserValue] = useState('');
+    const [passValue, setPassValue] = useState('');
+    
+    const loginPressed = () => {
+        alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    };
+
+    const navigaiteToNewAccount = () => {
+
+    };
+
+
     return (
         //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
         <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
@@ -13,17 +26,22 @@ export function Login() {
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"
+                    onChangeText={text => setUserValue(text)}
+                    value={userValue}
                 >
                 </TextInput>
                 <TextInput
                     style={styles.input}
                     placeholder=" Password"
+                    onChangeText={text => setPassValue(text)}
+                    secureTextEntry={true}
+                    value={passValue}
                 >
                 </TextInput>
-                <TouchableOpacity style={styles.loginButton}>
+                <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
                     Login
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.registerButton}>
+                <TouchableOpacity style={styles.registerButton} onPress={navigaiteToNewAccount}>
                     Create an account
                 </TouchableOpacity>
             </View>
