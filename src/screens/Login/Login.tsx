@@ -1,18 +1,22 @@
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, Button, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
 
 
 export function Login() {
     
+    //These hold and set the values in the password and username fields
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
     
+
+    //eventually will call login logic
     const loginPressed = () => {
         alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
     };
 
+    //eventually will hold navigation logic
     const navigaiteToNewAccount = () => {
 
     };
@@ -21,8 +25,10 @@ export function Login() {
     return (
         //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
         <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
-            <View style={styles.container}></View>
             <View style={styles.container}>
+            </View>
+            <View style={styles.container}>
+                <View style={styles.logoBox}><Image source={require('../../assets/placeholderLogo.png')} style={styles.logo}></Image></View>
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"
@@ -71,8 +77,19 @@ const styles = StyleSheet.create({
         width: width,
         height: '100%'
     },
-    overlayContent: {
-        // Styles for the content placed on top of the image
+    logo: {
+        flex: 1,
+        tintColor: 'black',
+        justifyContent: 'center',
+        resizeMode: 'contain',
+    },
+    logoBox: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: width * .2,
+        height: width * .2,
+        backgroundColor: 'darkorange',
+        borderRadius: 14,
     },
     text: {
         color: 'white',
@@ -80,7 +97,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-        width: width * .6,
+        width: width * .5,
         borderColor: 'darkgray',
         backgroundColor: 'gray',
         borderWidth: 2,
@@ -88,7 +105,7 @@ const styles = StyleSheet.create({
         color: 'lightgray',
     },
     loginButton: {
-        width: width * .6,
+        width: width * .5,
         backgroundColor: 'darkorange',
         color: 'lightgray',
         borderColor: 'darkgray',
@@ -97,7 +114,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     registerButton: {
-        width: width * .6,
+        width: width * .5,
         color: 'darkorange',
         borderColor: 'darkorange',
         borderWidth: 2,
