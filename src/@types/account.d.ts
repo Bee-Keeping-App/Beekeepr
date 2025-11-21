@@ -1,16 +1,22 @@
 // Account object just a temporary context to whole v
 
 export interface Account {
-
-    id: number;
-    username: string;
-    zipcode: string;
-    accountLevel: number;
-
+  id: string;
+  username: string;
+  zipcode: string;
+  accountLevel: number;
 }
+
+//JSON OBJ for reading
+
+export interface LocalAccountData {}
+
 export type AccountContextType = {
-    accounts: Account[];
-    saveAccount: (account: Account) => void;
-    updateAccount: (id: number, zipcode: string, accountLevel: number) => void;
-  };
-  
+  accounts: Account[];
+  currentAccount: Account | null;
+  saveAccount: (account: Account) => void;
+  updateAccount: (id: string, zipcode: string, accountLevel: number) => void;
+  login: (username: string, password: string) => void;
+  JSONlogin: (id: string) => void;
+  logout: () => void;
+};
