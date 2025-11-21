@@ -1,42 +1,75 @@
 // ThemeContext.tsx
-import React, { createContext, useContext, useMemo, useState, useEffect, ReactNode } from "react";
-import { TouchableOpacity, Text, ViewStyle, TextStyle, Switch, View, Appearance } from "react-native";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  TouchableOpacity,
+  Text,
+  ViewStyle,
+  TextStyle,
+  Switch,
+  View,
+  Appearance,
+  Modal,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { colorThemes, ColorTheme } from "../styles/colors";
 
-// Type declerations
+// Types
 type ThemeName = keyof typeof colorThemes;
 
-//button dec
-interface ButtonProps {
+type ButtonProps = {
   title: string;
   onPress?: () => void;
   style?: ViewStyle;
   textStyle?: TextStyle;
-}
+};
 
-interface ThemeContextType {
+type ThemeSwitchProps = {
+  label?: string;
+  invertLabel?: boolean;
+  style?: ViewStyle;
+};
+
+type ModalSize = "small" | "medium" | "large" | "full";
+
+type ThemedModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  title?: string;
+  children?: ReactNode;
+  size?: ModalSize;
+  dismissOnBackdropPress?: boolean;
+  contentStyle?: ViewStyle;
+};
+
+type ThemeContextType = {
   theme: ThemeName;
   colors: ColorTheme;
   setTheme: (name: ThemeName) => void;
   toggleTheme: () => void;
   components: {
-    //add more components here
     Button: React.FC<ButtonProps>;
     ThemeSwitch: React.FC<ThemeSwitchProps>;
+    Modal: React.FC<ThemedModalProps>;
   };
-  //add any more helper funcs
-  createButton: (title: string, onPress?: () => void, style?: ViewStyle, textStyle?: TextStyle) => JSX.Element;
+  createButton: (
+    title: string,
+    onPress?: () => void,
+    style?: ViewStyle,
+    textStyle?: TextStyle
+  ) => JSX.Element;
   createThemeSwitch: (props?: Partial<ThemeSwitchProps>) => JSX.Element;
-}
+  createModal: (props: ThemedModalProps) => JSX.Element;
+};
 
-// ThemeProvider dec
-interface ThemeProviderProps {
-  initialTheme?: ThemeName;
-  respectSystem?: boolean;
-  children: ReactNode;
-}
+// Styles
 
-// import color/styles from color.ts
 const styles = {
   button: (c: ColorTheme): ViewStyle => ({
     backgroundColor: c.primary,
@@ -58,21 +91,81 @@ const styles = {
     color: c.text,
     fontWeight: "600",
   }),
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
+    padding: 16,
+  } as ViewStyle,
+
+  modalContent: (c: ColorTheme, size: ModalSize): ViewStyle => {
+    const base: ViewStyle = {
+      backgroundColor: c.surface,
+      borderRadius: 16,
+      padding: 20,
+      shadowColor: "#000",
+      shadowOpacity: 0.25,
+      shadowOffset: { width: 0, height: 4 },
+      shadowRadius: 8,
+      elevation: 5,
+      maxWidth: "100%",
+    };
+
+    switch (size) {
+      case "small":
+        return { ...base, width: "70%", maxHeight: "40%" };
+      case "medium":
+        return { ...base, width: "85%", maxHeight: "60%" };
+      case "large":
+        return { ...base, width: "95%", maxHeight: "80%" };
+      case "full":
+        return { ...base, width: "100%", height: "100%", borderRadius: 0 };
+      default:
+        return base;
+    }
+  },
+
+  modalHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  } as ViewStyle,
+
+  modalTitle: (c: ColorTheme): TextStyle => ({
+    color: c.text,
+    fontSize: 18,
+    fontWeight: "700",
+  }),
+
+  modalCloseText: (c: ColorTheme): TextStyle => ({
+    color: c.muted,
+    fontSize: 22,
+    fontWeight: "700",
+    paddingHorizontal: 4,
+  }),
 };
 
-// declaration for context
+// Context
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-//func to use context
+
 export const useTheme = () => {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error("useTheme must be used inside <ThemeProvider>");
   return ctx;
 };
 
-//  Components  (literal objects used)
+// Components
 
-//button
-const ThemedButton: React.FC<ButtonProps> = ({ title, onPress, style, textStyle }) => {
+const ThemedButton: React.FC<ButtonProps> = ({
+  title,
+  onPress,
+  style,
+  textStyle,
+}) => {
   const { colors } = useTheme();
   return (
     <TouchableOpacity onPress={onPress} style={[styles.button(colors), style]}>
@@ -81,18 +174,22 @@ const ThemedButton: React.FC<ButtonProps> = ({ title, onPress, style, textStyle 
   );
 };
 
-//helper obj for themeswitching logic
-type ThemeSwitchProps = {
-  label?: string;
-  invertLabel?: boolean;
-  style?: ViewStyle;
-};
-
-//style logic to check light/dark mode
-const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ label, invertLabel, style }) => {
+const ThemeSwitch: React.FC<ThemeSwitchProps> = ({
+  label,
+  invertLabel,
+  style,
+}) => {
   const { theme, colors, toggleTheme } = useTheme();
   const isDark = theme === "dark";
-  const text = label ?? (invertLabel ? (isDark ? "Light mode" : "Dark mode") : (isDark ? "Dark mode" : "Light mode"));
+  const text =
+    label ??
+    (invertLabel
+      ? isDark
+        ? "Light mode"
+        : "Dark mode"
+      : isDark
+      ? "Dark mode"
+      : "Light mode");
 
   return (
     <View style={[styles.switchRow(colors), style]}>
@@ -107,10 +204,61 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ label, invertLabel, style }) 
   );
 };
 
-//  Provider  (actual exported obj)
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialTheme, respectSystem = true, children }) => {
+//Modal objects
+const ThemedModal: React.FC<ThemedModalProps> = ({
+  visible,
+  onClose,
+  title,
+  children,
+  size = "medium",
+  dismissOnBackdropPress = true,
+  contentStyle,
+}) => {
+  const { colors } = useTheme();
+
+  const handleBackdropPress = () => {
+    if (dismissOnBackdropPress) onClose();
+  };
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <TouchableWithoutFeedback onPress={handleBackdropPress}>
+        <View style={styles.modalOverlay}>
+          <TouchableWithoutFeedback>
+            <View style={[styles.modalContent(colors, size), contentStyle]}>
+              {title && (
+                <View style={styles.modalHeaderRow}>
+                  <Text style={styles.modalTitle(colors)}>{title}</Text>
+                  <TouchableOpacity onPress={onClose}>
+                    <Text style={styles.modalCloseText(colors)}>×</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              {children}
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
+
+// Provider
+
+export const ThemeProvider: React.FC<{
+  initialTheme?: ThemeName;
+  respectSystem?: boolean;
+  children: ReactNode;
+}> = ({ initialTheme, respectSystem = true, children }) => {
   const system = Appearance.getColorScheme() === "dark" ? "dark" : "light";
-  const [theme, setTheme] = useState<ThemeName>(initialTheme ?? (respectSystem ? system : "light"));
+  const [theme, setTheme] = useState<ThemeName>(
+    initialTheme ?? (respectSystem ? system : "light")
+  );
 
   useEffect(() => {
     if (!respectSystem) return;
@@ -121,7 +269,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialTheme, resp
   }, [respectSystem]);
 
   const colors = useMemo(() => colorThemes[theme], [theme]);
-  const toggleTheme = () => setTheme(t => (t === "light" ? "dark" : "light"));
+  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
 
   const value: ThemeContextType = useMemo(
     () => ({
@@ -129,24 +277,28 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialTheme, resp
       colors,
       setTheme,
       toggleTheme,
-      components: { Button: ThemedButton, ThemeSwitch },
-      createButton: (title, onPress, style, textStyle) => <ThemedButton title={title} onPress={onPress} style={style} textStyle={textStyle} />,
-      createThemeSwitch: props => <ThemeSwitch {...props} />,
+      components: {
+        Button: ThemedButton,
+        ThemeSwitch,
+        Modal: ThemedModal,
+      },
+      //helper create functions
+      createButton: (title, onPress, style, textStyle) => (
+        <ThemedButton
+          title={title}
+          onPress={onPress}
+          style={style}
+          textStyle={textStyle}
+        />
+      ),
+      createThemeSwitch: (props) => <ThemeSwitch {...props} />,
+
+      createModal: (props) => <ThemedModal {...props} />,
     }),
     [theme, colors]
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 };
-
-
-//ex of use 
-//import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
-//const { colors, theme, toggleTheme, createButton, createThemeSwitch } = useTheme();
-
-//buttons to switch theme:
-
-// {createButton(`Switch to ${theme === "light" ? "dark" : "light"} mode`, toggleTheme)}
-
-//const { Button } = components;
-//<Button title="Toggle Theme" onPress={toggleTheme} />;
