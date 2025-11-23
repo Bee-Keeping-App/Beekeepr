@@ -11,10 +11,8 @@ import * as SecureStore from "expo-secure-store";
 import { Account, AccountContextType } from "../@types/account";
 import { API_BASE_URL } from "@env";
 
-const BASE_URL = API_BASE_URL;
-
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -30,20 +28,6 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [currentAccountId, setCurrentAccountId] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-
-  //  SecureStore helpers
-  const loadSecureData = async () => {
-    try {
-      const json = await SecureStore.getItemAsync(STORAGE_KEY);
-      if (json) {
-        const data = JSON.parse(json);
-        setAccounts(data.accounts || []);
-        setCurrentAccountId(data.currentAccountId || null);
-      }
-    } catch (err) {
-      console.error("Failed to load SecureStore:", err);
-    }
-  };
 
   const saveSecureData = async (
     updatedAccounts: Account[],
@@ -62,25 +46,34 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
     }
   };
 
-  const clearSecureData = async () => {
+  const loadSecureData = async () => {
     try {
-      await SecureStore.deleteItemAsync(STORAGE_KEY);
+      const json = await SecureStore.getItemAsync(STORAGE_KEY);
+      if (!json) return { accounts: [], currentAccountId: null };
+
+      const data = JSON.parse(json);
+      return {
+        accounts: (data.accounts || []) as Account[],
+        currentAccountId: (data.currentAccountId || null) as string | null,
+      };
     } catch (err) {
-      console.error("Failed to clear SecureStore:", err);
+      console.error("Failed to load SecureStore:", err);
+      return { accounts: [], currentAccountId: null };
     }
   };
 
-  /* load stored accounts + attempt refresh on startup */
+  // init load + refresh once
   useEffect(() => {
     const init = async () => {
-      await loadSecureData();
-      // Attempt refresh token on startup
+      const stored = await loadSecureData();
+      setAccounts(stored.accounts);
+      setCurrentAccountId(stored.currentAccountId);
+
       await refreshAccessToken().catch(() => {});
     };
     init();
   }, []);
 
-  /* currently active account using memo */
   const currentAccount = useMemo(
     () =>
       currentAccountId
@@ -88,8 +81,6 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
         : null,
     [accounts, currentAccountId]
   );
-
-  /* save/update account */
 
   const saveAccount = useCallback(
     async (account: Account) => {
@@ -99,6 +90,7 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
           ? prev.map((a) => (a.id === account.id ? account : a))
           : [...prev, account];
 
+        // persist using fresh updated array
         saveSecureData(updated, currentAccountId);
         return updated;
       });
@@ -119,7 +111,6 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
     [currentAccountId]
   );
 
-  /* REGISTER */
   const register = async (username: string, password: string) => {
     const res = await api.post("/register", { username, password });
     const { accessToken } = res.data;
@@ -132,49 +123,51 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
       accountLevel: 0,
     };
 
-    setCurrentAccountId(username);
-    await saveAccount(newAcc);
-
-    // ensure persisted state reflects new account + selected id
-    await saveSecureData([...accounts, newAcc], username);
+    setAccounts((prev) => {
+      const updated = [...prev, newAcc];
+      setCurrentAccountId(username);
+      saveSecureData(updated, username);
+      return updated;
+    });
   };
 
-  /* login */
   const login = async (username: string, password: string) => {
     const res = await api.post("/login", { username, password });
     const { accessToken } = res.data;
     setAccessToken(accessToken);
 
-    const account: Account =
-      accounts.find((a) => a.username === username) ||
-      ({
-        id: username,
-        username,
-        zipcode: "",
-        accountLevel: 0,
-      } as Account);
+    setAccounts((prev) => {
+      const existing =
+        prev.find((a) => a.username === username) ||
+        ({
+          id: username,
+          username,
+          zipcode: "",
+          accountLevel: 0,
+        } as Account);
 
-    // persist if first time
-    await saveAccount(account);
+      const updated = prev.some((a) => a.id === existing.id)
+        ? prev.map((a) => (a.id === existing.id ? existing : a))
+        : [...prev, existing];
 
-    setCurrentAccountId(account.id);
-    await saveSecureData(accounts, account.id);
+      setCurrentAccountId(existing.id);
+      saveSecureData(updated, existing.id);
+      return updated;
+    });
   };
 
-  /* refresh token (do after every login from storage) */
   const refreshAccessToken = async () => {
     try {
       const res = await api.get("/refresh");
       setAccessToken(res.data.accessToken);
       return res.data.accessToken;
-    } catch (err) {
+    } catch {
       console.log("Refresh failed.");
       setAccessToken(null);
       return null;
     }
   };
 
-  /* logout */
   const logout = async () => {
     setCurrentAccountId(null);
     setAccessToken(null);

@@ -2,17 +2,17 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createStaticNavigation } from "@react-navigation/native";
 
-import { Demo } from "../screens/Login/demo";
-// import { RegisterScreen } from "../screens/RegisterScreen";
+import { Login } from "../screens/Login/Login";
+import { Register } from "../screens/Login/Resgister";
 
 const AuthStack = createNativeStackNavigator({
   screens: {
-    Demo: {
-      screen: Demo,
+    Login: {
+      screen: Login,
     },
-    // Register: {
-    //   screen: RegisterScreen,
-    // },
+    Register: {
+      screen: Register,
+    },
   },
 });
 

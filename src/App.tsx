@@ -38,23 +38,6 @@ const RootNavigator: React.FC<{ theme: any }> = ({ theme }) => {
   if (!accountCtx) return null;
   const { currentAccount, login } = accountCtx;
 
-  // check json for refresh tokens is still valid
-  const [localAccData, setLocalAccData] = useState(null);
-  useEffect(() => {
-    fetch("/localStorage/accounts.json")
-      .then((response) => response.json())
-      .then((localAccData) => setLocalAccData(localAccData))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
-  // if (localAccData) {
-  //   // check if current account is loaded in (current will always be filled if so)
-  //   var account_stored = localAccData.current_account == "" ? true : false;
-  //   if (account_stored) {
-  //     login(localAccData.current_account);
-  //   }
-  // }
-
   const RootNav = currentAccount ? Navigation : AuthNavigation;
 
   return (
