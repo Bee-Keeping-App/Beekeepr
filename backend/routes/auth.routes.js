@@ -9,13 +9,13 @@ const controller = require('../controllers/auth.controller');
 
 router.post(
     "/refresh",
-    validate(validator.hasRefreshToken),
+    validate(validator.hasRefreshToken()),
     controller.refreshToken
 );
 
 router.post(
     "/login",
-    validate(validator.login),
+    validate(validator.login()),
     controller.login
 );
 
