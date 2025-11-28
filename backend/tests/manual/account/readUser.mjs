@@ -26,7 +26,7 @@ if (args.length != 3) {
 
     if (VALID_INPUT) {
 
-        const res = await fetch(`${URL}/account`, {
+        const res = await fetch(`${URL}/accounts`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

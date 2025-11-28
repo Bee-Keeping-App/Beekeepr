@@ -35,16 +35,14 @@ router.get(
 
 // update an account
 router.patch(
-    "/:id",
-    validate(validator.idParam()),
+    "/",
     validate(validator.update()),
     controller.updateAccountInfo
 );
 
 // delete an account
 router.delete(
-    "/:id",
-    validate(validator.idParam()),
+    "/",
     controller.deleteAccount
 );
 

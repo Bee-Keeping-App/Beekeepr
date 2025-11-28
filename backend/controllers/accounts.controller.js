@@ -4,13 +4,13 @@ const Auth = require('../services/auth.service');
 /* Read all caller */
 exports.getAllAccounts = async (req, res) => {
     const accounts = await Accounts.findAll();
-    res.json({ accounts });
+    res.status(200).json({ accounts });
 };
 
 /* Read one caller */
 exports.getOneAccount = async (req, res) => {
     const account = await Accounts.findOne(req.params.id);
-    res.json({ account });
+    res.status(200).json({ account });
 };
 
 /* Insert caller */
@@ -23,23 +23,26 @@ exports.registerAccount = async (req, res) => {
     const refreshToken = Auth.signRefreshToken({ id: account._id.toString() });
     const accessToken = Auth.signAccessToken({ id: account._id.toString() });
 
+    // update refresh tracker in mongo
+    await Accounts.updateToken(account._id.toString(), refreshToken);
+
     // attach tokens
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
-    return res.status(200).json({ accessToken });
+    return res.status(201).json({ accessToken });
 };
 
 /* Update caller */
 exports.updateAccountInfo = async (req, res) => {
     const account = await Accounts.updateOne(
-        req.params.id,
+        req.user.id,
         req.body
     );
 
-  res.json({ account });
+  res.status(200).json({ account });
 }
 
 /* Delete caller */
 exports.deleteAccount = async (req, res) => {
-    await Accounts.remove(req.params.id);
+    await Accounts.deleteOne(req.user.id);
     res.status(204).send();
 }

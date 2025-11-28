@@ -10,9 +10,10 @@ const AccountSchema = new mongoose.Schema({
         lowercase: true
     },
     phone: {
-        type: Int32,
+        type: Number,
         required: false,
-        unique: true
+        unique: true,
+        sparse: true
     },
     password: {
         type: String,
@@ -21,7 +22,8 @@ const AccountSchema = new mongoose.Schema({
     },
     token: {
         type: String,
-        required: true
+        required: false,
+        sparse: true
     }
 });
 

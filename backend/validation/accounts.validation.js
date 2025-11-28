@@ -10,16 +10,18 @@ exports.idParam = () => {
 // validation logic for account POST
 exports.create = () => {
     return Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required()
+        email: Joi.string().required(),
+        password: Joi.string().required(),
+        phone: Joi.number().optional()
     });
 };
 
 // validation logic for account PATCH
 exports.update = () => {
     return Joi.object({
-        username: Joi.string().optional(),
-        password: Joi.string().optional()
+        email: Joi.string().optional(),
+        password: Joi.string().optional(),
+        phone: Joi.number().optional()
     });
 };
 
