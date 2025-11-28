@@ -1,45 +1,51 @@
 const router = require("express").Router();
 
+/* middlewares do validation, authorization */
 const validate = require('../middlewares/validation.middlewares');
-const authorize = require('../middlewares/auth.middlewares');
+const auth = require('../middlewares/auth.middlewares');
+
+/* validator contains schemes for each endpoint, checked by middleware */
 const validator = require('../validation/accounts.validation');
 
+/* controller calls logic for implementing actions upon successful auth / validation */
 const controller = require('../controllers/accounts.controller');
 
 /* Registering an account should not need prior authorization */
 router.post(
     "/",
-    validate(validator.create),
-    controller.insert
+    validate(validator.create()),
+    controller.registerAccount
 );
 
-/* WARNING: All routes after this line MUST ACCEPT AUTH TOKENS */
-router.use(authorize);
+/* WARNING: All routes after this line WILL CHECK FOR AUTH TOKENS */
+router.use(auth);
 
 // get all users
 router.get(
     "/",
-    controller.getAll
+    controller.getAllAccounts
 );
 
 // get one user
 router.get(
     "/:id",
-    validate(validator.idParam),
-    controller.getOne
+    validate(validator.idParam()),
+    controller.getOneAccount
 );
 
 // update an account
 router.patch(
-    validate(validator.update),
-    controller.update
+    "/:id",
+    validate(validator.idParam()),
+    validate(validator.update()),
+    controller.updateAccountInfo
 );
 
 // delete an account
 router.delete(
     "/:id",
-    validate(validator.id),
-    controller.delete
+    validate(validator.idParam()),
+    controller.deleteAccount
 );
 
 // this is how app.js accesses the account routes

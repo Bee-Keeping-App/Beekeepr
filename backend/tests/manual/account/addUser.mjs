@@ -30,7 +30,7 @@ if (args.length != 4) {
             'password': process.argv[3]
         };
 
-        const res = await fetch(`${URL}/account`, {
+        const res = await fetch(`${URL}/accounts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,8 +39,8 @@ if (args.length != 4) {
             body: JSON.stringify(payload)
         });
         
-        const data = await res.json();
         console.log(res);
+        const data = await res.json();
         console.log(data);
         console.log(`User: ${args[2]}\nPass: ${args[3]}`);
     }

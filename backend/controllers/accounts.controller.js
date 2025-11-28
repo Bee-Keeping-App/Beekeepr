@@ -1,34 +1,45 @@
-const service = require("../services/accounts.service");
+const Accounts = require("../services/accounts.service");
+const Auth = require('../services/auth.service');
 
 /* Read all caller */
-exports.getAll = async (req, res) => {
-    const accounts = await service.findAll();
-    res.json(accounts);
+exports.getAllAccounts = async (req, res) => {
+    const accounts = await Accounts.findAll();
+    res.json({ accounts });
 };
 
 /* Read one caller */
-exports.getOne = async (req, res) => {
-    const account = await service.findOne(req.params.id);
-    res.json(account);
+exports.getOneAccount = async (req, res) => {
+    const account = await Accounts.findOne(req.params.id);
+    res.json({ account });
 };
 
 /* Insert caller */
-exports.insert = async (req, res) => {
-    const account = await service.insertOne(req.body);
-    res.status(201).json(account);
+exports.registerAccount = async (req, res) => {
+    
+    // upload account to mongo
+    const account = await Accounts.insertOne(req.body);
+    
+    // make tokens
+    const refreshToken = Auth.signRefreshToken({ id: account._id.toString() });
+    const accessToken = Auth.signAccessToken({ id: account._id.toString() });
+
+    // attach tokens
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
+    return res.status(200).json({ accessToken });
 };
 
 /* Update caller */
-exports.update = async (req, res) => {
-    const account = await accountService.updateOne(
+exports.updateAccountInfo = async (req, res) => {
+    const account = await Accounts.updateOne(
         req.params.id,
         req.body
     );
-  res.json(account);
+
+  res.json({ account });
 }
 
 /* Delete caller */
-exports.delete = async (req, res) => {
-    await accountService.remove(req.params.id);
+exports.deleteAccount = async (req, res) => {
+    await Accounts.remove(req.params.id);
     res.status(204).send();
 }
