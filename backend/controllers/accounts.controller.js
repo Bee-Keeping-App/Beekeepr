@@ -44,5 +44,9 @@ exports.updateAccountInfo = async (req, res) => {
 /* Delete caller */
 exports.deleteAccount = async (req, res) => {
     await Accounts.deleteOne(req.user.id);
+    
+    // removes the refresh token from the request
+    res.cookie('refreshToken', '', { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });
+    
     res.status(204).send();
 }

@@ -12,14 +12,20 @@ exports.refreshToken = async (req, res, next) => {
 
         // verify user owns this refresh token
         const user = await Accounts.findOneById(payload);
-        if (refreshToken == user.token)
-            return res.status(200).json({ accessToken });
+        if (refreshToken != user.token) {
+            
+            // if user does not own this refresh token, revoke their tokens and serve forbidden
+            await Accounts.revokeToken(user.id);
+            
+            return res.status(403).json({ error: 'User does not own this refresh token '});
+        }
+        
+        // success path for token refreshing
+        return res.status(200).json({ accessToken });
 
-        // if user does not own this refresh token, revoke their tokens and serve forbidden
-        await Accounts.revokeToken(user.id);
-        return res.status(403).json({ error: 'User does not own this refresh token '});
 
     } catch(error) {
+        
         // catch-all for expired or invalid refresh token
         return res.status(403).json({ error: 'Invalid/Expired token' });
     }
@@ -44,6 +50,7 @@ exports.login = async (req, res, next) => {
 
         // attach tokens
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
+        
         return res.status(200).json({ accessToken });
 
     } catch(error) {
@@ -55,7 +62,11 @@ exports.logout = async (req, res, next) => {
     try {
         
         // revoke their token on logout
-        await Accounts.revokeToken(req.user);    
+        await Accounts.revokeToken(req.user);
+        
+        // removes the refresh token from the request
+        res.cookie('refreshToken', '', { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });
+        
         return res.status(204).send();
         
     } catch(error) {
