@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../backend/app');
-const Account = require('../../backend/accounts.model');
+const Account = require('../../backend/models/accounts.model');
 
 describe('POST /accounts', () => {
     beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('POST /accounts', () => {
         };
 
         return request(app)
-        .post('/accounts')
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(validUser.fields)
         .expect(201)    // 201 bc POST makes a server resource
@@ -51,7 +51,7 @@ describe('POST /accounts', () => {
         };
 
         return request(app)
-        .post('/accounts')
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(invalidUser.fields)
         .expect(400);
@@ -65,7 +65,7 @@ describe('POST /accounts', () => {
         };
 
         return request(app)
-        .post('/accounts')
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(invalidUser.fields)
         .expect(400);
@@ -86,17 +86,17 @@ describe('POST /accounts', () => {
 
         // inserts a valid user
         await request(app)
-        .post('/accounts')
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(validUser.fields)
         .expect(201);
         
         // fails inserting bc of duplicate email
         return request(app)
-        .post('/accounts')
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(invalidUser.fields)
-        .expect(400);
+        .expect(409);
     });
 });
 

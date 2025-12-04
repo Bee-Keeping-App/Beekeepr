@@ -4,8 +4,8 @@
   "main": "index.tsx",
   "scripts": {
     "start": "expo start --dev-client",
-    "test": "jest",
-    "test:ci": "jest --ci --runInBand --detectOpenHandles --forceExit",
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:ci": "jest --ci --runInBand --detectOpenHandles",
     "web": "expo start --web",
     "android": "expo run:android",
     "ios": "expo run:ios"
@@ -29,6 +29,7 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
+    "mongodb-memory-server": "^10.4.0",
     "mongoose": "^8.19.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

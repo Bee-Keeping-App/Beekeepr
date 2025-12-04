@@ -1,28 +1,50 @@
 const Accounts = require('../models/accounts.model');
 const argon2 = require('argon2');
 
-exports.findAll = () => { 
-    return Accounts.find(); 
+class DuplicateUserError extends Error {}
+class NotFoundError extends Error {}
+
+exports.DuplicateUserError = DuplicateUserError;
+exports.NotFoundError = NotFoundError;
+
+exports.findAll = async () => { 
+    return await Accounts.find(); 
 };
 
-exports.findOne = (query) => { 
-    return Accounts.findOne(query);
+exports.findOne = async (query) => { 
+    return await Accounts.findOne(query);
 };
 
-exports.findOneById = (id) => {
-    return Accounts.findById(id);
+exports.findOneById = async (id) => {
+    return await Accounts.findById(id);
 };
 
-exports.insertOne = (account) => {
-    return Accounts.create(account);
+exports.insertOne = async (account) => {
+
+    try {
+        return await Accounts.create(account);
+    } catch(err) {
+        if (err.code === 11000) {
+            throw new DuplicateUserError('Email already exists');
+        }
+        throw err;
+    }
 };
 
-exports.updateOne = (id, account) => {
-    return Accounts.findByIdAndUpdate(id, account, { new: true });
+exports.updateOne = async (id, account) => {
+    const result = await Accounts.findByIdAndUpdate(id, account, { new: true });
+    if (!result) {
+        throw new NotFoundError('Account not found');
+    }
+    return result;
 };
 
-exports.deleteOne = (id) => {
-    return Accounts.findByIdAndDelete(id);
+exports.deleteOne = async (id) => {
+    const result = await Accounts.findByIdAndDelete(id);
+    if (!result) {
+        throw new NotFoundError('Account not found');
+    }
+    return result;
 };
 
 exports.comparePasswords = async (username, attempt) => {
@@ -33,10 +55,18 @@ exports.comparePasswords = async (username, attempt) => {
     return valid ? user : false;
 };
 
-exports.revokeToken = (id) => {
-    return Accounts.findByIdAndUpdate(id, { token: null });
+exports.revokeToken = async (id) => {
+    const result = await Accounts.findByIdAndUpdate(id, { token: null });
+    if (!result) {
+        throw new NotFoundError('Account not found');
+    }
+    return result;
 };
 
-exports.updateToken = (id, token) => {
-    return Accounts.findByIdAndUpdate(id, { token: token });
+exports.updateToken = async (id, token) => {
+    const result = await Accounts.findByIdAndUpdate(id, { token: token });
+    if (!result) {
+        throw new NotFoundError('Account not found');
+    }
+    return result;
 };

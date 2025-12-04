@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(loggingMiddleware);
 
 /* Implementing Routes */
-app.use('api/accounts', require('./routes/accounts.routes'));
+app.use('/api/accounts', require('./routes/accounts.routes'));
 
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
 app.use(errorMiddleware);

@@ -1,22 +1,16 @@
 const request = require('supertest');
 const app = require('../../backend/app');
-const Account = require('../../backend/accounts.model');
+const Account = require('../../backend/models/accounts.model');
 
-function insertUser(user) { 
-    return request(app)
-        .post('/accounts')
+async function insertUser(user) {
+    const response = await request(app)
+        .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(user.fields)
-        .expect(201)    // 201 bc POST makes a server resource
-        .then(response => {
-            
-            // checks for access token
-            expect(response.body).toHaveProperty('token');
+        .expect(201);
 
-            // return the token (for sending future requests as an authenticated user)
-            return response.body['token'];
-
-        });
+    expect(response.body).toHaveProperty('token');
+    return response.body['token'];
 }
 
 describe('GET /accounts', () => {
@@ -51,17 +45,17 @@ describe('GET /accounts', () => {
 
         // call /accounts with one of the tokens
         const response = await request(app)
-            .get('/accounts')
+            .get('/api/accounts')
             .set('Accept', 'application/json')
             .set('Authorization', `Bearer ${tokenA}`)  // tokenA or tokenB works
             .expect(200);
 
         // verify response
-        expect(response.body).toHaveLength(2);
-        const emails = response.body.map(u => u.email);
-        expect(emails).toContain('successEmail@gmail.com');
-        expect(emails).toContain('goodemail@gmail.com');
-
+        expect(response.body).toHaveProperty('accounts')
+        expect(response.body.accounts).toHaveLength(2);
+        const emails = response.body.accounts.map(u => u.email);
+        expect(emails).toContain('successEmail@gmail.com'.toLowerCase());
+        expect(emails).toContain('goodemail@gmail.com'.toLowerCase());
     });
 
     test('successfully read 1 user', async () => {
@@ -84,24 +78,26 @@ describe('GET /accounts', () => {
         // call /accounts with one of the tokens
         // fetch all users to get a valid ID for targetUser
         const allUsers = await request(app)
-            .get('/accounts')
+            .get('/api/accounts')
             .set('Accept', 'application/json')
             .set('Authorization', `Bearer ${tokenA}`)
             .expect(200);
 
         // pick target user's ID
-        const targetId = allUsers.body.find(u => u.email === targetUser.fields.email)._id;
+        const targetId = allUsers.body.accounts.find(u => u.email === (targetUser.fields.email.toLowerCase()))._id;
+        console.log(targetId);
 
         // fetch one user by ID
         const response = await request(app)
-            .get(`/accounts/${targetId}`)
+            .get(`/api/accounts/${targetId}`)
             .set('Accept', 'application/json')
             .set('Authorization', `Bearer ${tokenA}`)
             .expect(200);
 
         // verify response
-        expect(response.body).toHaveProperty('_id', targetId);
-        expect(response.body).toHaveProperty('email', targetUser.fields.email);
+        expect(response.body).toHaveProperty('account');
+        expect(response.body.account).toHaveProperty('_id', targetId);
+        expect(response.body.account).toHaveProperty('email', targetUser.fields.email.toLowerCase());
     });
 });
 
