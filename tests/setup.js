@@ -16,7 +16,7 @@ beforeAll(async () => {
 // runs after every test
 beforeEach(async () => {
     
-    // collects collections and deletes their contents
+    // identifies collections and deletes their contents
     const collections = await mongoose.connection.db.collections();
     for (let collection of collections) {
         await collection.deleteMany({});

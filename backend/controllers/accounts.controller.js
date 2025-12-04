@@ -28,7 +28,7 @@ exports.registerAccount = async (req, res) => {
 
     // attach tokens
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
-    return res.status(201).json({ accessToken });
+    return res.status(201).json({ 'token': accessToken });
 };
 
 /* Update caller */

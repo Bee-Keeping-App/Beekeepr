@@ -8,18 +8,18 @@ const controller = require('../controllers/auth.controller');
 
 
 router.post(
-    "/refresh",
+    "/api/refresh",
     validate(validator.hasRefreshToken()),
     controller.refreshToken
 );
 
 router.post(
-    "/login",
+    "/api/login",
     validate(validator.login()),
     controller.login
 );
 
 router.post(
-    "/logout",
+    "/api/logout",
     controller.logout
 );
