@@ -1,5 +1,4 @@
 const request = require('supertest');
-const mongoose = require('mongoose');
 const app = require('../../backend/app');
 const Account = require('../../backend/accounts.model');
 
@@ -11,7 +10,7 @@ describe('POST /accounts', () => {
     });
 
     afterEach(async () => {
-        
+
         // empty the database
         await Account.deleteMany({});
     });

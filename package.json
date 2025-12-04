@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start --dev-client",
     "test": "jest",
-    "test:ci": "jest --ci --runInBand --detectOpenHandles",
+    "test:ci": "jest --ci --runInBand --detectOpenHandles --forceExit",
     "web": "expo start --web",
     "android": "expo run:android",
     "ios": "expo run:ios"
