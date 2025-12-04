@@ -25,10 +25,7 @@
     "expo-linking": "~8.0.8",
     "expo-splash-screen": "~31.0.10",
     "expo-system-ui": "~6.0.7",
-<<<<<<< HEAD
     "jest": "^30.2.0",
-=======
->>>>>>> jacob-Backend
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.20.0",
