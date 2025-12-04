@@ -6,10 +6,15 @@ export function Almanac() {
       <View style={styles.container}>
         <Text>Almanac</Text>
         <Text>Test</Text>
+
         <Button screen="Article" params={{}} >
           Go to Article
         </Button>
         
+        <Button screen="Weather" params={{}}>
+          Go to Weather
+        </Button>
+
       </View>
     );
   }

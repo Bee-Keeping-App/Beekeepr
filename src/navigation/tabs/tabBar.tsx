@@ -3,8 +3,8 @@ import { Image, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStack } from '../stacks/HomeStack';
 import { AlmanacStack } from '../stacks/AlmanacStack';
-import { CommunityStack } from '../stacks/CommunityStack.tsx';
-import { HiveTrackerStack } from '../stacks/HiveTrackerStack.tsx';
+import { CommunityStack } from '../stacks/CommunityStack';
+import { HiveTrackerStack } from '../stacks/HiveTrackerStack';
 
 
 

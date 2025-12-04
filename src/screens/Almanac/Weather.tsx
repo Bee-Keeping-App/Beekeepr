@@ -5,11 +5,8 @@ import * as React from 'react';
 import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View,} from 'react-native';
 import { WebView } from 'react-native-webview';
 
-//Placeholder 
-const OPENWEATHER_KEY = '';
-
-//im writing this to allow merging again
-
+//get key from env
+const OPENWEATHER_KEY = process.env.EXPO_PUBLIC_OPENWEATHER_KEY ?? '';
 
 //Hard-coded coordinates for troy
 const TROY_LAT = 42.7284;
@@ -85,7 +82,7 @@ function formatDateLabel(dateStr: string): string {
 export function WeatherMap() {
   //Forecast state
   const [forecast, setForecast] = React.useState<ForecastDay[]>([]);
-  //Simple loading + error flags
+  //loading + error flags
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
