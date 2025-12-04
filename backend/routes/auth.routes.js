@@ -8,18 +8,21 @@ const controller = require('../controllers/auth.controller');
 
 
 router.post(
-    "/api/refresh",
+    "/refresh",
     validate(validator.hasRefreshToken()),
     controller.refreshToken
 );
 
 router.post(
-    "/api/login",
+    "/login",
     validate(validator.login()),
     controller.login
 );
 
 router.post(
-    "/api/logout",
+    "/logout",
     controller.logout
 );
+
+// this is how app.js accesses the auth routes
+module.exports = router;

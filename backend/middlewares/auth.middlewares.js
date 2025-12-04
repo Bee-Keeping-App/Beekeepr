@@ -12,9 +12,10 @@ module.exports = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     try {
+        
         // verify token
         const payload = auth.validateAccessToken(token);
-        
+
         // ids each user's request
         req.user = payload;
         

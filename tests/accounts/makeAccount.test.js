@@ -15,32 +15,32 @@ describe('POST /accounts', () => {
         await Account.deleteMany({});
     });
 
-    test('returns tokens for successful registration', () => {
+    test('returns tokens for successful registration', async () => {
         const validUser = {
             fields: { email: 'successEmail@gmail.com', password: 'qwertyuiop' },
             isValid: true,
             errMsg: null
         };
 
-        return request(app)
+        const response = await request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(validUser.fields)
         .expect(201)    // 201 bc POST makes a server resource
-        .then(response => {
-            
-            // checks for access token
-            expect(response.body).toHaveProperty('token');
-            
-            // parsing http-only cookies
-            const cookies = response.headers['set-cookie'];
-            expect(cookies).toBeDefined();
+    
+        
+        // checks for access token
+        expect(response.body).toHaveProperty('token');
+        
+        // parsing http-only cookies
+        const cookies = response.headers['set-cookie'];
+        expect(cookies).toBeDefined();
 
-            // checks for refresh token
-            const refreshCookie = cookies.find(c => c.startsWith('refreshToken='));
-            expect(refreshCookie).toBeDefined();
-            expect(refreshCookie).toContain('HttpOnly');
-        });
+        // checks for refresh token
+        const refreshCookie = cookies.find(c => c.startsWith('refreshToken='));
+        expect(refreshCookie).toBeDefined();
+        expect(refreshCookie).toContain('HttpOnly');
+        
     });
 
     test('fails insert due to missing email', async () => {

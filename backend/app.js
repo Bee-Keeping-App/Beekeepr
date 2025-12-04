@@ -15,7 +15,7 @@ app.use(loggingMiddleware);
 
 /* Implementing Routes */
 app.use('/api/accounts', require('./routes/accounts.routes'));
-
+app.use('/api/auth', require('./routes/auth.routes'));
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
 app.use(errorMiddleware);
 

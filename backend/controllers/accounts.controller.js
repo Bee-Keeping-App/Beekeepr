@@ -17,6 +17,7 @@ exports.getOneAccount = async (req, res) => {
 exports.registerAccount = async (req, res, next) => {
     
     try {
+        
         // upload account to mongo
         const account = await Accounts.insertOne(req.body);
         

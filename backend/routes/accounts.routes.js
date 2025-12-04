@@ -34,7 +34,7 @@ router.get(
 );
 
 // update an account
-router.patch(
+router.put(
     "/",
     validate(validator.update()),
     controller.updateAccountInfo

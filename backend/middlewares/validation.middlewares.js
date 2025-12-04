@@ -5,7 +5,8 @@ module.exports = (schema) => {
         const allArgs = {
             ...req.body,
             ...req.params,
-            ...req.query
+            ...req.query,
+            ...req.cookies
         };
         const { error } = schema.validate(allArgs);
 

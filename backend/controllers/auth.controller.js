@@ -7,27 +7,31 @@ exports.refreshToken = async (req, res, next) => {
 
         // verify refresh token, get new access token, and send it in json
         const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken)
+            return res.status(401).json({ error: 'User did not provide a refresh token' });
+
+
         const payload = Auth.validateRefreshToken(refreshToken);
-        const accessToken = Auth.signAccessToken(payload);
 
         // verify user owns this refresh token
-        const user = await Accounts.findOneById(payload);
-        if (refreshToken != user.token) {
+        const user = await Accounts.findOneById(payload.id);
+
+        if ((!user.token) || (user.token !== refreshToken)) {
             
-            // if user does not own this refresh token, revoke their tokens and serve forbidden
-            await Accounts.revokeToken(user.id);
-            
+            // if the associated user has null for their token, that means the person
+            // using this token is not the user, and therefore should not keep access
             return res.status(403).json({ error: 'User does not own this refresh token '});
         }
         
         // success path for token refreshing
-        return res.status(200).json({ accessToken });
-
+        const accessToken = Auth.signAccessToken({ id: payload.id });
+        return res.status(200).json({ token: accessToken });
 
     } catch(error) {
         
+        console.log(error);
         // catch-all for expired or invalid refresh token
-        return res.status(403).json({ error: 'Invalid/Expired token' });
+        return res.status(401).json({ error: 'Invalid/Expired token' });
     }
 };
 

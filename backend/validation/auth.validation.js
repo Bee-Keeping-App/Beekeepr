@@ -10,7 +10,7 @@ exports.hasRefreshToken = () => {
 // checks for login credentials
 exports.login = () => {
     return Joi.object({
-        username: Joi.string().required(),
+        email: Joi.string().required(),
         password: Joi.string().required()
     });
 };
