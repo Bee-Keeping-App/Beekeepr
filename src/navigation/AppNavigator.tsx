@@ -1,27 +1,30 @@
+// navigation/AppNavigator.tsx
 import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-  createStaticNavigation,
-  StaticParamList,
-} from "@react-navigation/native";
 
 import { Tabs } from "./tabs/tabBar";
 import { NotFound } from "../screens/NotFound";
 
-// Root-level stack: anything here sits outside the tab bar (modals, 404, auth, etc.)
-const RootStack = createNativeStackNavigator({
-  screens: {
-    Tabs: {
-      screen: Tabs,
-      options: { headerShown: false },
-    },
-    NotFound: {
-      screen: NotFound,
-      options: { title: "404" },
-      linking: { path: "*" },
-    },
-  },
-});
+export type AppStackParamList = {
+  Tabs: undefined;
+  NotFound: undefined;
+};
 
-export const Navigation = createStaticNavigation(RootStack);
-export type RootStackParamList = StaticParamList<typeof RootStack>;
+const RootStack = createNativeStackNavigator<AppStackParamList>();
+
+export const AppNavigator: React.FC = () => {
+  return (
+    <RootStack.Navigator>
+      <RootStack.Screen
+        name="Tabs"
+        component={Tabs}
+        options={{ headerShown: false }}
+      />
+      <RootStack.Screen
+        name="NotFound"
+        component={NotFound}
+        options={{ title: "404" }}
+      />
+    </RootStack.Navigator>
+  );
+};

@@ -1,21 +1,23 @@
-// object to hold Queen Info
-interface QueenInfo {
-  QueenParent: string; //here store if start of line
+// object to hold Qualitive Queen Info
+export interface QueenInfo {
+  QueenParent: string; // here store "start" if start of line
   QueenName: string;
   sourceObtained: string;
-  ageBirth: string;
+  age: string;
   hygenicBehavior: string;
   broodPattern: string;
   agressiveness: string;
 }
 
-interface ColonyNode {
+// Tree Node
+export interface ColonyNode<TQueen = QueenInfo> {
   activeStatus: boolean;
-  Queen: QueenInfo;
-  value: ColonyInfo;
-  children?: ColonyNode<ColonyInfo>[];
+  Queen: TQueen;
+  children?: ColonyNode<TQueen>[];
 }
 
-const;
+// One lineage
+export type ColonyTree = ColonyNode<QueenInfo>;
 
-//export tree of colonies through reading through json obj
+// multiple lineages
+export type ColonyForest = ColonyNode<QueenInfo>[];

@@ -1,24 +1,6 @@
-import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
+import React from "react";
+import { WeatherMap } from "./WeatherMap";
 
-type Props = StaticScreenProps<{
-  user: string;
-}>;
-
-export function Article({ route }: Props) {
-  return (
-    <View style={styles.container}>
-      <Text>Temp article</Text>
-    </View>
-  );
+export function Article() {
+  return <WeatherMap />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-  },
-});

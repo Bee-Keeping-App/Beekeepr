@@ -156,6 +156,27 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
     });
   };
 
+  const guestLogin = async () => {
+    const guestAcc: Account = {
+      id: "guest",
+      username: "Guest",
+      zipcode: "",
+      accountLevel: 0,
+    };
+
+    setAccounts((prev) => {
+      const exists = prev.some((a) => a.id === guestAcc.id);
+      const updated = exists ? prev : [...prev, guestAcc];
+
+      setCurrentAccountId(guestAcc.id);
+      saveSecureData(updated, guestAcc.id);
+      return updated;
+    });
+
+    // No real token for guest
+    setAccessToken(null);
+  };
+
   const refreshAccessToken = async () => {
     try {
       const res = await api.get("/refresh");
@@ -182,6 +203,7 @@ const AccountProvider = ({ children }: AccountProviderProps) => {
     login,
     logout,
     JSONlogin: () => {},
+    guestLogin,
   };
 
   return (

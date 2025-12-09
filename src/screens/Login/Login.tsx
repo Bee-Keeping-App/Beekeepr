@@ -11,10 +11,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/AuthNavigator";
+
+import { useContext } from "react";
+import { AccountContext } from "../../Contexts/AuthContext";
+
+type AuthNavProp = NativeStackNavigationProp<AuthStackParamList>;
+
 export function Login() {
   //These hold and set the values in the password and username fields
   const [userValue, setUserValue] = useState("");
   const [passValue, setPassValue] = useState("");
+
+  const navigation = useNavigation<AuthNavProp>();
+  const accountCtx = useContext(AccountContext);
 
   //eventually will call login logic
   const loginPressed = () => {
@@ -24,22 +36,49 @@ export function Login() {
         " and the entered password is " +
         passValue
     );
+
+    if (!userValue || !passValue) {
+      alert("Please enter both username and password.");
+      return;
+    }
+
+    if (accountCtx?.login) {
+      accountCtx.login(userValue, passValue).catch((err) => {
+        console.error("Login failed:", err);
+        alert("Login failed. Please check your credentials and try again.");
+      });
+    } else {
+      console.warn("AccountContext or login function is not available");
+    }
+  };
+
+  const guestLoginPressed = () => {
+    if (accountCtx?.guestLogin) {
+      accountCtx.guestLogin().catch((err) => {
+        console.error("Guest login failed:", err);
+        alert("Guest login failed. Please try again.");
+      });
+    } else {
+      console.warn("AccountContext or guestLogin function is not available");
+    }
   };
 
   //eventually will hold navigation logic
-  const navigaiteToNewAccount = () => {};
+  const navigaiteToNewAccount = () => {
+    navigation.navigate("Register");
+  };
 
   return (
     //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
     <ImageBackground
-      source={require("../../assets/placeholderBackground.png")}
+      source={require("../../../assets/placeholderBackground.png")}
       style={styles.background}
     >
       <View style={styles.container}></View>
       <View style={styles.container}>
         <View style={styles.logoBox}>
           <Image
-            source={require("../../assets/placeholderLogo.png")}
+            source={require("../../../assets/placeholderLogo.png")}
             style={styles.logo}
           ></Image>
         </View>
@@ -64,6 +103,15 @@ export function Login() {
           onPress={navigaiteToNewAccount}
         >
           Create an account
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.registerButton, { marginTop: 10 }]}
+          onPress={guestLoginPressed}
+        >
+          <Text style={{ color: "darkorange", padding: 6 }}>
+            Continue as Guest
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}></View>

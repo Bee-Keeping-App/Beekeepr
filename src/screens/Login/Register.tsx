@@ -11,10 +11,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/AuthNavigator";
+
+import { useContext } from "react";
+import { AccountContext } from "../../Contexts/AuthContext";
+
+type AuthNavProp = NativeStackNavigationProp<AuthStackParamList>;
+
 export function Register() {
   //These hold and set the values in the password and username fields
   const [userValue, setUserValue] = useState("");
   const [passValue, setPassValue] = useState("");
+
+  const navigation = useNavigation<AuthNavProp>();
+  const accountCtx = useContext(AccountContext);
 
   //eventually will call login logic
   const loginPressed = () => {
@@ -26,13 +38,26 @@ export function Register() {
     );
   };
 
+  const guestLoginPressed = () => {
+    if (accountCtx?.guestLogin) {
+      accountCtx.guestLogin().catch((err) => {
+        console.error("Guest login failed:", err);
+        alert("Guest login failed. Please try again.");
+      });
+    } else {
+      console.warn("AccountContext or guestLogin function is not available");
+    }
+  };
+
   //eventually will hold navigation logic
-  const navigaiteToNewAccount = () => {};
+  const navigaiteToNewAccount = () => {
+    navigation.navigate("Login");
+  };
 
   return (
     //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
     <ImageBackground
-      source={require("../../assets/placeholderBackground.png")}
+      source={require("../../../assets/placeholderBackground.png")}
       style={styles.background}
     >
       <View style={styles.container}></View>
@@ -51,13 +76,22 @@ export function Register() {
           value={passValue}
         ></TextInput>
         <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
-          Login
+          Sign Up
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.registerButton}
           onPress={navigaiteToNewAccount}
         >
-          Create an account
+          Already have an Account?
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.registerButton, { marginTop: 10 }]}
+          onPress={guestLoginPressed}
+        >
+          <Text style={{ color: "darkorange", padding: 6 }}>
+            Continue as Guest
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}></View>

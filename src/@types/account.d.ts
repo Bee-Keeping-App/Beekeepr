@@ -11,12 +11,17 @@ export interface Account {
 
 export interface LocalAccountData {}
 
-export type AccountContextType = {
+export interface AccountContextType {
   accounts: Account[];
   currentAccount: Account | null;
-  saveAccount: (account: Account) => void;
-  updateAccount: (id: string, zipcode: string, accountLevel: number) => void;
-  login: (username: string, password: string) => void;
-  JSONlogin: (id: string) => void;
-  logout: () => void;
-};
+  saveAccount: (account: Account) => Promise<void> | void;
+  updateAccount: (
+    id: string,
+    zipcode: string,
+    accountLevel: number
+  ) => Promise<void> | void;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => Promise<void> | void;
+  JSONlogin: () => void;
+  guestLogin: () => Promise<void> | void;
+}
