@@ -3,8 +3,8 @@ const cookieParser = require("cookie-parser");
 const app = express();
 
 /* Middlewares */
-const loggingMiddleware = require('./middlewares/logging.middlewares');
-const errorMiddleware = require('./middlewares/error.middlewares'); 
+const loggingMiddleware = require('./middlewares/logging.middleware');
+const errorMiddleware = require('./middlewares/error.middleware'); 
 
 /* Imported Middlewares */
 app.use(express.json());
@@ -14,8 +14,9 @@ app.use(cookieParser());
 app.use(loggingMiddleware);
 
 /* Implementing Routes */
-app.use('/api/accounts', require('./routes/accounts.routes'));
-app.use('/api/auth', require('./routes/auth.routes'));
+app.use('/api/accounts', require('./routers/accounts.router'));
+app.use('/api/auth', require('./routers/auth.router'));
+
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
 app.use(errorMiddleware);
 

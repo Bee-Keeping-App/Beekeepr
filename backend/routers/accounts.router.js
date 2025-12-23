@@ -1,11 +1,11 @@
 const router = require("express").Router();
 
 /* middlewares do validation, authorization */
-const validate = require('../middlewares/validation.middlewares');
-const auth = require('../middlewares/auth.middlewares');
+const validate = require('../middlewares/validation.middleware');
+const auth = require('../middlewares/auth.middleware');
 
 /* validator contains schemes for each endpoint, checked by middleware */
-const validator = require('../validation/accounts.validation');
+const validator = require('../validators/accounts.validator');
 
 /* controller calls logic for implementing actions upon successful auth / validation */
 const controller = require('../controllers/accounts.controller');

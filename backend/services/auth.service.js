@@ -1,23 +1,132 @@
-const jwt = require("jsonwebtoken");
+const TokenManager = require('../services/tokens.service');
+const SessionManager = require('../services/session.service');
+const Accounts = require('../services/accounts.service');
 
-// constants from .env
-const ACCESS_SECRET = process.env.ACCESS_SECRET;
-const ACCESS_EXPIRY = '15m';
-const REFRESH_SECRET = process.env.REFRESH_SECRET;
-const REFRESH_EXPIRY = '7d';
+const {
+    WrongPasswordError,
+    NullQueryError,
+    ExpiredTokenError,
+    UnauthenticatedUserError
+} = require('../classes/errors.class');
 
-exports.signAccessToken = (payload) => {
-    return jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRY });
+
+exports.refreshToken = async (refreshString) => {
+
+    // validate the token
+    var payload = TokenManager.validateRefreshToken(refreshString);
+    
+    // find the user and update the access token id
+    const user = await Accounts.findOneById(payload.owner.id);
+    await user.updateOne({ $inc: { accessId: 1 } });
+    payload.version = user.accessId;
+
+    // return the new access token
+    return TokenManager.signAccessToken(payload);
 };
 
-exports.signRefreshToken = (payload) => {
-    return jwt.sign(payload, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRY });
+// you should definitely put some specs here
+exports.handleLogin = async (username, password) => {
+
+    // find user
+    const user = await Accounts.findOne({ username });
+    if (!user) throw new NullQueryError('Invalid login');
+    
+    // validate login
+    if (!(await user.validatePassword(password)))
+        throw new WrongPasswordError('Invalid login');
+
+    // generate tokens
+    const accessToken = TokenManager.signAccessToken({
+        id: user.id,
+        version: user.accessId
+    });
+    const refreshToken = TokenManager.signRefreshToken({
+        id: user.id,
+        version: user.refreshId
+    });
+
+    // login state is internally synced
+    // return the tokens for embedding
+    return { accessToken, refreshToken };
 };
 
-exports.validateAccessToken = (token) => {
-    return jwt.verify(token, ACCESS_SECRET);
+// you should definitely put some specs here
+exports.handleLogout = async (id) => {
+
+    // find user
+    const user = await Accounts.findOneById(id);
+    if (!user) throw new NullQueryError('User not found');
+    
+    // update token ids to invalidate tokens
+    await user.updateOne({
+        $inc: { accessId: 1, refreshId: 1 }
+    });
 };
 
-exports.validateRefreshToken = (token) => {
-    return jwt.verify(token, REFRESH_SECRET);
+exports.handleSignup = async (info) => {
+
+    const initialVersion = 1;
+
+    // data has passed validation, now needs to pass db insert
+    const user = await Accounts.insertOne({
+        ...info,
+        accessVersion: initialVersion,
+        refreshVersion: initialVersion
+    });
+    if (!user) throw new NullQueryError('Failed account insert into DB');
+
+    // now need to make tokens
+    const accessToken = TokenManager.signAccessToken({
+        id: user._id,
+        version: initialVersion, // should be math.random
+    });
+    const refreshToken = TokenManager.signRefreshToken({
+        id: user._id,
+        version: initialVersion
+    });
+
+    // signup state is internally synced
+    // return the tokens for embedding
+    return { accessToken, refreshToken };
+};
+
+exports.validateTokenOwnership = async (accessString, refreshString) => {
+
+
+    /*
+    * 1. validate access and refresh strings
+    * 2. check that their user ids match
+    * 3. check that their token versions match in db
+    */
+
+
+    let accessPayload, refreshPayload, accessToken;
+    
+    // try validating the access token, and auto-refresh if it throws ExpiredTokenError
+    try {
+        accessPayload = TokenManager.validateAccessToken(accessString);
+    } catch (error) {
+        if (error instanceof ExpiredTokenError)
+            accessPayload, accessToken = await SessionManager.refreshSession(refreshString);
+        else
+            throw error;
+    }
+
+    // now try validating the refresh token
+    // if this throws ExpiredTokenError then that tells auth to trigger login
+    // SessionManager.refreshSession() also throws ExpiredTokenError if refresh is expired
+    refreshPayload = TokenManager.validateRefreshToken(refreshString);
+
+    // implies these tokens belong to different users
+    if (refreshPayload.owner.id != accessPayload.owner.id)
+        throw new UnauthenticatedUserError('User has mismatched tokens');
+
+
+    // get the user associated with these tokens
+    const user = await Accounts.findOneById(refreshOwner.owner.id);
+    if (user.refreshId != refreshPayload.version
+        || user.accessId != accessPayload.version) 
+        throw new UnauthenticatedUserError('User has invalid tokens');
+    
+    return accessToken;
 };

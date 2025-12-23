@@ -9,8 +9,8 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
-    expect(response.body).toHaveProperty('token');
-    return response.body['token'];
+    expect(response.body).toHaveProperty('accessToken');
+    return response.body['accessToken'];
 }
 
 describe('PUT /accounts', () => {

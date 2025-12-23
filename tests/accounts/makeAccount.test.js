@@ -30,7 +30,7 @@ describe('POST /accounts', () => {
     
         
         // checks for access token
-        expect(response.body).toHaveProperty('token');
+        expect(response.body).toHaveProperty('accessToken');
         
         // parsing http-only cookies
         const cookies = response.headers['set-cookie'];

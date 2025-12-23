@@ -9,13 +9,11 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
-    expect(response.body).toHaveProperty('token');
-
-    const refreshCookie = response.headers['set-cookie'];
+    expect(response.body).toHaveProperty('accessToken');
 
     return {
-        access: response.body.token,
-        refresh: refreshCookie
+        access: response.body.accessToken,
+        refresh: response.headers['set-cookie']
     };
 }
 
@@ -42,11 +40,9 @@ describe('POST /refresh', () => {
         // insert user and get their access token
         const auth = await insertUser(validUser);
         
+        // gets login creds
         const refreshCookie = auth['refresh'];
         const oldToken = auth['access'];
-
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-        sleep(1000);
 
         // call /refresh and show the refreshToken
         const response = await request(app)
@@ -55,11 +51,8 @@ describe('POST /refresh', () => {
             .set('Cookie', refreshCookie[0].split(';')[0])
             .expect(200);
         
-        expect(response.body).toHaveProperty('token');
-
-        console.log('old token:', oldToken);
-        console.log('new token:', response.body.token);
-
+        // tests
+        expect(response.body).toHaveProperty('accessToken');
         expect(response.body.token).not.toBe(oldToken);
         
     });
@@ -83,7 +76,7 @@ describe('POST /refresh', () => {
         
     });
 
-    test('fail to get new access token with no fake refresh token', async () => {
+    test('fail to get new access token with fake refresh token', async () => {
         const validUser = {
             fields: { email: 'successEmail@gmail.com', password: 'qwertyuiop' },
             isValid: true,
@@ -98,7 +91,7 @@ describe('POST /refresh', () => {
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')
             .set('Cookie', 'yippeeyabbabooo')
-            .expect(404);
+            .expect(401);
         
     });
 
@@ -119,10 +112,11 @@ describe('POST /refresh', () => {
         const { accessTokenA, refreshCookieA } = await insertUser(validUserA);
         const { accessTokenB, refreshCookieB } = await insertUser(validUserB);
 
+        // logs out validUserA
         await request(app)
             .post('/api/auth/logout')
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${tokenA}`)
+            .set('Authorization', `Bearer ${accessTokenA}`)
             .expect(204);
         
         // call /refresh with the other's refresh cookie
@@ -130,7 +124,7 @@ describe('POST /refresh', () => {
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')
             .set('Cookie', refreshCookieA[0].split(';')[0])
-            .expect(403);
+            .expect(401);
         
     });
 });

@@ -1,57 +1,65 @@
 const Accounts = require("../services/accounts.service");
 const Auth = require('../services/auth.service');
+const catchAsync = require('../utils/catchAsync');
 
 /* Read all caller */
-exports.getAllAccounts = async (req, res) => {
+exports.getAllAccounts = catchAsync(async (req, res, next) => {
     const accounts = await Accounts.findAll();
     res.status(200).json({ accounts });
-};
+});
 
 /* Read one caller */
-exports.getOneAccount = async (req, res) => {
+exports.getOneAccount = catchAsync(async (req, res, next) => {
     const account = await Accounts.findOneById(req.params.id);
     res.status(200).json({ account });
-};
+});
 
-/* Insert caller */
-exports.registerAccount = async (req, res, next) => {
-    
-    try {
-        
-        // upload account to mongo
-        const account = await Accounts.insertOne(req.body);
-        
-        // make tokens
-        const refreshToken = Auth.signRefreshToken({ id: account._id.toString() });
-        const accessToken = Auth.signAccessToken({ id: account._id.toString() });
+/* Make an Account */
+exports.registerAccount = catchAsync(async (req, res, next) => {
 
-        // update refresh tracker in mongo
-        await Accounts.updateToken(account._id.toString(), refreshToken);
+    /* me calculating my mlfd grade:
 
-        // attach tokens
-        res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
-        return res.status(201).json({ 'token': accessToken });
-    } catch(err) {
-        next(err);
-    }
-};
+        * 10750 in hw points / 12800 in total points = 0.8398
+        * 54 in quiz points / 86 in total points = 0.6279
+        * 26.82 on the exam / 30 in total exam = 0.894
+        * 
+        * final grade: 50% hw, 20% quiz, 30% final
+        * 0.5 * 0.8398 + 0.2 * 0.6279 + 0.3 * 0.894
+        * 0.4199 + 0.1258 + 0.2682 = 0.8139
+        * cope rounding: 0.42 + 0.13 + 0.27 = 0.82
+        * 
+        * fml bro ik ik ts 90 on the final :sob:
+    */
+
+    // login handled by auth service
+    const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
+
+    // attach tokens and send request
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
+    return res.status(201).json({ accessToken });
+
+});
 
 /* Update caller */
-exports.updateAccountInfo = async (req, res) => {
+exports.updateAccountInfo = catchAsync(async (req, res, next) => {
+    
+    // finds an account by id then updates it (idempotent operation)
     const account = await Accounts.updateOne(
         req.user.id,
         req.body
     );
 
-  res.status(200).json({ account });
-}
+    res.status(200).json({ account });
+});
 
 /* Delete caller */
-exports.deleteAccount = async (req, res) => {
+exports.deleteAccount = catchAsync(async (req, res, next) => {
+    
+    // deletes the account
     await Accounts.deleteOne(req.user.id);
     
     // removes the refresh token from the request
-    res.cookie('refreshToken', '', { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });
+    res.cookie('refreshToken', null, { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });
     
     res.status(204).send();
-}
+});

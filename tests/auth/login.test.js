@@ -9,8 +9,8 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
-    expect(response.body).toHaveProperty('token');
-    return response.body['token'];
+    expect(response.body).toHaveProperty('accessToken');
+    return response.body['accessToken'];
 }
 
 describe('POST /login', () => {
@@ -35,7 +35,7 @@ describe('POST /login', () => {
 
         const token = await insertUser(validUser);
 
-        // call /accounts with one of the tokens
+        // log out validUser
         await request(app)
             .post('/api/auth/logout')
             .send(validUser.fields)
@@ -43,6 +43,8 @@ describe('POST /login', () => {
             .set('Authorization', `Bearer ${token}`)
             .expect(204);
         
+
+        // now try logging them in again
         const response = await request(app)
             .post('/api/auth/login')
             .send(validUser.fields)
