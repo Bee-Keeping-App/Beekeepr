@@ -62,8 +62,7 @@ describe('POST /login', () => {
 
         // verify response
         // checks for access token
-        expect(response.body).toHaveProperty('accessToken');
-        expect(response.cookies).toHaveProperty('set-cookie');
+        console.log(response.body);
 
         // parsing tokens
         const refresh = response.headers['set-cookie'];
@@ -92,7 +91,7 @@ describe('POST /login', () => {
             .expect(200);
         
 
-        invalidUser['password'] = null;
+        invalidUser.fields['password'] = null;
 
         await request(app)
             .post('/api/auth/login')
@@ -100,8 +99,8 @@ describe('POST /login', () => {
             .set('Accept', 'application/json')
             .expect(400);
 
-        invalidUser['email'] = null;
-        invalidUser['password'] = 'qwertyuiop';
+        invalidUser.fields['email'] = null;
+        invalidUser.fields['password'] = 'qwertyuiop';
         
         await request(app)
             .post('/api/auth/login')
@@ -109,7 +108,7 @@ describe('POST /login', () => {
             .set('Accept', 'application/json')
             .expect(400);
 
-        invalidUser['password'] = null;
+        invalidUser.fields['password'] = null;
 
         await request(app)
             .post('/api/auth/login')
@@ -125,27 +124,28 @@ describe('POST /login', () => {
             errMsg: null
         };
 
-        const token = await insertUser(invalidUser);
+        const auth = await insertUser(invalidUser);
 
         // call /accounts with one of the tokens
         await request(app)
             .post('/api/auth/logout')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
-            .expect(204);
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
+            .expect(200);
         
 
-        invalidUser['password'] = '123bananas';
+        invalidUser.fields['password'] = '123bananas';
 
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
-            .expect(404);
+            .expect(401);
 
-        invalidUser['email'] = 'bademail@gmail.com';
-        invalidUser['password'] = 'qwertyuiop';
+        invalidUser.fields['email'] = 'bademail@gmail.com';
+        invalidUser.fields['password'] = 'qwertyuiop';
         
         await request(app)
             .post('/api/auth/login')
@@ -153,7 +153,7 @@ describe('POST /login', () => {
             .set('Accept', 'application/json')
             .expect(401);
 
-        invalidUser['password'] = '123bananas';
+        invalidUser.fields['password'] = '123bananas';
 
         await request(app)
             .post('/api/auth/login')

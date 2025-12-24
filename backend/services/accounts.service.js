@@ -11,9 +11,8 @@ exports.findAll = async () => {
     return result;
 };
 
-exports.findOne = async (query) => {
-    console.log(query);
-    const result = await Accounts.findOne(query);
+exports.findOne = async (query, includePassword = false) => {
+    const result = includePassword ? await Accounts.findOne(query, '+password') : await Accounts.findOne(query);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };

@@ -23,8 +23,6 @@ exports.login = catchAsync(async (req, res, next) => {
 
     // get tokens from Auth
     const { email, password } = req.body;
-
-    console.log('login args:\n', [email, password]);
     const { accessToken, refreshToken } = await Auth.handleLogin(email, password);
 
     // attach tokens

@@ -13,8 +13,6 @@ module.exports = (schema) => {
                 ...req.cookies
             };
 
-            console.log('Request Arguments:\n', allArgs);
-
             const { error } = schema.validate(allArgs, { 
                 allowUnknown: true, // Will ignore keys not specified by the validator
                 stripUnknown: false // will remove unknown keys from request (KEEP AS FALSE)

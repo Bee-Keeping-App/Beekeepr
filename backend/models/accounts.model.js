@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const argon2 = require('argon2');
+const {
+    WrongPasswordError
+} = require('../classes/errors.class');
 
 /* all mongo entries for Accounts will have this scheme */
 const AccountSchema = new mongoose.Schema({
@@ -38,8 +41,11 @@ AccountSchema.set('toObject', { virtuals: true });
 
 // call scheme.validatePassword to verify an attempt
 AccountSchema.methods.validatePassword = async function(attempt) {
-    console.log('validation args:', [attempt, this.password]);
-    return await argon2.verify(this.password, attempt);
+    try {
+        return await argon2.verify(this.password, attempt);
+    } catch (error) {
+        throw WrongPasswordError('Could not verify attempt');
+    }
 };
 
 // middleware for auto-hashing passwords

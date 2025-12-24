@@ -28,12 +28,24 @@ exports.refreshToken = async (refreshString) => {
 exports.handleLogin = async (email, password) => {
 
     // find user
-    const user = await Accounts.findOne({ email }, '+password');
-    if (!user) throw new NullQueryError('Invalid login');
-    
-    // validate login
-    if (!(await user.validatePassword(password)))
-        throw new WrongPasswordError('Invalid login');
+    let user;
+    try {
+        
+        // attempt to find user by their email
+        user = await Accounts.findOne({ email }, true);
+        if (!user) throw new NullQueryError('Email not found');
+
+        // attempt to validate password with hash
+        if (!(await user.validatePassword(password)))
+            throw new WrongPasswordError('Attempt did not match hash');
+
+    } catch (error) {
+        
+        // convert these errors into an Unauthenticated User error
+        if (error instanceof NullQueryError ||
+            error instanceof WrongPasswordError)
+            throw new UnauthenticatedUserError('Invalid login')
+    }
 
     // generate tokens
     const accessToken = TokenManager.signAccessToken({
