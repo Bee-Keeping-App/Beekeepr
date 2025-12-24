@@ -1,4 +1,5 @@
 const {
+    FailedValidationError,
     InvalidTokenError,
     ExpiredTokenError,
     MissingTokenError,

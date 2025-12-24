@@ -25,10 +25,10 @@ exports.refreshToken = async (refreshString) => {
 };
 
 // you should definitely put some specs here
-exports.handleLogin = async (username, password) => {
+exports.handleLogin = async (email, password) => {
 
     // find user
-    const user = await Accounts.findOne({ username });
+    const user = await Accounts.findOne({ email }, '+password');
     if (!user) throw new NullQueryError('Invalid login');
     
     // validate login

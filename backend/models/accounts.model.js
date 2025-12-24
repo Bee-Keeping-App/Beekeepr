@@ -38,6 +38,7 @@ AccountSchema.set('toObject', { virtuals: true });
 
 // call scheme.validatePassword to verify an attempt
 AccountSchema.methods.validatePassword = async function(attempt) {
+    console.log('validation args:', [attempt, this.password]);
     return await argon2.verify(this.password, attempt);
 };
 

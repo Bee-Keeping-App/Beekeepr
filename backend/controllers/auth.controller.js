@@ -22,7 +22,10 @@ exports.register = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
 
     // get tokens from Auth
-    accessToken, refreshToken = await Auth.handleLogin(req.body);
+    const { email, password } = req.body;
+
+    console.log('login args:\n', [email, password]);
+    const { accessToken, refreshToken } = await Auth.handleLogin(email, password);
 
     // attach tokens
     res.cookie("refreshToken", refreshToken, { 'httpOnly': true, 'secure': (process.env.USE_PROD == 'true') });

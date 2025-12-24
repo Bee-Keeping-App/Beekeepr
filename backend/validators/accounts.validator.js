@@ -1,5 +1,12 @@
 const Joi = require('joi');
 
+// validation for GET 1 account
+exports.findOne = () => {
+    return Joi.object({
+        id: Joi.required()
+    });
+};
+
 // validation logic for account POST
 exports.create = () => {
     return Joi.object({

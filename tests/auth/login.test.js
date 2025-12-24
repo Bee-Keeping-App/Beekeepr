@@ -9,8 +9,14 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
+    // check that tokens were returned
     expect(response.body).toHaveProperty('accessToken');
-    return response.body['accessToken'];
+    expect(response.headers).toHaveProperty('set-cookie');
+
+    return {
+        access: response.body.accessToken,
+        refresh: response.headers['set-cookie']
+    };
 }
 
 describe('POST /login', () => {
@@ -33,18 +39,20 @@ describe('POST /login', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
 
         // log out validUser
         await request(app)
             .post('/api/auth/logout')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
-            .expect(204);
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
+            .expect(200);
         
 
         // now try logging them in again
+        // login implies no active auth tokens
         const response = await request(app)
             .post('/api/auth/login')
             .send(validUser.fields)
@@ -54,16 +62,15 @@ describe('POST /login', () => {
 
         // verify response
         // checks for access token
-        expect(response.body).toHaveProperty('token');
-        
-        // parsing http-only cookies
-        const cookies = response.headers['set-cookie'];
-        expect(cookies).toBeDefined();
+        expect(response.body).toHaveProperty('accessToken');
+        expect(response.cookies).toHaveProperty('set-cookie');
 
-        // checks for refresh token
-        const refreshCookie = cookies.find(c => c.startsWith('refreshToken='));
-        expect(refreshCookie).toBeDefined();
-        expect(refreshCookie).toContain('HttpOnly');
+        // parsing tokens
+        const refresh = response.headers['set-cookie'];
+        const access = response.body.accessToken;
+
+        expect(refresh).toBeDefined();
+        expect(access).toBeDefined();
     });
 
     test('failed log in due to missing field(s)', async () => {
@@ -73,15 +80,16 @@ describe('POST /login', () => {
             errMsg: null
         };
 
-        const token = await insertUser(invalidUser);
+        const auth = await insertUser(invalidUser);
 
         // call /accounts with one of the tokens
         await request(app)
             .post('/api/auth/logout')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
-            .expect(204);
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
+            .expect(200);
         
 
         invalidUser['password'] = null;
@@ -143,7 +151,7 @@ describe('POST /login', () => {
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
-            .expect(404);
+            .expect(401);
 
         invalidUser['password'] = '123bananas';
 
@@ -151,7 +159,7 @@ describe('POST /login', () => {
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
-            .expect(404);
+            .expect(401);
     });
 });
 

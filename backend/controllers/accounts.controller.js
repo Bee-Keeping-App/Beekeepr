@@ -45,7 +45,7 @@ exports.updateAccountInfo = catchAsync(async (req, res, next) => {
     
     // finds an account by id then updates it (idempotent operation)
     const account = await Accounts.updateOne(
-        req.user.id,
+        req.user,
         req.body
     );
 
@@ -56,7 +56,7 @@ exports.updateAccountInfo = catchAsync(async (req, res, next) => {
 exports.deleteAccount = catchAsync(async (req, res, next) => {
     
     // deletes the account
-    await Accounts.deleteOne(req.user.id);
+    await Accounts.deleteOne(req.user);
     
     // removes the refresh token from the request
     res.cookie('refreshToken', null, { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });

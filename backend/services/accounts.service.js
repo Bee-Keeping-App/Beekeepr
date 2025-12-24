@@ -12,6 +12,7 @@ exports.findAll = async () => {
 };
 
 exports.findOne = async (query) => {
+    console.log(query);
     const result = await Accounts.findOne(query);
     if (!result) throw new NullQueryError('Account not found');
     return result;

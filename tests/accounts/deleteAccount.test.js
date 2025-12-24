@@ -9,8 +9,14 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
+    // check that tokens were returned
     expect(response.body).toHaveProperty('accessToken');
-    return response.body['accessToken'];
+    expect(response.headers).toHaveProperty('set-cookie');
+
+    return {
+        access: response.body.accessToken,
+        refresh: response.headers['set-cookie']
+    };
 }
 
 describe('DELETE /accounts', () => {
@@ -33,20 +39,22 @@ describe('DELETE /accounts', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
 
         // call /accounts with one of the tokens
         await request(app)
             .delete('/api/accounts')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(204);
 
         const response = await request(app)
             .get('/api/accounts')
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(200);
 
         expect(response.body).toHaveProperty('accounts');

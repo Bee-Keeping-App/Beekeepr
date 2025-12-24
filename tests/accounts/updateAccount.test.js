@@ -9,8 +9,14 @@ async function insertUser(user) {
         .send(user.fields)
         .expect(201);
 
+    // check that tokens were returned
     expect(response.body).toHaveProperty('accessToken');
-    return response.body['accessToken'];
+    expect(response.headers).toHaveProperty('set-cookie');
+
+    return {
+        access: response.body.accessToken,
+        refresh: response.headers['set-cookie']
+    };
 }
 
 describe('PUT /accounts', () => {
@@ -33,7 +39,7 @@ describe('PUT /accounts', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
         
         validUser['fields']['email'] = 'newEmail@gmail.com';
         validUser['fields']['password'] = 'newpassword';
@@ -43,7 +49,8 @@ describe('PUT /accounts', () => {
             .put('/api/accounts')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(200);
         
 
@@ -60,7 +67,7 @@ describe('PUT /accounts', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
         
         validUser['fields']['email'] = null;
         validUser['fields']['password'] = 'newpassword';
@@ -70,7 +77,8 @@ describe('PUT /accounts', () => {
             .put('/api/accounts')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(400);
     });
 
@@ -81,7 +89,7 @@ describe('PUT /accounts', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
         
         validUser['fields']['phone'] = 'pancakes';
 
@@ -90,7 +98,8 @@ describe('PUT /accounts', () => {
             .put('/api/accounts')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(400);
     });
 
@@ -101,7 +110,7 @@ describe('PUT /accounts', () => {
             errMsg: null
         };
 
-        const token = await insertUser(validUser);
+        const auth = await insertUser(validUser);
         
         validUser['fields']['phone'] = 1234567890;
 
@@ -110,7 +119,8 @@ describe('PUT /accounts', () => {
             .put('/api/accounts')
             .send(validUser.fields)
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${token}`)
+            .set('Authorization', `Bearer ${auth.access}`)
+            .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(200);
 
         // verify response
