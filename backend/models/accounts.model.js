@@ -26,12 +26,12 @@ const AccountSchema = new mongoose.Schema({
     },
     refreshId: {
         type: Number,
-        required: false,
+        required: true,
         select: false
     },
     accessId: {
         type: Number,
-        required: false,
+        required: true,
         select: false
     }
 });

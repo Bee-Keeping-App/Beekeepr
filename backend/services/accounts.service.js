@@ -17,8 +17,8 @@ exports.findOne = async (query, includePassword = false) => {
     return result;
 };
 
-exports.findOneById = async (id) => {
-    const result = await Accounts.findById(id);
+exports.findOneById = async (id, includeTokens = false) => {
+    const result = includeTokens ? await Accounts.findById(id, '+refreshId +accessId') : await Accounts.findById(id);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };

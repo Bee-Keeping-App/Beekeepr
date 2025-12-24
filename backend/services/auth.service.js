@@ -6,7 +6,8 @@ const {
     WrongPasswordError,
     NullQueryError,
     ExpiredTokenError,
-    UnauthenticatedUserError
+    UnauthenticatedUserError,
+    InvalidTokenError
 } = require('../classes/errors.class');
 
 
@@ -14,9 +15,18 @@ exports.refreshToken = async (refreshString) => {
 
     // validate the token
     var payload = TokenManager.validateRefreshToken(refreshString);
+
+    // find the user and validate the token version
+    const user = await Accounts.findOneById(payload.owner.id, true);
+
+    console.log('Refresh Token version:', payload.version);
+    console.log('DB Refresh version:', user.refreshId);
+    console.log('user in db:\n', user);
+
+    if (user.refreshId != payload.version)
+        throw new InvalidTokenError('Refresh token is invalid');
     
-    // find the user and update the access token id
-    const user = await Accounts.findOneById(payload.owner.id);
+    // update the access token version
     await user.updateOne({ $inc: { accessId: 1 } });
     payload.version = user.accessId;
 
@@ -82,8 +92,8 @@ exports.handleSignup = async (info) => {
     // data has passed validation, now needs to pass db insert
     const user = await Accounts.insertOne({
         ...info,
-        accessVersion: initialVersion,
-        refreshVersion: initialVersion
+        accessId: initialVersion,
+        refreshId: initialVersion
     });
     if (!user) throw new NullQueryError('Failed account insert into DB');
 

@@ -10,6 +10,10 @@ async function insertUser(user) {
         .expect(201);
 
     expect(response.body).toHaveProperty('accessToken');
+    expect(response.headers).toHaveProperty('set-cookie');
+    
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.headers['set-cookie']).toBeDefined();
 
     return {
         access: response.body.accessToken,
@@ -65,7 +69,7 @@ describe('POST /refresh', () => {
         };
 
         // insert user and get their access token
-        const { accessToken, refreshCookie } = await insertUser(validUser);
+        const auth = await insertUser(validUser);
 
         // call /accounts with one of the tokens
         await request(app)
@@ -84,7 +88,7 @@ describe('POST /refresh', () => {
         };
 
         // insert user and get their access token
-        const { accessToken, refreshCookie } = await insertUser(validUser);
+        const auth = await insertUser(validUser);
 
         // call /accounts with one of the tokens
         await request(app)
@@ -109,21 +113,22 @@ describe('POST /refresh', () => {
         };
 
         // insert user and get their access token
-        const { accessTokenA, refreshCookieA } = await insertUser(validUserA);
-        const { accessTokenB, refreshCookieB } = await insertUser(validUserB);
+        const authA = await insertUser(validUserA);
+        const authB = await insertUser(validUserB);
 
         // logs out validUserA
         await request(app)
             .post('/api/auth/logout')
             .set('Accept', 'application/json')
-            .set('Authorization', `Bearer ${accessTokenA}`)
-            .expect(204);
+            .set('Authorization', `Bearer ${authA.access}`)
+            .set('Cookie', authA.refresh[0].split(';')[0])
+            .expect(200);
         
         // call /refresh with the other's refresh cookie
         await request(app)
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')
-            .set('Cookie', refreshCookieA[0].split(';')[0])
+            .set('Cookie', authA.refresh[0].split(';')[0])
             .expect(401);
         
     });

@@ -12,13 +12,13 @@ router.post(
     controller.login
 );
 
-// All endpoints past this line implement auth checking
-router.use(authMiddleware);
-
 router.post(
     "/refresh",
     controller.refreshToken
 );
+
+// All endpoints past this line implement auth checking
+router.use(authMiddleware);
 
 router.post(
     "/logout",
