@@ -16,16 +16,16 @@ module.exports = (err, req, res, next) => {
     err.status = err.status || 'error';
 
     // log the error
-    console.log('======================================ERROR======================================\n',
-        err);
-    console.log('===================================END OF ERROR==================================');
+    console.log(`======================================ERROR======================================\n\n
+        %O\n\n
+        ===================================END OF ERROR==================================`, err);
 
     switch (err.constructor) {
 
-        case MissingTokenError:
+        case FailedValidationError:
             return res.status(400).json(err.message);
-
-        case DuplicateFieldError:
+        
+        case MissingTokenError:
             return res.status(400).json(err.message);
 
         case InvalidTokenError:
@@ -45,6 +45,9 @@ module.exports = (err, req, res, next) => {
 
         case NullQueryError:
             return res.status(404).json(err.message);
+
+        case DuplicateFieldError:
+            return res.status(409).json(err.message);
     }
 
     if (process.env.USE_PROD == 'false') {

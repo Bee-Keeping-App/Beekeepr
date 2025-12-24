@@ -54,6 +54,12 @@ class DuplicateFieldError extends DomainError {
     }
 }
 
+class FailedValidationError extends DomainError {
+    constructor(message = 'Request did not pass validation') {
+        super(message);
+    }
+}
+
 module.exports = {
     WrongPasswordError,
     NullQueryError,
@@ -62,5 +68,6 @@ module.exports = {
     UnauthorizedUserError,
     MissingTokenError,
     ExpiredTokenError,
-    InvalidTokenError
+    InvalidTokenError,
+    FailedValidationError
 };

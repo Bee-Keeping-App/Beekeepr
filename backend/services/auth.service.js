@@ -77,11 +77,15 @@ exports.handleSignup = async (info) => {
 
     // now need to make tokens
     const accessToken = TokenManager.signAccessToken({
-        id: user._id,
+        owner: {
+            id: user.id
+        },
         version: initialVersion, // should be math.random
     });
     const refreshToken = TokenManager.signRefreshToken({
-        id: user._id,
+        owner: {
+            id: user.id
+        },
         version: initialVersion
     });
 

@@ -1,12 +1,5 @@
 const Joi = require('joi');
 
-// validate read by id
-exports.idParam = () => {
-    return Joi.object({
-        id: Joi.string().required()
-    });
-};
-
 // validation logic for account POST
 exports.create = () => {
     return Joi.object({

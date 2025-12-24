@@ -18,7 +18,7 @@ const REFRESH_EXPIRY = '7d';
 */
 
 // template function
-async function signToken(payload, secret, expiry) {
+function signToken(payload, secret, expiry) {
     return jwt.sign({
         'owner': payload.owner,
         'iat': Math.floor(Date.now()),
@@ -31,7 +31,7 @@ async function signToken(payload, secret, expiry) {
 };
 
 // template function
-async function validateToken(tokenString, secret) {
+function validateToken(tokenString, secret) {
     try {
         return jwt.verify(tokenString, secret);
     } catch (err) {

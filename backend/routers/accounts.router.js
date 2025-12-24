@@ -29,7 +29,6 @@ router.get(
 // get one user
 router.get(
     "/:id",
-    validate(validator.idParam()),
     controller.getOneAccount
 );
 
