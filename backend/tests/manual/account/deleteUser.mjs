@@ -30,7 +30,7 @@ if (args.length != 3) {
 
     if (VALID_INPUT) {
 
-        const res = await fetch(`${URL}/account`, {
+        const res = await fetch(`${URL}/accounts`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,8 +38,8 @@ if (args.length != 3) {
             }
         });
 
-        const data = await res.json();
         console.log(res);
+        const data = await res.json();
         console.log(data);
         console.log(`Access Token: ${args[2]}`);
     }

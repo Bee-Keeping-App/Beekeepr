@@ -17,7 +17,7 @@ const args = process.argv;
 var VALID_INPUT = false;
 
 if (args.length != 4) {
-    console.log('Usage: $node addUser.js username password');
+    console.log('Usage: $node addUser.js email password');
 } else {
     VALID_INPUT = true;
 }
@@ -26,11 +26,11 @@ if (args.length != 4) {
 
     if (VALID_INPUT) {
         const payload = {
-            'username': process.argv[2],
+            'email': process.argv[2],
             'password': process.argv[3]
         };
 
-        const res = await fetch(`${URL}/account`, {
+        const res = await fetch(`${URL}/accounts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,9 +39,9 @@ if (args.length != 4) {
             body: JSON.stringify(payload)
         });
         
-        const data = await res.json();
         console.log(res);
+        const data = await res.json();
         console.log(data);
-        console.log(`User: ${args[2]}\nPass: ${args[3]}`);
+        console.log(`email: ${args[2]}\npassword: ${args[3]}`);
     }
 })();

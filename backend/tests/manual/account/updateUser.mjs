@@ -16,8 +16,8 @@ const URL = (process.env.USE_PROD == 'true') ? process.env.PROD_URL : `http://lo
 const args = process.argv;
 var VALID_INPUT = false;
 
-if (args.length != 5) {
-    console.log('Usage: $node addUser.js accessToken newUsername newPassword');
+if (args.length != 4) {
+    console.log('Usage: $node addUser.js accessToken newEmail');
 } else {
     VALID_INPUT = true;
 }
@@ -26,11 +26,10 @@ if (args.length != 5) {
 
     if (VALID_INPUT) {
         const payload = {
-            'username': args[3],
-            'password': args[4]
+            'email': args[3],
         };
 
-        const res = await fetch(`${URL}/account`, {
+        const res = await fetch(`${URL}/accounts`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,11 +38,12 @@ if (args.length != 5) {
             },
             body: JSON.stringify(payload)
         });
-        
-        const data = await res.json();
         console.log(res);
+
+        const data = await res.json();
         console.log(data);
+        
         console.log(`Access Token: ${args[2]}`);
-        console.log(`New User: ${args[3]}\nNew Pass: ${args[4]}`);
+        console.log(`New User: ${args[3]}`);
     }
 })();
