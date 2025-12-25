@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Node.js CI/CD
 
 on:
   push:
@@ -7,55 +7,45 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
 
+    # Spins up a local MongoDB for the test suite
     services:
-      mongo:
+      mongodb:
         image: mongo:6
         ports:
           - 27017:27017
-        options: --bind_ip_all
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Set test environment variables
-        run: |
-          echo "MONGO_URI_TEST=mongodb://localhost:27017/beekeepr_test" >> $GITHUB_ENV
-
-      - name: Run tests
+      - name: Run Tests
         run: npm test
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "beekeepr-backend"
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
+        env:
+          # --- Secrets (From GitHub Settings > Secrets) ---
+          ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
+          REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
+          
+          # this should always be false until we git gud lulz
+          USE_PROD: 'false'
+          
+          # db uris, server chooses which to use based on USE_PROD
+          MONGO_TEST: ${{ secrets.MONGO_TEST }}
+          MONGO_PROD: ${{ secrets.MONGO_PROD }}
+                    
+          # specifies a domain; localhost:3000 is used instead if USE_PROD is false
+          PROD_URL: 'sixxxseevveeeeeennnnnnn'
+          
+          # Environment helper
+          NODE_ENV: test
