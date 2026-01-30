@@ -1,5 +1,29 @@
 const Joi = require('joi');
 
+/* note:
+    I would consider moving these schemas out to a global config/constant folder
+    so the frontend and backend can use the same ones.
+*/
+
+// 3-20 chars, alphanum + '.' and '-' allowed
+const validUsername = Joi.string()
+            .min(3)
+            .max(20)
+            .pattern(new RegExp(/^[a-zA-Z0-9-.]{3,20}$/));
+
+// 8-30 chars, alphanumeric + special chars allowed
+const validPassword = Joi.string()
+            .min(8)
+            .max(30)
+            .pattern(new RegExp(/^[a-zA-z0-9!@#$%^&*()?]{8,30}$/));
+
+const validEmail = Joi.string()
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } });
+
+// phone regex borrowed from https://stackoverflow.com/questions/16699007/
+const validPhone = Joi.string()
+            .pattern(new RegExp(/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/));
+
 // validation for GET 1 account
 exports.findOne = () => {
     return Joi.object({
@@ -10,25 +34,27 @@ exports.findOne = () => {
 // validation logic for account POST
 exports.create = () => {
     return Joi.object({
-        email: Joi.string().required(),
-        password: Joi.string().required(),
-        phone: Joi.number().optional()
+        email: validEmail.required(),
+        username: validUsername.required(),
+        password: validPassword.required(),
+        phone: validPhone.optional()
     });
 };
 
 // validation logic for account PATCH
 exports.update = () => {
     return Joi.object({
-        email: Joi.string().optional(),
-        password: Joi.string().optional(),
-        phone: Joi.number().optional()
+        email: validEmail.optional(),
+        username: validUsername.optional(),
+        password: validPassword.optional(),
+        phone: validPhone.optional()
     });
 };
 
 // validation logic for account DELETE
 exports.delete = () => {
     return Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required()
+        username: validUsername.required(),
+        password: validPassword.required()
     });
 };
