@@ -1,6 +1,8 @@
-import { validEmail, validPassword } from './accounts.validator';
-
 const Joi = require('joi');
+const {
+    validPassword,
+    validEmail
+} = require('./fields');
 
 // checks for refresh token
 // TODO: check for valid refresh token format as well
