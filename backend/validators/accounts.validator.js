@@ -3,6 +3,9 @@ const Joi = require('joi');
 /* note:
     I would consider moving these schemas out to a global config/constant folder
     so the frontend and backend can use the same ones.
+
+    Currently the password and email schemas are being reused by the auth validator schemas
+    as well.
 */
 
 // 3-20 chars, alphanum + '.' and '-' allowed
@@ -12,12 +15,12 @@ const validUsername = Joi.string()
             .pattern(new RegExp(/^[a-zA-Z0-9-.]{3,20}$/));
 
 // 8-30 chars, alphanumeric + special chars allowed
-const validPassword = Joi.string()
+export const validPassword = Joi.string()
             .min(8)
             .max(30)
             .pattern(new RegExp(/^[a-zA-z0-9!@#$%^&*()?]{8,30}$/));
 
-const validEmail = Joi.string()
+export const validEmail = Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } });
 
 // phone regex borrowed from https://stackoverflow.com/questions/16699007/

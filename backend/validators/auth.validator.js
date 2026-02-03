@@ -1,6 +1,9 @@
+import { validEmail, validPassword } from './accounts.validator';
+
 const Joi = require('joi');
 
 // checks for refresh token
+// TODO: check for valid refresh token format as well
 exports.hasRefreshToken = () => {
     return Joi.object({
         refreshToken: Joi.string().required()
@@ -10,7 +13,7 @@ exports.hasRefreshToken = () => {
 // checks for login credentials
 exports.login = () => {
     return Joi.object({
-        email: Joi.string().required(),
-        password: Joi.string().required()
+        email: validEmail.required(),
+        password: validPassword.required()
     });
 };
