@@ -17,7 +17,6 @@ exports.findOne = () => {
 exports.create = () => {
     return Joi.object({
         email: validEmail.required(),
-        username: validUsername.required(),
         password: validPassword.required(),
         phone: validPhone.optional()
     });
@@ -27,7 +26,6 @@ exports.create = () => {
 exports.update = () => {
     return Joi.object({
         email: validEmail.optional(),
-        username: validUsername.optional(),
         password: validPassword.optional(),
         phone: validPhone.optional()
     });

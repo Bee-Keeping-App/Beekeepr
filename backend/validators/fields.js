@@ -20,9 +20,23 @@ const validPassword = Joi.string()
 const validEmail = Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } });
 
-// phone regex borrowed from https://stackoverflow.com/questions/16699007/
-const validPhone = Joi.string()
-            .pattern(new RegExp(/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/));
+// phone regex borrowed from https://stackoverflow.com/a/50122731
+const phoneRegex = new RegExp(/(\+\d{1,3}\s?)?((\(\d{3}\)\s?)|(\d{3})(\s|-?))(\d{3}(\s|-?))(\d{4})(\s?(([E|e]xt[:|.|]?)|x|X)(\s?\d+))?/);
+
+// accepts string or number, but coerces to string before checking against a regex
+const validPhone = Joi.alternatives()
+    .try(
+        Joi.string(),
+        Joi.number()
+    ).custom((value, helpers) => {
+        const str = String(value);
+
+        if (!phoneRegex.test(str)) {
+            return helpers.error('any.invalid');
+        }
+
+        return str;
+    }, 'phone validation');
 
 module.exports = {
     validUsername,
