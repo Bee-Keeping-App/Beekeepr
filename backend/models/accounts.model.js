@@ -14,7 +14,7 @@ const AccountSchema = new mongoose.Schema({
         lowercase: true
     },
     phone: {
-        type: Number,
+        type: String,
         required: false,
         unique: true,
         sparse: true
