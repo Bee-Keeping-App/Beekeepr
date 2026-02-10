@@ -1,4 +1,10 @@
 const Joi = require('joi');
+const {
+    validUsername,
+    validPassword,
+    validEmail,
+    validPhone
+} = require('./fields');
 
 // validation for GET 1 account
 exports.findOne = () => {
@@ -10,25 +16,25 @@ exports.findOne = () => {
 // validation logic for account POST
 exports.create = () => {
     return Joi.object({
-        email: Joi.string().required(),
-        password: Joi.string().required(),
-        phone: Joi.number().optional()
+        email: validEmail.required(),
+        password: validPassword.required(),
+        phone: validPhone.optional()
     });
 };
 
 // validation logic for account PATCH
 exports.update = () => {
     return Joi.object({
-        email: Joi.string().optional(),
-        password: Joi.string().optional(),
-        phone: Joi.number().optional()
+        email: validEmail.optional(),
+        password: validPassword.optional(),
+        phone: validPhone.optional()
     });
 };
 
 // validation logic for account DELETE
 exports.delete = () => {
     return Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required()
+        username: validUsername.required(),
+        password: validPassword.required()
     });
 };
