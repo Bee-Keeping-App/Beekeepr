@@ -9,6 +9,7 @@ export function Login() {
     //These hold and set the values in the password and username fields
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
+
     
 
     //eventually will call login logic
@@ -18,12 +19,10 @@ export function Login() {
 
     //eventually will hold navigation logic
     const navigaiteToNewAccount = () => {
-
     };
 
 
     return (
-        //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
         <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
             <View style={styles.container}>
             </View>

@@ -1,7 +1,7 @@
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, Button, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
 
 
 export function Register() {
@@ -9,24 +9,33 @@ export function Register() {
     //These hold and set the values in the password and username fields
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
+    const [confPassValue, setConfPassValue] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     
 
     //eventually will call login logic
     const loginPressed = () => {
-        alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+        if(confPassValue != passValue) {
+            alert("Password values are not equal");
+        } else {
+            alert("Password values are equal!")
+        }
     };
 
+    const handleShowPassword = () => {
+        setShowPassword(!showPassword);
+    }
     //eventually will hold navigation logic
     const navigaiteToNewAccount = () => {
-
     };
 
 
     return (
-        //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
         <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
-            <View style={styles.container}></View>
             <View style={styles.container}>
+            </View>
+            <View style={styles.container}>
+                <View style={styles.logoBox}><Image source={require('../../assets/placeholderLogo.png')} style={styles.logo}></Image></View>
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"
@@ -34,19 +43,33 @@ export function Register() {
                     value={userValue}
                 >
                 </TextInput>
+                <View style={styles.hiddenInputBox}>
+                    <TextInput
+                        style={styles.hiddenInput}
+                        placeholder=" Password"
+                        onChangeText={text => setPassValue(text)}
+                        secureTextEntry={showPassword}
+                        value={passValue}
+                    >
+                    </TextInput>
+                    <TouchableOpacity style={styles.showPassword} onPress={handleShowPassword}>
+                        {showPassword ? ' o ' : ' 􀋯 '}
+                    </TouchableOpacity>
+                </View>
+
+
                 <TextInput
                     style={styles.input}
-                    placeholder=" Password"
-                    onChangeText={text => setPassValue(text)}
+                    placeholder=" Confirm Password"
+                    onChangeText={text => setConfPassValue(text)}
                     secureTextEntry={true}
-                    value={passValue}
+                    value={confPassValue}
                 >
                 </TextInput>
+
+
                 <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
-                    Login
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.registerButton} onPress={navigaiteToNewAccount}>
-                    Create an account
+                    Create Account
                 </TouchableOpacity>
             </View>
             <View style={styles.container}></View>
@@ -75,24 +98,64 @@ const styles = StyleSheet.create({
         width: width,
         height: '100%'
     },
-    overlayContent: {
-        // Styles for the content placed on top of the image
+    logo: {
+        flex: 1,
+        tintColor: 'black',
+        justifyContent: 'center',
+        resizeMode: 'contain',
+    },
+    logoBox: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: width * .2,
+        height: width * .2,
+        backgroundColor: 'darkorange',
+        borderRadius: 14,
     },
     text: {
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold',
     },
-    input: {
-        width: width * .6,
+
+
+    hiddenInputBox: {
+        flexDirection: 'row',
+        width: width * .5
+    },
+    hiddenInput: {
+        flex: 1,
         borderColor: 'darkgray',
         backgroundColor: 'gray',
         borderWidth: 2,
         borderRadius: 5,
         color: 'lightgray',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
     },
+    input: {
+        width: width * .5,
+        borderColor: 'darkgray',
+        backgroundColor: 'gray',
+        borderWidth: 2,
+        borderRadius: 5,
+        color: 'lightgray',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+    },
+    showPassword: {
+        color: 'white',
+        borderColor: 'darkgray',
+        backgroundColor: 'gray',
+        borderWidth: 2,
+        borderRadius: 5,
+        alignItems: 'flex-end',
+        justifyContent: 'flex-end',
+    },
+    
+    
     loginButton: {
-        width: width * .6,
+        width: width * .5,
         backgroundColor: 'darkorange',
         color: 'lightgray',
         borderColor: 'darkgray',
@@ -101,7 +164,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     registerButton: {
-        width: width * .6,
+        width: width * .5,
         color: 'darkorange',
         borderColor: 'darkorange',
         borderWidth: 2,
