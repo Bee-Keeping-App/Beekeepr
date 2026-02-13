@@ -1,10 +1,10 @@
-const Joi = require('joi');
-const {
+import Joi from 'joi';
+import {
     validUsername,
     validPassword,
     validEmail,
     validPhone
-} = require('./fields');
+} from './fields';
 
 // validation for GET 1 account
 exports.findOne = () => {
