@@ -9,9 +9,9 @@ import {
     UnauthorizedUserError,
     UnauthenticatedUserError
 
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
-export default error = (err, req, res, next) => {
+export default (err, req, res, next) => {
 
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';

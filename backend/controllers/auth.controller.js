@@ -1,5 +1,5 @@
-import * as Auth from '../services/auth.service';
-import catchAsync from '../utils/catchAsync';
+import * as Auth from '../services/auth.service.js';
+import catchAsync from '../utils/catchAsync.js';
 
 export const refreshToken = catchAsync(async (req, res, next) => {
 

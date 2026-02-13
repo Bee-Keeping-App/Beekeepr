@@ -1,14 +1,16 @@
-import router from "express/Router";
+import { Router } from 'express';
 
 /* middlewares do validation, authorization */
-import validate from '../middlewares/validation.middleware';
-import authenticate from '../middlewares/auth.middleware';
+import validate from '../middlewares/validation.middleware.js';
+import authenticate from '../middlewares/auth.middleware.js';
 
 /* validator contains schemes for each endpoint, checked by middleware */
-import * as schema from '../validators/accounts.validator';
+import * as schema from '../validators/accounts.validator.js';
 
 /* controller calls logic for implementing actions upon successful auth / validation */
-import * as controller from '../controllers/accounts.controller';
+import * as controller from '../controllers/accounts.controller.js';
+
+var router = Router();
 
 /* Registering an account should not need prior authorization */
 router.post(

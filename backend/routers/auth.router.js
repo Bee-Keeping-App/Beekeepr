@@ -1,10 +1,12 @@
-import router from 'express/Router';
+import { Router } from 'express';
 
 /* Middlewares */
-import validate from '../middlewares/validation.middleware';
-import authenticate from '../middlewares/auth.middleware';
-import * as controller from '../controllers/auth.controller';
+import validate from '../middlewares/validation.middleware.js';
+import authenticate from '../middlewares/auth.middleware.js';
+import * as controller from '../controllers/auth.controller.js';
 import * as schema from '../validators/auth.validator.js';
+
+var router = Router();
 
 router.post(
     "/login",

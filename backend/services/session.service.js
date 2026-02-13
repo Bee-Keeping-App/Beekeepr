@@ -1,8 +1,8 @@
-import * as Accounts from '../services/accounts.service';
-import * as TokenManager from '../services/tokens.service';
+import * as Accounts from '../services/accounts.service.js';
+import * as TokenManager from '../services/tokens.service.js';
 import {
     InvalidTokenError
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
 export const refreshSession = async (refreshTokenString) => {
 

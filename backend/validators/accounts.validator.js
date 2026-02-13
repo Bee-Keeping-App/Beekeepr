@@ -4,17 +4,17 @@ import {
     validPassword,
     validEmail,
     validPhone
-} from './fields';
+} from './fields.js';
 
 // validation for GET 1 account
-exports.findOne = () => {
+export const findOne = () => {
     return Joi.object({
         id: Joi.required()
     });
 };
 
 // validation logic for account POST
-exports.create = () => {
+export const create = () => {
     return Joi.object({
         email: validEmail.required(),
         password: validPassword.required(),
@@ -23,7 +23,7 @@ exports.create = () => {
 };
 
 // validation logic for account PATCH
-exports.update = () => {
+export const update = () => {
     return Joi.object({
         email: validEmail.optional(),
         password: validPassword.optional(),
@@ -32,7 +32,7 @@ exports.update = () => {
 };
 
 // validation logic for account DELETE
-exports.delete = () => {
+export const deleteOne = () => {
     return Joi.object({
         username: validUsername.required(),
         password: validPassword.required()

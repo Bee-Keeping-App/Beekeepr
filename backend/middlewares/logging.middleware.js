@@ -1,4 +1,4 @@
-export default logs = (req, res, next) => {
+export default (req, res, next) => {
     const start = Date.now();
 
     res.on("finish", () => {

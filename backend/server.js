@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import app from './app.js';
-import { connectToDB } from './utils/connectDb.js';
+import connectToDB from './utils/connectDb.js';
 
 connectToDB().then(() => {
     const PORT = 3000;

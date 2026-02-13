@@ -1,6 +1,6 @@
-import * as TokenManager from '../services/tokens.service';
-import * as SessionManager from '../services/session.service';
-import * as Accounts from '../services/accounts.service';
+import * as TokenManager from '../services/tokens.service.js';
+import * as SessionManager from '../services/session.service.js';
+import * as Accounts from '../services/accounts.service.js';
 
 import {
     WrongPasswordError,
@@ -8,7 +8,7 @@ import {
     ExpiredTokenError,
     UnauthenticatedUserError,
     InvalidTokenError
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
 
 export const refreshToken = async (refreshString) => {

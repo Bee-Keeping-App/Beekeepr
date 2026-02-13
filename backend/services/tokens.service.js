@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {
     ExpiredTokenError,
     InvalidTokenError
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
 // constants from .env
 const ACCESS_SECRET = process.env.ACCESS_SECRET;

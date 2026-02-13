@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "expo start --dev-client",
-    "test": "jest --detectOpenHandles --forceExit",
+    "test": "--experimental-modules --npx jest --detectOpenHandles --forceExit",
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
     "web": "expo start --web",
     "android": "expo run:android",

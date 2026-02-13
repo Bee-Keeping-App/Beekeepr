@@ -1,6 +1,6 @@
-import * as Accounts from "../services/accounts.service";
-import * as Auth from '../services/auth.service';
-import catchAsync from '../utils/catchAsync';
+import * as Accounts from "../services/accounts.service.js";
+import * as Auth from '../services/auth.service.js';
+import catchAsync from '../utils/catchAsync.js';
 
 /* Read all caller */
 export const getAllAccounts = catchAsync(async (req, res, next) => {

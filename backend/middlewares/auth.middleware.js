@@ -1,11 +1,11 @@
-import * as SessionManager from '../services/session.service';
-import * as TokenManager from '../services/tokens.service';
+import * as SessionManager from '../services/session.service.js';
+import * as TokenManager from '../services/tokens.service.js';
 
 import {
     MissingTokenError
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
-export default authenticate = async (req, res, next) => {
+export default async (req, res, next) => {
     
     try {
 

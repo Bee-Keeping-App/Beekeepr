@@ -1,8 +1,8 @@
 import {
     FailedValidationError
-} from '../classes/errors.class';
+} from '../classes/errors.class.js';
 
-export default val = (schema) => {
+export default (schema) => {
     return (req, res, next) => {
         try {
             // schema is imported from /validation
