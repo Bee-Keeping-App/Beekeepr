@@ -1,21 +1,21 @@
-const Accounts = require("../services/accounts.service");
-const Auth = require('../services/auth.service');
-const catchAsync = require('../utils/catchAsync');
+import * as Accounts from "../services/accounts.service";
+import * as Auth from '../services/auth.service';
+import catchAsync from '../utils/catchAsync';
 
 /* Read all caller */
-exports.getAllAccounts = catchAsync(async (req, res, next) => {
+export const getAllAccounts = catchAsync(async (req, res, next) => {
     const accounts = await Accounts.findAll();
     res.status(200).json({ accounts });
 });
 
 /* Read one caller */
-exports.getOneAccount = catchAsync(async (req, res, next) => {
+export const getOneAccount = catchAsync(async (req, res, next) => {
     const account = await Accounts.findOneById(req.params.id);
     res.status(200).json({ account });
 });
 
 /* Make an Account */
-exports.registerAccount = catchAsync(async (req, res, next) => {
+export const registerAccount = catchAsync(async (req, res, next) => {
 
     /* me calculating my mlfd grade:
 
@@ -41,7 +41,7 @@ exports.registerAccount = catchAsync(async (req, res, next) => {
 });
 
 /* Update caller */
-exports.updateAccountInfo = catchAsync(async (req, res, next) => {
+export const updateAccountInfo = catchAsync(async (req, res, next) => {
     
     // finds an account by id then updates it (idempotent operation)
     const account = await Accounts.updateOne(
@@ -53,7 +53,7 @@ exports.updateAccountInfo = catchAsync(async (req, res, next) => {
 });
 
 /* Delete caller */
-exports.deleteAccount = catchAsync(async (req, res, next) => {
+export const deleteAccount = catchAsync(async (req, res, next) => {
     
     // deletes the account
     await Accounts.deleteOne(req.user);

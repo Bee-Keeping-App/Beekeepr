@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const {
+import jwt from 'jsonwebtoken';
+import {
     ExpiredTokenError,
     InvalidTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class';
 
 // constants from .env
 const ACCESS_SECRET = process.env.ACCESS_SECRET;
@@ -46,18 +46,18 @@ function validateToken(tokenString, secret) {
     }
 }
 
-exports.signAccessToken = (payload) => {
+export const signAccessToken = (payload) => {
     return signToken(payload, ACCESS_SECRET, ACCESS_EXPIRY);
 };
 
-exports.signRefreshToken = (payload) => {
+export const signRefreshToken = (payload) => {
     return signToken(payload, REFRESH_SECRET, REFRESH_EXPIRY);
 };
 
-exports.validateAccessToken = (accessString) => {
+export const validateAccessToken = (accessString) => {
     return validateToken(accessString, ACCESS_SECRET);
 };
 
-exports.validateRefreshToken = (refreshString) => {
+export const validateRefreshToken = (refreshString) => {
     return validateToken(refreshString, REFRESH_SECRET);
 };
