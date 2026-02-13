@@ -5,7 +5,7 @@ import {
     MissingTokenError
 } from '../classes/errors.class';
 
-export default auth = async (req, res, next) => {
+export default authenticate = async (req, res, next) => {
     
     try {
 

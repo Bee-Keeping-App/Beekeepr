@@ -1,50 +1,51 @@
-const router = require("express").Router();
+import router from "express/Router";
 
 /* middlewares do validation, authorization */
-const validate = require('../middlewares/validation.middleware');
-const auth = require('../middlewares/auth.middleware');
+import validate from '../middlewares/validation.middleware';
+import authenticate from '../middlewares/auth.middleware';
 
 /* validator contains schemes for each endpoint, checked by middleware */
-const validator = require('../validators/accounts.validator');
+import * as schema from '../validators/accounts.validator';
 
 /* controller calls logic for implementing actions upon successful auth / validation */
-const controller = require('../controllers/accounts.controller');
+import * as controller from '../controllers/accounts.controller';
 
 /* Registering an account should not need prior authorization */
 router.post(
     "/",
-    validate(validator.create()),
+    validate(schema.create()),
     controller.registerAccount
 );
-
-/* WARNING: All routes after this line WILL CHECK FOR AUTH TOKENS */
-router.use(auth);
 
 // get all users
 router.get(
     "/",
+    authenticate,
     controller.getAllAccounts
 );
 
 // get one user
 router.get(
     "/:id",
-    validate(validator.findOne()),
+    authenticate,
+    validate(schema.findOne()),
     controller.getOneAccount
 );
 
 // update an account
 router.put(
     "/",
-    validate(validator.update()),
+    authenticate,
+    validate(schema.update()),
     controller.updateAccountInfo
 );
 
 // delete an account
 router.delete(
     "/",
+    authenticate,
     controller.deleteAccount
 );
 
 // this is how app.js accesses the account routes
-module.exports = router;
+export default router;

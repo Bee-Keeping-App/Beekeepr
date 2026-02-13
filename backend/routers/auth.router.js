@@ -1,14 +1,14 @@
-const router = require('express').Router();
+import router from 'express/Router';
 
 /* Middlewares */
-const validationMiddleware = require('../middlewares/validation.middleware');
-const authMiddleware = require('../middlewares/auth.middleware');
-const controller = require('../controllers/auth.controller');
-const validator = require('../validators/auth.validator.js');
+import validate from '../middlewares/validation.middleware';
+import authenticate from '../middlewares/auth.middleware';
+import * as controller from '../controllers/auth.controller';
+import * as schema from '../validators/auth.validator.js';
 
 router.post(
     "/login",
-    validationMiddleware(validator.login()),
+    validate(schema.login()),
     controller.login
 );
 
@@ -17,13 +17,11 @@ router.post(
     controller.refreshToken
 );
 
-// All endpoints past this line implement auth checking
-router.use(authMiddleware);
-
 router.post(
     "/logout",
+    authenticate,
     controller.logout
 );
 
 // this is how app.js accesses the auth routes
-module.exports = router;
+export default router;
