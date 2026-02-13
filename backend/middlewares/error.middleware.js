@@ -1,4 +1,4 @@
-const {
+import {
     FailedValidationError,
     InvalidTokenError,
     ExpiredTokenError,
@@ -9,9 +9,9 @@ const {
     UnauthorizedUserError,
     UnauthenticatedUserError
 
-} = require('../classes/errors.class');
+} from '../classes/errors.class';
 
-module.exports = (err, req, res, next) => {
+export default error = (err, req, res, next) => {
 
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';

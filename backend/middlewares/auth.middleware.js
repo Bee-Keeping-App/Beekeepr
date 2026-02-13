@@ -1,11 +1,11 @@
-const SessionManager = require('../services/session.service');
-const TokenManager = require('../services/tokens.service');
+import * as SessionManager from '../services/session.service';
+import * as TokenManager from '../services/tokens.service';
 
-const {
+import {
     MissingTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class';
 
-module.exports = async (req, res, next) => {
+export default auth = async (req, res, next) => {
     
     try {
 

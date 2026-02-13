@@ -1,8 +1,8 @@
-const {
+import {
     FailedValidationError
-} = require('../classes/errors.class');
+} from '../classes/errors.class';
 
-module.exports = (schema) => {
+export default val = (schema) => {
     return (req, res, next) => {
         try {
             // schema is imported from /validation
