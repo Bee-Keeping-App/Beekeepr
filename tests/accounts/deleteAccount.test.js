@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../backend/app';
 import Account from '../../backend/models/accounts.model';
 
+// adds a user to the mocked database
 async function insertUser(user) {
     const response = await request(app)
         .post('/api/accounts')
@@ -13,6 +14,8 @@ async function insertUser(user) {
     expect(response.body).toHaveProperty('accessToken');
     expect(response.headers).toHaveProperty('set-cookie');
 
+
+    // returns their tokens (needed for future operations on this user / as this user)
     return {
         access: response.body.accessToken,
         refresh: response.headers['set-cookie']
@@ -41,7 +44,7 @@ describe('DELETE /accounts', () => {
 
         const auth = await insertUser(validUser);
 
-        // call /accounts with one of the tokens
+        // sends a delete request, expect 204 (resource deleted successfully signal)
         await request(app)
             .delete('/api/accounts')
             .send(validUser.fields)
@@ -50,6 +53,7 @@ describe('DELETE /accounts', () => {
             .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(204);
 
+        // get request to double check the resource was deleted (expect 0 accounts)
         const response = await request(app)
             .get('/api/accounts')
             .set('Accept', 'application/json')
@@ -57,6 +61,7 @@ describe('DELETE /accounts', () => {
             .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(200);
 
+        // asserts expectation here
         expect(response.body).toHaveProperty('accounts');
         expect(response.body.accounts).toHaveLength(0);
     });
