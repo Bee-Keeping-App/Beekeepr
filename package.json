@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "expo start --dev-client",
-    "test": "--experimental-modules --npx jest --detectOpenHandles --forceExit",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
     "web": "expo start --web",
     "android": "expo run:android",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~19.1.10",
+    "cross-env": "^10.1.0",
     "typescript": "~5.9.2"
   },
   "private": true
