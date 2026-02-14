@@ -1,17 +1,17 @@
-const TokenManager = require('../services/tokens.service');
-const SessionManager = require('../services/session.service');
-const Accounts = require('../services/accounts.service');
+import * as TokenManager from '../services/tokens.service.js';
+import * as SessionManager from '../services/session.service.js';
+import * as Accounts from '../services/accounts.service.js';
 
-const {
+import {
     WrongPasswordError,
     NullQueryError,
     ExpiredTokenError,
     UnauthenticatedUserError,
     InvalidTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
 
-exports.refreshToken = async (refreshString) => {
+export const refreshToken = async (refreshString) => {
 
     // validate the token
     var payload = TokenManager.validateRefreshToken(refreshString);
@@ -35,7 +35,7 @@ exports.refreshToken = async (refreshString) => {
 };
 
 // you should definitely put some specs here
-exports.handleLogin = async (email, password) => {
+export const handleLogin = async (email, password) => {
 
     // find user
     let user;
@@ -73,7 +73,7 @@ exports.handleLogin = async (email, password) => {
 };
 
 // you should definitely put some specs here
-exports.handleLogout = async (id) => {
+export const handleLogout = async (id) => {
 
     // find user
     const user = await Accounts.findOneById(id);
@@ -85,7 +85,7 @@ exports.handleLogout = async (id) => {
     });
 };
 
-exports.handleSignup = async (info) => {
+export const handleSignup = async (info) => {
 
     const initialVersion = 1;
 
@@ -116,7 +116,7 @@ exports.handleSignup = async (info) => {
     return { accessToken, refreshToken };
 };
 
-exports.validateTokenOwnership = async (accessString, refreshString) => {
+export const validateTokenOwnership = async (accessString, refreshString) => {
 
 
     /*

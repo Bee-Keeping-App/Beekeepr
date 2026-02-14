@@ -1,10 +1,10 @@
-const Accounts = require('../services/accounts.service');
-const TokenManager = require('../services/tokens.service');
-const {
+import * as Accounts from '../services/accounts.service.js';
+import * as TokenManager from '../services/tokens.service.js';
+import {
     InvalidTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
-exports.refreshSession = async (refreshTokenString) => {
+export const refreshSession = async (refreshTokenString) => {
 
     // if validate throws ==> force login
     const owner = TokenManager.validateRefreshToken(refreshTokenString).owner;

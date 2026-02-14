@@ -6,68 +6,56 @@ class DomainError extends Error {
     }
 }
 
-class WrongPasswordError extends DomainError {
+export class WrongPasswordError extends DomainError {
     constructor(message = 'Invalid login') {
         super(message);
     }
 }
 
-class NullQueryError extends DomainError {
+export class NullQueryError extends DomainError {
     constructor(message = 'Query returned none') {
         super(message);
     }
 }
 
-class UnauthenticatedUserError extends DomainError {
+export class UnauthenticatedUserError extends DomainError {
     constructor(message = 'User not authenticated') {
         super(message);
     }
 }
 
-class UnauthorizedUserError extends DomainError {
+export class UnauthorizedUserError extends DomainError {
     constructor(message = 'User not authorized') {
         super(message);
     }
 }
 
-class MissingTokenError extends DomainError {
+export class MissingTokenError extends DomainError {
     constructor(message = 'Request missing token') {
         super(message);
     }
 }
 
-class ExpiredTokenError extends DomainError {
+export class ExpiredTokenError extends DomainError {
     constructor(message = 'Token expired') {
         super(message);
     }
 }
 
-class InvalidTokenError extends DomainError {
+export class InvalidTokenError extends DomainError {
     constructor(message = 'Token invalid') {
         super(message);
     }
 }
 
-class DuplicateFieldError extends DomainError {
+export class DuplicateFieldError extends DomainError {
     constructor(message = 'Unqiue index was violated') {
         super(message);
     }
 }
 
-class FailedValidationError extends DomainError {
+export class FailedValidationError extends DomainError {
     constructor(message = 'Request did not pass validation') {
         super(message);
     }
 }
-
-module.exports = {
-    WrongPasswordError,
-    NullQueryError,
-    DuplicateFieldError,
-    UnauthenticatedUserError,
-    UnauthorizedUserError,
-    MissingTokenError,
-    ExpiredTokenError,
-    InvalidTokenError,
-    FailedValidationError
-};

@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../../backend/app');
-const Account = require('../../backend/models/accounts.model');
+import request from 'supertest';
+import app from '../../backend/app.js';
+import Account from '../../backend/models/accounts.model.js';
 
 async function insertUser(user) {
     const response = await request(app)
