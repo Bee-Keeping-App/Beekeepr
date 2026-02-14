@@ -1,14 +1,14 @@
-const Auth = require('../services/auth.service');
-const catchAsync = require('../utils/catchAsync');
+import * as Auth from '../services/auth.service.js';
+import catchAsync from '../utils/catchAsync.js';
 
-exports.refreshToken = catchAsync(async (req, res, next) => {
+export const refreshToken = catchAsync(async (req, res, next) => {
 
     // get new access token
     const accessToken = await Auth.refreshToken(req.cookies.refreshToken);
     return res.status(200).json({ accessToken });
 });
 
-exports.register = catchAsync(async (req, res, next) => {
+export const register = catchAsync(async (req, res, next) => {
     
     // delegate to auth
     const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
@@ -19,7 +19,7 @@ exports.register = catchAsync(async (req, res, next) => {
 });
 
 
-exports.login = catchAsync(async (req, res, next) => {
+export const login = catchAsync(async (req, res, next) => {
 
     // get tokens from Auth
     const { email, password } = req.body;
@@ -30,7 +30,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return res.status(200).json({ accessToken });
 });
 
-exports.logout = catchAsync(async (req, res, next) => {
+export const logout = catchAsync(async (req, res, next) => {
     
     // do logout using auth
     await Auth.handleLogout(req.user);

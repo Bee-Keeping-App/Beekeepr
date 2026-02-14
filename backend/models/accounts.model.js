@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
-const argon2 = require('argon2');
-const {
-    WrongPasswordError
-} = require('../classes/errors.class');
+import mongoose from 'mongoose';
+import argon2 from 'argon2';
+
+import { WrongPasswordError } from '../classes/errors.class.js';
 
 /* all mongo entries for Accounts will have this scheme */
 const AccountSchema = new mongoose.Schema({
@@ -60,4 +59,4 @@ AccountSchema.virtual('id').get(function() {
     return this._id.toHexString();
 });
 
-module.exports = mongoose.model("Accounts", AccountSchema);
+export default mongoose.model("Accounts", AccountSchema);
