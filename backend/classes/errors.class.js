@@ -1,3 +1,6 @@
+/* 
+Template error that all inherit
+*/
 class DomainError extends Error {
     constructor(message) {
         

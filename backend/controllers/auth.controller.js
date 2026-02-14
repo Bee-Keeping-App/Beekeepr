@@ -1,6 +1,7 @@
 import * as Auth from '../services/auth.service.js';
 import catchAsync from '../utils/catchAsync.js';
 
+/* Uses the refreshToken to refresh an expired AccessToken */
 export const refreshToken = catchAsync(async (req, res, next) => {
 
     // get new access token
@@ -8,6 +9,7 @@ export const refreshToken = catchAsync(async (req, res, next) => {
     return res.status(200).json({ accessToken });
 });
 
+/* attempts signup, generates tokens on success and stores them in the response */
 export const register = catchAsync(async (req, res, next) => {
     
     // delegate to auth
@@ -19,6 +21,7 @@ export const register = catchAsync(async (req, res, next) => {
 });
 
 
+/* attempts login, generates tokens on success. Stores them in the resposne object */
 export const login = catchAsync(async (req, res, next) => {
 
     // get tokens from Auth
@@ -30,6 +33,7 @@ export const login = catchAsync(async (req, res, next) => {
     return res.status(200).json({ accessToken });
 });
 
+/* attempts logout, removes refresh token on success */
 export const logout = catchAsync(async (req, res, next) => {
     
     // do logout using auth
