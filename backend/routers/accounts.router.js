@@ -10,23 +10,24 @@ import * as schema from '../validators/accounts.validator.js';
 /* controller calls logic for implementing actions upon successful auth / validation */
 import * as controller from '../controllers/accounts.controller.js';
 
+// router object will hold the routes, and gets passed into the app.use() call
 var router = Router();
 
-/* Registering an account should not need prior authorization */
+/* Account registration path. It validates fields then calls the controller. It doesn't check auth */
 router.post(
     "/",
     validate(schema.create()),
     controller.registerAccount
 );
 
-// get all users
+/* Account GET ALL path. It checks for auth, then calls the controller method for reading all accounts */
 router.get(
     "/",
     authenticate,
     controller.getAllAccounts
 );
 
-// get one user
+/* Account GET one path. It expects an account id param, checks tokens, validates args, then calls the controller */
 router.get(
     "/:id",
     authenticate,
@@ -34,7 +35,8 @@ router.get(
     controller.getOneAccount
 );
 
-// update an account
+/* Account PUT path. It checks tokens, parses id, validates fields, then calls the controller to update */
+// This operation is IDEMPOTENT, which means if you call it multiple times the resource will always be the same on the server
 router.put(
     "/",
     authenticate,
@@ -42,7 +44,7 @@ router.put(
     controller.updateAccountInfo
 );
 
-// delete an account
+/* Account DELETE path. It checks tokens, parses id, then deletes that account with the controller */
 router.delete(
     "/",
     authenticate,

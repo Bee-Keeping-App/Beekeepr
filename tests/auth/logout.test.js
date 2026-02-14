@@ -13,6 +13,7 @@ async function insertUser(user) {
     expect(response.body).toHaveProperty('accessToken');
     expect(response.headers).toHaveProperty('set-cookie');
 
+    // used to get a user's tokens
     return {
         access: response.body.accessToken,
         refresh: response.headers['set-cookie']
@@ -39,8 +40,10 @@ describe('POST /logout', () => {
             errMsg: null
         };
 
+        // register the user
         const auth = await insertUser(validUser);
         
+        // expect a successful logout
         await request(app)
             .post('/api/auth/logout')
             .send(validUser.fields)
