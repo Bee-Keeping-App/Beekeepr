@@ -10,7 +10,7 @@ import {
     InvalidTokenError
 } from '../classes/errors.class.js';
 
-
+// used to refresh an access token and update the db token ids
 export const refreshToken = async (refreshString) => {
 
     // validate the token
@@ -23,6 +23,7 @@ export const refreshToken = async (refreshString) => {
     console.log('DB Refresh version:', user.refreshId);
     console.log('user in db:\n', user);
 
+    // checks if the refresh id in db matches the refresh token's id
     if (user.refreshId != payload.version)
         throw new InvalidTokenError('Refresh token is invalid');
     
@@ -116,6 +117,8 @@ export const handleSignup = async (info) => {
     return { accessToken, refreshToken };
 };
 
+
+// this function is not used, but don't delete it yet
 export const validateTokenOwnership = async (accessString, refreshString) => {
 
 
