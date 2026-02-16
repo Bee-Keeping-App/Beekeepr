@@ -1,5 +1,5 @@
-import * as Auth from '../services/auth.service.js';
-import catchAsync from '../utils/catchAsync.js';
+import * as Auth from './auth.service.js';
+import catchAsync from '../../utils/catchAsync.js';
 
 /* Uses the refreshToken to refresh an expired AccessToken */
 export const refreshToken = catchAsync(async (req, res, next) => {

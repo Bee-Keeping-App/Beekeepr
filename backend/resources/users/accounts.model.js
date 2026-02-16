@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import argon2 from 'argon2';
 
-import { WrongPasswordError } from '../classes/errors.class.js';
+import { WrongPasswordError } from '../../classes/errors.class.js';
 
 
 /* What is a model?

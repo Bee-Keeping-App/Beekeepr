@@ -1,8 +1,8 @@
-import AccountSchema from '../models/accounts.model.js';
+import AccountSchema from './accounts.model.js';
 import {
     NullQueryError,
     DuplicateFieldError
-} from '../classes/errors.class.js';
+} from '../../classes/errors.class.js';
 
 
 /* Gets every account. Can throw a NullQuery error if no accounts were found */

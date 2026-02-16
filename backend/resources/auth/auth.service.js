@@ -1,6 +1,6 @@
-import * as TokenManager from '../services/tokens.service.js';
-import * as SessionManager from '../services/session.service.js';
-import * as Accounts from '../services/accounts.service.js';
+import * as TokenManager from '../../utils/tokens.service.js';
+import * as SessionManager from '../../utils/session.service.js';
+import * as Accounts from '../users/accounts.service.js';
 
 import {
     WrongPasswordError,
@@ -8,7 +8,7 @@ import {
     ExpiredTokenError,
     UnauthenticatedUserError,
     InvalidTokenError
-} from '../classes/errors.class.js';
+} from '../../classes/errors.class.js';
 
 // used to refresh an access token and update the db token ids
 export const refreshToken = async (refreshString) => {

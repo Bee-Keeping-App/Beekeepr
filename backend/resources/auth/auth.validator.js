@@ -2,7 +2,7 @@ import Joi from 'joi';
 import {
     validPassword,
     validEmail
-} from './fields.js';
+} from '../users/fields.js';
 
 // checks for refresh token
 // TODO: check for valid refresh token format as well

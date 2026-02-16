@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
 /* middlewares do validation, authorization */
-import validate from '../middlewares/validation.middleware.js';
-import authenticate from '../middlewares/auth.middleware.js';
+import validate from '../../middlewares/validation.middleware.js';
+import authenticate from '../../middlewares/auth.middleware.js';
 
 /* validator contains schemes for each endpoint, checked by middleware */
-import * as schema from '../validators/accounts.validator.js';
+import * as schema from './accounts.validator.js';
 
 /* controller calls logic for implementing actions upon successful auth / validation */
-import * as controller from '../controllers/accounts.controller.js';
+import * as controller from './accounts.controller.js';
 
 // router object will hold the routes, and gets passed into the app.use() call
 var router = Router();

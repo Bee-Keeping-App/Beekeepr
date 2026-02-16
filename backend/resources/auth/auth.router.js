@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
 /* Middlewares */
-import validate from '../middlewares/validation.middleware.js';
-import authenticate from '../middlewares/auth.middleware.js';
-import * as controller from '../controllers/auth.controller.js';
-import * as schema from '../validators/auth.validator.js';
+import validate from '../../middlewares/validation.middleware.js';
+import authenticate from '../../middlewares/auth.middleware.js';
+import * as controller from './auth.controller.js';
+import * as schema from './auth.validator.js';
 
 var router = Router();
 

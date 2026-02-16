@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../../backend/app.js';
-import Account from '../../backend/models/accounts.model.js';
+import Account from '../../backend/resources/users/accounts.model.js';
 
 describe('POST /accounts', () => {
     beforeAll(async () => {

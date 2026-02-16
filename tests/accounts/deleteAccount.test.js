@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../../backend/app';
-import Account from '../../backend/models/accounts.model';
+import Account from '../../backend/resources/users/accounts.model';
 
 // adds a user to the mocked database
 async function insertUser(user) {

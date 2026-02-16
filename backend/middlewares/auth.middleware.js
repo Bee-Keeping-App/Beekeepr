@@ -1,5 +1,5 @@
-import * as SessionManager from '../services/session.service.js';
-import * as TokenManager from '../services/tokens.service.js';
+import * as SessionManager from '../utils/session.service.js';
+import * as TokenManager from '../utils/tokens.service.js';
 
 import {
     MissingTokenError

@@ -7,8 +7,8 @@ import logger from './middlewares/logging.middleware.js';
 import errorHandler from './middlewares/error.middleware.js'; 
 
 /* Routers */
-import accountsRouter from './routers/accounts.router.js';
-import authRouter from './routers/auth.router.js';
+import accountsRouter from './resources/users/accounts.router.js';
+import authRouter from './resources/auth/auth.router.js';
 
 /* Imported Middlewares */
 app.use(express.json());
