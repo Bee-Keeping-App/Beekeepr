@@ -44,3 +44,6 @@ export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
 // defines an Update schema, which is composed of a subset of CreateUserSchema fields
 export const UpdateUserSchema = CreateUserSchema.partial();
 export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
+
+export const GetUserSchema = z.object({ id: z.string() });
+export type GetUserDTO = z.infer<typeof GetUserSchema>;

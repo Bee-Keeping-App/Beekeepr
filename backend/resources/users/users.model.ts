@@ -3,7 +3,7 @@ import { UserWithAuth } from './users.schema';
 
 // this type allows a User type to become a UserDocument
 // and UserDocuments can become Documents
-interface UserNoId extends Omit<UserWithAuth, 'id'> {};
+export interface UserNoId extends Omit<UserWithAuth, 'id'> {};
 export type UserDocument = HydratedDocument<UserNoId>;
 
 /* all mongo entries for Users will have this scheme */

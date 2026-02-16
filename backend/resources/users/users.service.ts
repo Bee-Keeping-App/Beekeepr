@@ -1,9 +1,7 @@
-import { UserModel, UserDocument } from './users.model';
+import { UserModel, UserDocument, UserNoId } from './users.model';
 import {
-    User, UserSchema, 
-    UserWithAuth, UserWithAuthSchema,
-    CreateUserDTO, CreateUserSchema,
-    UpdateUserDTO, UpdateUserSchema
+    User, UserSchema,
+    CreateUserDTO, UpdateUserDTO,
  } from './users.schema';
 
 import {
@@ -14,27 +12,27 @@ import {
 export const getUserById = async (id: string): Promise<User> => {
     
     const result = await UserModel
-    .findById(id)   // looks for a document by its ID
-    .lean();        // tells mongo to not wrap the result in a Mongoose object (very heavy) for a performance boost
-
+    .findById(id)           // looks for a document by its ID
+    .lean() as UserNoId | null; // tells mongo to not wrap the result in a Mongoose object (very heavy) for a performance boost
+    
     // TODO: uncomment this
     if (!result) throw new NullQueryError();
 
     // as User ensures the object only has fields the User object has
-    return UserSchema.parse(result) as User;
+    return UserSchema.parse(result);
 };
 
-export const getAllUsers = async (): Promise<Array<User>> => {
+export const getAllUsers = async (): Promise<User[]> => {
 
     const result = await UserModel
     .find()                     // empty find returns everything
-    .lean();
+    .lean() as UserNoId[];
 
     // TODO: uncomment this
     if (!result) throw new NullQueryError();
 
     // forces each element to be a user type
-    return result.map((user: User) => { return UserSchema.parse(user); });
+    return result.map((user: UserNoId) => { return UserSchema.parse(user); }) as User[];
 };
 
 export const makeUser = async (data: CreateUserDTO): Promise<User> => {
@@ -45,29 +43,21 @@ export const makeUser = async (data: CreateUserDTO): Promise<User> => {
     // does the actual insert
     await doc.save(); 
     
-    // convert the document to a JSON
-    const user = doc.toObject();
-    
-    // parse it
-    return UserSchema.parse(user);
+    // parse the document as POJO (JSON) 
+    return UserSchema.parse(doc.toObject()) as User;
 };
 
 export const updateUser = async (data: UpdateUserDTO): Promise<User> => {
 
     // see if the user exists
-    const alreadyExists = await UserModel.findOneAndUpdate(
-        { email: data.email }
-    ).lean();
-    
-    // ensures the user already exists
-    if (!alreadyExists) throw new NullQueryError();
-
-    // idempotent replace
-    const result = await UserModel.findByIdAndUpdate(
-        alreadyExists._id,                  // finds the doc by id
+    const result = await UserModel.findOneAndUpdate(
+        { email: data.email },              // finds the doc by id
         { $set: data },                     // only updates fields defined in data
         { new: true, runValidators: true }  // replaces the old object, runs validation
-    ).lean();
+    ).lean() as UserNoId;
+    
+    // ensures the user already exists
+    if (!result) throw new NullQueryError();
 
-    return UserSchema.parse(result);
+    return UserSchema.parse(result) as User;
 };
