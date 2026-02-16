@@ -9,7 +9,7 @@ export type UserDocument = HydratedDocument<UserNoId>;
 /* all mongo entries for Users will have this scheme */
 
 // this schema will ensure all documents have similar state
-const userSchema = new Schema<UserDocument>({
+const userSchema = new Schema<UserNoId>({
     
     email: {            // each argument specifies a rule the key must have
         type: String,   // datatype
@@ -43,22 +43,6 @@ const userSchema = new Schema<UserDocument>({
         required: true,
         select: false
     }
-});
-
-// method for replacing the _id field on returned objects
-userSchema.post(['find', 'findOne', 'findOneAndUpdate'], function (docs) {
-    
-    // this function binds an object's _id field to id, then deletes _id from the object
-    const makeId = (doc: any) => {
-        if (doc && doc._id) {
-            doc.id = doc._id.toString();
-            delete doc._id;
-        }
-    };
-
-    // this ensures the function runs on arrays or singular objects
-    if (Array.isArray(docs))    docs.forEach(makeId);
-    else                        makeId(docs);
 });
 
 // exports a model of type UserDocument, which can be coerced into types User or UserWithAuth
