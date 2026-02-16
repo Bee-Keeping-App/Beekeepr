@@ -1,16 +1,15 @@
-import mongoose from 'mongoose';
-import { Schema, model, Document } from 'mongoose';
-import { User, UserWithAuth } from './users.types';
+import { Schema, model, HydratedDocument } from 'mongoose';
+import { UserWithAuth } from './users.schema';
 
-// this type defines how a User type becomes a mongo type
-interface UserDocument extends Omit<User, 'id'>, Document {}
-
-
+// this type allows a User type to become a UserDocument
+// and UserDocuments can become Documents
+interface UserNoId extends Omit<UserWithAuth, 'id'> {};
+export type UserDocument = HydratedDocument<UserNoId>;
 
 /* all mongo entries for Users will have this scheme */
 
 // this schema will ensure all documents have similar state
-const userSchema = new Schema({
+const userSchema = new Schema<UserDocument>({
     
     email: {            // each argument specifies a rule the key must have
         type: String,   // datatype
@@ -20,7 +19,7 @@ const userSchema = new Schema({
         lowercase: true // sets all characters to lowercase
     },
     phone: {
-        type: Number,
+        type: String,
         required: false,
         unique: true,
         sparse: true    // IMPORTANT: when using unique, it considers documents that don't have this key
@@ -45,3 +44,22 @@ const userSchema = new Schema({
         select: false
     }
 });
+
+// method for replacing the _id field on returned objects
+userSchema.post(['find', 'findOne', 'findOneAndUpdate'], function (docs) {
+    
+    // this function binds an object's _id field to id, then deletes _id from the object
+    const makeId = (doc: any) => {
+        if (doc && doc._id) {
+            doc.id = doc._id.toString();
+            delete doc._id;
+        }
+    };
+
+    // this ensures the function runs on arrays or singular objects
+    if (Array.isArray(docs))    docs.forEach(makeId);
+    else                        makeId(docs);
+});
+
+// exports a model of type UserDocument, which can be coerced into types User or UserWithAuth
+export const UserModel = model<UserDocument>('User', userSchema);
