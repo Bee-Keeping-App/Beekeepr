@@ -45,5 +45,5 @@ export type CreateUserDTO = z.infer<typeof CreateUserSchema>;
 export const UpdateUserSchema = CreateUserSchema.partial();
 export type UpdateUserDTO = z.infer<typeof UpdateUserSchema>;
 
-export const GetUserSchema = z.object({ id: z.string().optional() });
+export const GetUserSchema = z.object({ id: z.string().nullable() });
 export type GetUserDTO = z.infer<typeof GetUserSchema>;

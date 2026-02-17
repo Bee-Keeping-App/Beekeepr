@@ -10,8 +10,9 @@ import {
 export const getOneById = async (req: Request, res: Response) => {
     
     // parses the id as a string
-    const id: string = GetUserSchema.parse(req.params.id).id;
-    
+    const id: string | null = GetUserSchema.parse(req.params.id).id;
+    if (!id) return res.status(400).json({"err": "missing id path parameter"});
+
     // gets the user object from the service
     const user: User = await Service.getUserById(id);
     
@@ -50,4 +51,17 @@ export const updateOneUser = async (req: Request, res: Response) => {
 
     // send back the made document
     return res.status(200).json(user);
-}
+};
+
+export const deleteOneUser = async (req: Request, res: Response) => {
+
+    // parses the id as a string
+    const id: string | null = GetUserSchema.parse(req.params.id).id;
+    if (!id) return res.status(400).json({"err": "missing id path parameter"});
+
+    // call the service
+    await Service.deleteUser(id);
+
+    // respond with success
+    return res.status(204).json({"msg": "user deleted"});
+};

@@ -59,5 +59,12 @@ export const updateUser = async (data: UpdateUserDTO): Promise<User> => {
     // ensures the user already exists
     if (!result) throw new NullQueryError();
 
+    // returns a User type
     return UserSchema.parse(result) as User;
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+    
+    // delete the user
+    await UserModel.findByIdAndDelete(id);
 };
