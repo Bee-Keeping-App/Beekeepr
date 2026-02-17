@@ -63,7 +63,7 @@ export const updateOneUser = async (req: Request, res: Response) => {
 
 
 // this controller function deletes one user
-export const deleteOneUser = async (req: Request, res: Response) => {
+export const deleteOneById = async (req: Request, res: Response) => {
 
     // parses the id as a string
     const { id } = GetUserSchema.parse(req.params);

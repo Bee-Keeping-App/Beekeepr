@@ -38,9 +38,9 @@ router.patch(
 );
 
 router.delete(
-    "/",
+    "/:id",
     validate(GetUserSchema),
-    controller.
-)
+    controller.deleteOneById
+);
 
 export default router;
