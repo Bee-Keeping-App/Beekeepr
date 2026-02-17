@@ -12,7 +12,7 @@ import {
 export const getUserById = async (id: string): Promise<User> => {
     
     const result = await UserModel
-    .findById(id)           // looks for a document by its ID
+    .findById(id)               // looks for a document by its ID
     .lean() as UserNoId | null; // tells mongo to not wrap the result in a Mongoose object (very heavy) for a performance boost
     
     // TODO: uncomment this
