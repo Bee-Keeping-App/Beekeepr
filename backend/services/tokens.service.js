@@ -46,18 +46,22 @@ function validateToken(tokenString, secret) {
     }
 }
 
+// implements signToken for the access token
 export const signAccessToken = (payload) => {
     return signToken(payload, ACCESS_SECRET, ACCESS_EXPIRY);
 };
 
+// implements signToken for the refresh token
 export const signRefreshToken = (payload) => {
     return signToken(payload, REFRESH_SECRET, REFRESH_EXPIRY);
 };
 
+// implements validateToken for the access token
 export const validateAccessToken = (accessString) => {
     return validateToken(accessString, ACCESS_SECRET);
 };
 
+// implements validateToken for the refresh token
 export const validateRefreshToken = (refreshString) => {
     return validateToken(refreshString, REFRESH_SECRET);
 };

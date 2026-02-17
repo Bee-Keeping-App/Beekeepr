@@ -13,6 +13,8 @@ async function insertUser(user) {
     expect(response.body).toHaveProperty('accessToken');
     expect(response.headers).toHaveProperty('set-cookie');
 
+
+    // get the user's tokens (necessary for ops in the future)
     return {
         access: response.body.accessToken,
         refresh: response.headers['set-cookie']
@@ -41,6 +43,7 @@ describe('PUT /accounts', () => {
 
         const auth = await insertUser(validUser);
         
+        // changing these fields, and then sending them in the request
         validUser['fields']['email'] = 'newEmail@gmail.com';
         validUser['fields']['password'] = 'newpassword';
 
@@ -54,7 +57,7 @@ describe('PUT /accounts', () => {
             .expect(200);
         
 
-        // verify response
+        // verify the response has the new email
         expect(response.body).toHaveProperty('account');
         expect(response.body.account).toHaveProperty('email');
         expect(response.body.account.email).toBe('newEmail@gmail.com'.toLowerCase());
@@ -69,6 +72,8 @@ describe('PUT /accounts', () => {
 
         const auth = await insertUser(validUser);
         
+        // we inserted with a valid email, and now are removing the email
+        // we should fail because our new account doesn't have an email
         validUser['fields']['email'] = null;
         validUser['fields']['password'] = 'newpassword';
 
@@ -91,6 +96,8 @@ describe('PUT /accounts', () => {
 
         const auth = await insertUser(validUser);
         
+        // we add a phone field that will violate the schema
+        // so we expect a 400 
         validUser['fields']['phone'] = 'pancakes';
 
         // call /accounts with one of the tokens
@@ -112,8 +119,8 @@ describe('PUT /accounts', () => {
 
         const auth = await insertUser(validUser);
         
-        const phone = '1234567890'
-        validUser['fields']['phone'] = phone;
+        // try successfully adding a phone number
+        validUser['fields']['phone'] = 1234567890;
 
         // call /accounts with one of the tokens
         const response = await request(app)
@@ -124,7 +131,7 @@ describe('PUT /accounts', () => {
             .set('Cookie', auth.refresh[0].split(';')[0])
             .expect(200);
 
-        // verify response
+        // verify the response is positive and the resource was successfully updated
         expect(response.body).toHaveProperty('account');
         expect(response.body.account).toHaveProperty('phone');
         expect(response.body.account.phone).toBe(phone);

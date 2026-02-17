@@ -17,20 +17,6 @@ export const getOneAccount = catchAsync(async (req, res, next) => {
 /* Make an Account */
 export const registerAccount = catchAsync(async (req, res, next) => {
 
-    /* me calculating my mlfd grade:
-
-        * 10750 in hw points / 12800 in total points = 0.8398
-        * 54 in quiz points / 86 in total points = 0.6279
-        * 26.82 on the exam / 30 in total exam = 0.894
-        * 
-        * final grade: 50% hw, 20% quiz, 30% final
-        * 0.5 * 0.8398 + 0.2 * 0.6279 + 0.3 * 0.894
-        * 0.4199 + 0.1258 + 0.2682 = 0.8139
-        * cope rounding: 0.42 + 0.13 + 0.27 = 0.82
-        * 
-        * fml bro ik ik ts 90 on the final :sob:
-    */
-
     // login handled by auth service
     const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
 
