@@ -1,10 +1,9 @@
+import { Request, Response, NextFunction } from 'express';
+
 import * as SessionManager from '../utils/session.service.js';
 import * as TokenManager from '../utils/tokens.service.js';
 
-import {
-    MissingTokenError
-} from '../classes/errors.class.js';
-
+import { AuthObject, AuthParserSchema } from './middlewares.schema.js';
 /* Since the auth middleware has only 1 purpose (validating tokens),
     All the exported logic resides in this anonymous function.
     
@@ -15,29 +14,21 @@ import {
     -> if failure, it catches the error and forwards it to the error-handling middleware 
 */
 
-export default async (req, res, next) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
     
     try {
 
-        // 1. parse tokens (if missing ==> bad request error)
-        const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith("Bearer ")) 
-            throw new MissingTokenError('Request has no access token');
-        
-        const accessString = authHeader.split(" ")[1];
-        const refreshString = req.cookies.refreshToken;
-        
-        if (!refreshString) 
-            throw new MissingTokenError('Request has no refresh token');
+        // parses the tokens from the auth object
+        const { refreshString, accessString } = AuthParserSchema.parse(req);
 
-
-        // 2. validate tokens (if invalid ==> unauthenticated user error)
-        let payload;
-        payload = TokenManager.validateAccessToken(accessString);
-        payload = TokenManager.validateRefreshToken(refreshString);
+        // if each succeed without error then both tokens are valid
+        let payload;    // payload holds information about the token owner
+        payload = TokenManager.validateAccessToken(refreshString);
+        payload = TokenManager.validateRefreshToken(accessString);
 
         // 3. attach the id to the request body (useful for operations downstream)
-        req.user = payload.owner.id; 
+        // TODO: Find a way to implement this in a TS-friendly manner
+        // req.user = payload.owner.id;
         next(); // next means the next process in the route is called
 
     } catch (error) {

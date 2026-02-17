@@ -4,7 +4,7 @@ const app = express();
 
 /* Middlewares */
 import logger from './middlewares/logging.middleware';
-// import errorHandler from './middlewares/error.middleware';
+import errorHandler from './middlewares/error.middleware';
 
 /* Routers */
 import usersRouter from './resources/users/users.router';
@@ -20,6 +20,6 @@ app.use(logger);
 app.use('/api/users', usersRouter);
 
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
-// app.use(errorHandler);
+app.use(errorHandler);
 
 export default app;

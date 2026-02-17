@@ -6,7 +6,6 @@ import {
     CreateUserSchema, CreateUserDTO,
     UpdateUserSchema, UpdateUserDTO
 } from './users.schema';
-
 import catchAsync from '../../utils/catchAsync';
 
 

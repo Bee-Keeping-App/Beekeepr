@@ -2,8 +2,8 @@ import { UserModel, UserDocument, UserNoId } from './users.model';
 import {
     User, UserSchema,
     CreateUserDTO, UpdateUserDTO,
- } from './users.schema';
-
+} from './users.schema';
+import { NullQueryError } from '../../classes/errors.class';
 
 
 export const getUserById = async (id: string): Promise<User> => {
@@ -13,7 +13,7 @@ export const getUserById = async (id: string): Promise<User> => {
     .lean() as UserNoId | null; // tells mongo to not wrap the result in a Mongoose object (very heavy) for a performance boost
     
     // TODO: replace Error with a custom error
-    if (!result) throw new Error('User with that id was not found');
+    if (!result) throw new NullQueryError('User with that id was not found');
 
     // as User ensures the object only has fields the User object has
     return UserSchema.parse(result);
@@ -57,7 +57,7 @@ export const updateUser = async (data: UpdateUserDTO, id: string): Promise<User>
     ).lean() as UserNoId;
     
     // ensures the user already exists
-    if (!result) throw new Error('Could not find target user');
+    if (!result) throw new NullQueryError('Could not find target user');
 
     // returns a User type
     return UserSchema.parse(result) as User;
