@@ -120,7 +120,8 @@ describe('PUT /accounts', () => {
         const auth = await insertUser(validUser);
         
         // try successfully adding a phone number
-        validUser['fields']['phone'] = 1234567890;
+        const phone = '1234567890'
+        validUser['fields']['phone'] = phone;
 
         // call /accounts with one of the tokens
         const response = await request(app)
@@ -134,7 +135,7 @@ describe('PUT /accounts', () => {
         // verify the response is positive and the resource was successfully updated
         expect(response.body).toHaveProperty('account');
         expect(response.body.account).toHaveProperty('phone');
-        expect(response.body.account.phone).toBe(1234567890);
+        expect(response.body.account.phone).toBe(phone);
     });
 });
 
