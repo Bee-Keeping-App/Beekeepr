@@ -9,7 +9,9 @@
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
     "web": "expo start --web",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -45,8 +47,16 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~19.1.10",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
     "cross-env": "^10.1.0",
-    "typescript": "~5.9.2"
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.3.0",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.56.0"
   },
   "private": true
 }

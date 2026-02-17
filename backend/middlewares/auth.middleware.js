@@ -1,4 +1,3 @@
-import * as SessionManager from '../services/session.service.js';
 import * as TokenManager from '../services/tokens.service.js';
 
 import {

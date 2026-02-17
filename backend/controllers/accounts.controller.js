@@ -3,19 +3,19 @@ import * as Auth from '../services/auth.service.js';
 import catchAsync from '../utils/catchAsync.js';
 
 /* Read all caller */
-export const getAllAccounts = catchAsync(async (req, res, next) => {
+export const getAllAccounts = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     const accounts = await Accounts.findAll();
     res.status(200).json({ accounts });
 });
 
 /* Read one caller */
-export const getOneAccount = catchAsync(async (req, res, next) => {
+export const getOneAccount = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     const account = await Accounts.findOneById(req.params.id);
     res.status(200).json({ account });
 });
 
 /* Make an Account */
-export const registerAccount = catchAsync(async (req, res, next) => {
+export const registerAccount = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
 
     // login handled by auth service
     const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
@@ -27,7 +27,7 @@ export const registerAccount = catchAsync(async (req, res, next) => {
 });
 
 /* Update caller */
-export const updateAccountInfo = catchAsync(async (req, res, next) => {
+export const updateAccountInfo = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     // finds an account by id then updates it (idempotent operation)
     const account = await Accounts.updateOne(
@@ -39,7 +39,7 @@ export const updateAccountInfo = catchAsync(async (req, res, next) => {
 });
 
 /* Delete caller */
-export const deleteAccount = catchAsync(async (req, res, next) => {
+export const deleteAccount = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     // deletes the account
     await Accounts.deleteOne(req.user);
