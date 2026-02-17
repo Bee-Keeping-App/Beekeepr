@@ -120,7 +120,8 @@ describe('PUT /accounts', () => {
         const auth = await insertUser(validUser);
         
         // try successfully adding a phone number
-        validUser['fields']['phone'] = 1234567890;
+        const phone = '1234567890'
+        validUser['fields']['phone'] = phone;
 
         // call /accounts with one of the tokens
         const response = await request(app)
