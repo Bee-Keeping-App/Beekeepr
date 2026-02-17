@@ -7,6 +7,9 @@ import {
     UpdateUserSchema, UpdateUserDTO
 } from './users.schema';
 
+
+// this controller is used to get one user by their id
+// the id is passed as a path parameter
 export const getOneById = async (req: Request, res: Response) => {
     
     // parses the id as a string
@@ -19,6 +22,8 @@ export const getOneById = async (req: Request, res: Response) => {
     return res.status(200).json(user);
 };
 
+
+// this controller function gets every user in the collection 
 export const getAllUsers = async (req: Request, res: Response) => {
 
     // call the service to get all the users
@@ -28,6 +33,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
     return res.status(200).json(users);
 };
 
+
+// this controller function makes a user
 export const createOneUser = async (req: Request, res: Response) => {
 
     // parse the body into a CreateUserDTO
@@ -40,6 +47,8 @@ export const createOneUser = async (req: Request, res: Response) => {
     return res.status(201).json(user);
 };
 
+
+// this controller function updates one user
 export const updateOneUser = async (req: Request, res: Response) => {
 
     // parse the body into an UpdateUserDTO
@@ -52,6 +61,8 @@ export const updateOneUser = async (req: Request, res: Response) => {
     return res.status(200).json(user);
 };
 
+
+// this controller function deletes one user
 export const deleteOneUser = async (req: Request, res: Response) => {
 
     // parses the id as a string
