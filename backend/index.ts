@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import app from './app.js';
+import app from './app';
 import connectToDB from './utils/connectDb.js';
 
 // connects to the database before launching the server

@@ -15,24 +15,24 @@ const router = Router();
 
 router.get(                     // this route supports GET
     "/",                        // this route ends in /
-    validate(GetUserSchema),    // the first function in the chain is a validation
     controller.getAllUsers      // after validation the controller is called
 );
 
 router.get(
     "/:id",                     // an example of a "path parameter"
-    validate(GetUserSchema),
+    validate(GetUserSchema),    // sometimes a validation function will execute ahead of the controller
     controller.getOneById
 );
 
 router.post(
     "/",
     validate(CreateUserSchema),
-    controller.getAllUsers
+    controller.createOneUser
 );
 
 router.patch(
-    "/",
+    "/:id",
+    validate(GetUserSchema),
     validate(UpdateUserSchema),
     controller.updateOneUser
 );

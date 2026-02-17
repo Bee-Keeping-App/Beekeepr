@@ -3,12 +3,11 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 /* Middlewares */
-import logger from './middlewares/logging.middleware.js';
-import errorHandler from './middlewares/error.middleware.js'; 
+import logger from './middlewares/logging.middleware';
+// import errorHandler from './middlewares/error.middleware';
 
 /* Routers */
-import accountsRouter from './resources/users/accounts.router.js';
-import authRouter from './resources/auth/auth.router.js';
+import usersRouter from './resources/users/users.router';
 
 /* Imported Middlewares */
 app.use(express.json());
@@ -18,10 +17,9 @@ app.use(cookieParser());
 app.use(logger);
 
 /* Implementing Routes */
-app.use('/api/accounts', accountsRouter);
-app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
-app.use(errorHandler);
+// app.use(errorHandler);
 
 export default app;

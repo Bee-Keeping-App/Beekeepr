@@ -44,9 +44,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/react": "~19.1.10",
     "cross-env": "^10.1.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.2"
   },
   "private": true

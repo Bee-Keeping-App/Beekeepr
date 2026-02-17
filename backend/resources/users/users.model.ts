@@ -4,12 +4,11 @@ import { UserWithAuth } from './users.schema';
 // this type allows a User type to become a UserDocument
 // and UserDocuments can become Documents
 export interface UserNoId extends Omit<UserWithAuth, 'id'> {};
-export type UserDocument = HydratedDocument<UserNoId>;
 
 /* all mongo entries for Users will have this scheme */
 
 // this schema will ensure all documents have similar state
-const userSchema = new Schema<UserNoId>({
+const userSchema = new Schema({
     
     email: {            // each argument specifies a rule the key must have
         type: String,   // datatype
@@ -33,17 +32,20 @@ const userSchema = new Schema<UserNoId>({
         select: false   // IMPORTANT: tells mongoose to not return this key when this document is queried, unless explicitly stated.
                         // this ensures we don't share hashed passwords everywhere
     },
-    refreshId: {        // for tracking a user's refresh token. Useful for revoking in the case of security breaches
+    refreshId: {            // for tracking a user's refresh token. Useful for revoking in the case of security breaches
         type: Number,
-        required: true,
+        required: false,    // set this to true in the future
         select: false
     },
-    accessId: {         // for tracking a user's access token. Useful for revoking in the case of security breaches
+    accessId: {             // for tracking a user's access token. Useful for revoking in the case of security breaches
         type: Number,
-        required: true,
+        required: false,    // set this to true in the future
         select: false
     }
 });
 
-// exports a model of type UserDocument, which can be coerced into types User or UserWithAuth
-export const UserModel = model<UserDocument>('User', userSchema);
+// interface schema with userNoId here
+export const UserModel = model<UserNoId>('User', userSchema);
+
+// defines a type for a full mongoose object (useful sometimes)
+export type UserDocument = ReturnType<typeof UserModel.hydrate>;
