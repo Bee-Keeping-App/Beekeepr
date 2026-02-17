@@ -32,8 +32,10 @@ export default [
     {
         files: ['tests/**/*.js'],
         languageOptions: {
-            globals: globals.jest,
-                  ...globals.node, //this is bad btw (since tests folder may contain front-end tests)
+            globals: {
+                ...globals.jest,
+                ...globals.node, //this is bad btw (since tests folder may contain front-end tests)
+            }
         },
     },
 
