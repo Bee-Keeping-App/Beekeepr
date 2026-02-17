@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 

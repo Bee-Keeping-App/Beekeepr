@@ -11,7 +11,7 @@ import {
 
 } from '../classes/errors.class.js';
 
-export default (err, req, res, next) => {
+export default (err, req, res, next) => { // eslint-disable-line no-unused-vars
 
     // ensures responses have basic info attached
     err.statusCode = err.statusCode || 500;

@@ -48,7 +48,7 @@ describe('GET /accounts', () => {
         };
 
         // insert users and get their tokens
-        const tokensA = await insertUser(validUserA);
+        await insertUser(validUserA);
         const tokensB = await insertUser(validUserB);
 
         // call /accounts with one of the tokens
@@ -88,7 +88,7 @@ describe('GET /accounts', () => {
 
         // insert users and get their tokens
         const tokensA = await insertUser(authedUser);
-        const tokensB = await insertUser(targetUser);
+        await insertUser(targetUser);
 
         // call /accounts with the tokens of the auth user
         

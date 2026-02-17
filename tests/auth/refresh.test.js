@@ -69,7 +69,7 @@ describe('POST /refresh', () => {
         };
 
         // insert user and get their access token
-        const auth = await insertUser(validUser);
+        await insertUser(validUser);
 
         // call /accounts without a token, expecting a failure
         await request(app)
@@ -88,7 +88,7 @@ describe('POST /refresh', () => {
         };
 
         // insert user and get their access token
-        const auth = await insertUser(validUser);
+        await insertUser(validUser);
 
         // call /accounts with only one token (need both)
         await request(app)
@@ -128,7 +128,7 @@ describe('POST /refresh', () => {
 
         // insert user and get their access token
         const authA = await insertUser(validUserA);
-        const authB = await insertUser(validUserB);
+        await insertUser(validUserB);
 
         // logs out validUserA
         await request(app)

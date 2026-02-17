@@ -17,6 +17,18 @@ export default [
     },
 
     js.configs.recommended,
+    {
+        rules: {
+            'no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
+        },
+    },
 
     // backend (node)
     // I think we're migrating to ts eventually(?)
@@ -57,8 +69,18 @@ export default [
             ...react.configs.recommended.rules,
             ...reactHooks.configs.recommended.rules,
 
+            'no-unused-vars': 'off',
+
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
+
             'react/react-in-jsx-scope': 'off',
-            '@typescript-eslint/no-unused-vars': 'error',
         },
         settings: {
             react: {
