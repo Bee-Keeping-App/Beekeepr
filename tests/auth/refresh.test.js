@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../../backend/app');
-const Account = require('../../backend/models/accounts.model');
+import request from 'supertest';
+import app from '../../backend/app.js';
+import Account from '../../backend/models/accounts.model.js';
 
 async function insertUser(user) {
     const response = await request(app)
@@ -55,7 +55,7 @@ describe('POST /refresh', () => {
             .set('Cookie', refreshCookie[0].split(';')[0])
             .expect(200);
         
-        // tests
+        // asserts the new token is not the same as the old token
         expect(response.body).toHaveProperty('accessToken');
         expect(response.body.token).not.toBe(oldToken);
         
@@ -71,7 +71,7 @@ describe('POST /refresh', () => {
         // insert user and get their access token
         const auth = await insertUser(validUser);
 
-        // call /accounts with one of the tokens
+        // call /accounts without a token, expecting a failure
         await request(app)
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')
@@ -90,7 +90,7 @@ describe('POST /refresh', () => {
         // insert user and get their access token
         const auth = await insertUser(validUser);
 
-        // call /accounts with one of the tokens
+        // call /accounts with only one token (need both)
         await request(app)
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')
@@ -100,6 +100,20 @@ describe('POST /refresh', () => {
     });
 
     test('fail to get new access token with logged-out user\'s refresh token', async () => {
+        
+        /* This one needs a comment block to explain what's up
+
+            Hypothetically, the refresh token can be stolen to abusively use 
+            someone's account. if User A steals User B's refresh token, they can
+            pretend to be User B without restriction.
+
+            By implementing token tracing in the database, we set User B's tokens to null
+            once they log out. So when User A attempts to authenticate as User B, they 
+            are rejected. This wouldn't stop User A if User B was already logged in
+
+        */
+        
+        
         const validUserA = {
             fields: { email: 'successEmail@gmail.com', password: 'qwertyuiop' },
             isValid: true,
@@ -124,7 +138,9 @@ describe('POST /refresh', () => {
             .set('Cookie', authA.refresh[0].split(';')[0])
             .expect(200);
         
-        // call /refresh with the other's refresh cookie
+        // call /refresh with validUserA's refresh cookie
+        // Should fail because validUserA is logged out, and
+        // therefore needs to login again to be given new tokens
         await request(app)
             .post('/api/auth/refresh')
             .set('Accept', 'application/json')

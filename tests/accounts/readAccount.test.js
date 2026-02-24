@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../../backend/app');
-const Account = require('../../backend/models/accounts.model');
+import request from 'supertest';
+import app from '../../backend/app.js';
+import Account from '../../backend/models/accounts.model.js';
 
 async function insertUser(user) {
     const response = await request(app)
@@ -13,6 +13,8 @@ async function insertUser(user) {
     expect(response.body).toHaveProperty('accessToken');
     expect(response.headers).toHaveProperty('set-cookie');
 
+
+    // get their tokens for future operations
     return {
         access: response.body.accessToken,
         refresh: response.headers['set-cookie']
@@ -50,6 +52,7 @@ describe('GET /accounts', () => {
         const tokensB = await insertUser(validUserB);
 
         // call /accounts with one of the tokens
+        // we need the tokens because GET is a protected route
         const response = await request(app)
             .get('/api/accounts')
             .set('Accept', 'application/json')
@@ -57,15 +60,18 @@ describe('GET /accounts', () => {
             .set('Cookie', tokensB.refresh[0].split(';')[0])
             .expect(200);
 
-        // verify response
+        // verify the # of accounts is 2
         expect(response.body).toHaveProperty('accounts')
         expect(response.body.accounts).toHaveLength(2);
         
         const emails = response.body.accounts.map(u => u.email);
         
+        // this check asserts the inserted emails were edited in the db to be lowercase,
+        // even though we uploaded them with uppercase characters (intentional behavior)
         expect(emails).toContain('successEmail@gmail.com'.toLowerCase());
         expect(emails).toContain('goodemail@gmail.com'.toLowerCase());
     });
+
 
     test('successfully read 1 user', async () => {
         const authedUser = {
@@ -84,8 +90,9 @@ describe('GET /accounts', () => {
         const tokensA = await insertUser(authedUser);
         const tokensB = await insertUser(targetUser);
 
-        // call /accounts with one of the tokens
-        // fetch all users to get a valid ID for targetUser
+        // call /accounts with the tokens of the auth user
+        
+        // first fetch all users to get the id of the user we're GETting
         const allUsers = await request(app)
             .get('/api/accounts')
             .set('Accept', 'application/json')
@@ -97,7 +104,7 @@ describe('GET /accounts', () => {
         // pick target user's ID
         const targetId = allUsers.body.accounts.find(u => u.email === (targetUser.fields.email.toLowerCase())).id;
 
-        // fetch one user by ID
+        // fetch target user by ID
         const response = await request(app)
             .get(`/api/accounts/${targetId}`)
             .set('Accept', 'application/json')

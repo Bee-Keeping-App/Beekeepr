@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../../backend/app');
-const Account = require('../../backend/models/accounts.model');
+import request from 'supertest';
+import app from '../../backend/app.js';
+import Account from '../../backend/models/accounts.model.js';
 
 describe('POST /accounts', () => {
     beforeAll(async () => {
@@ -15,6 +15,7 @@ describe('POST /accounts', () => {
         await Account.deleteMany({});
     });
 
+    // this ensures when a user registers they get tokens
     test('returns tokens for successful registration', async () => {
         const validUser = {
             fields: { email: 'successEmail@gmail.com', password: 'qwertyuiop' },
@@ -22,6 +23,7 @@ describe('POST /accounts', () => {
             errMsg: null
         };
 
+        // registering the user via posting to the accounts route
         const response = await request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')
@@ -41,6 +43,8 @@ describe('POST /accounts', () => {
         expect(refreshCookie).toBeDefined();
         expect(refreshCookie).toContain('HttpOnly');
         
+
+        // because we have the access & refresh token, this test succeeded
     });
 
     test('fails insert due to missing email', async () => {
@@ -50,6 +54,8 @@ describe('POST /accounts', () => {
                 'errMsg': "missing email"
         };
 
+        // we send the post, expecting it to be rejected
+        // because the email is missing
         return request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')
@@ -64,6 +70,7 @@ describe('POST /accounts', () => {
             'errMsg': "Phone number needs to be a number"
         };
 
+        // we send a bad phone number ==> expect a 400
         return request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')
@@ -91,7 +98,7 @@ describe('POST /accounts', () => {
         .send(validUser.fields)
         .expect(201);
         
-        // fails inserting bc of duplicate email
+        // this user has the same email && emails are unique ==> this should be rejected
         return request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')

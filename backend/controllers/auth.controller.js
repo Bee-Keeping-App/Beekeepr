@@ -1,14 +1,16 @@
-const Auth = require('../services/auth.service');
-const catchAsync = require('../utils/catchAsync');
+import * as Auth from '../services/auth.service.js';
+import catchAsync from '../utils/catchAsync.js';
 
-exports.refreshToken = catchAsync(async (req, res, next) => {
+/* Uses the refreshToken to refresh an expired AccessToken */
+export const refreshToken = catchAsync(async (req, res, next) => {
 
     // get new access token
     const accessToken = await Auth.refreshToken(req.cookies.refreshToken);
     return res.status(200).json({ accessToken });
 });
 
-exports.register = catchAsync(async (req, res, next) => {
+/* attempts signup, generates tokens on success and stores them in the response */
+export const register = catchAsync(async (req, res, next) => {
     
     // delegate to auth
     const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
@@ -19,7 +21,8 @@ exports.register = catchAsync(async (req, res, next) => {
 });
 
 
-exports.login = catchAsync(async (req, res, next) => {
+/* attempts login, generates tokens on success. Stores them in the resposne object */
+export const login = catchAsync(async (req, res, next) => {
 
     // get tokens from Auth
     const { email, password } = req.body;
@@ -30,7 +33,8 @@ exports.login = catchAsync(async (req, res, next) => {
     return res.status(200).json({ accessToken });
 });
 
-exports.logout = catchAsync(async (req, res, next) => {
+/* attempts logout, removes refresh token on success */
+export const logout = catchAsync(async (req, res, next) => {
     
     // do logout using auth
     await Auth.handleLogout(req.user);

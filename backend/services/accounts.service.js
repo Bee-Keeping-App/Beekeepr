@@ -1,32 +1,36 @@
-const Accounts = require('../models/accounts.model');
-const {
+import AccountSchema from '../models/accounts.model.js';
+import {
     NullQueryError,
     DuplicateFieldError
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
 
-exports.findAll = async () => {
-    const result = await Accounts.find();
+/* Gets every account. Can throw a NullQuery error if no accounts were found */
+export const findAll = async () => {
+    const result = await AccountSchema.find();  // no args ==> find everything
     if (!result) throw new NullQueryError('Account(s) not found');
     return result;
 };
 
-exports.findOne = async (query, includePassword = false) => {
-    const result = includePassword ? await Accounts.findOne(query, '+password') : await Accounts.findOne(query);
+/* gets 1 account. Has a flag for returning the password or not */
+export const findOne = async (query, includePassword = false) => {
+    const result = includePassword ? await AccountSchema.findOne(query, '+password') : await AccountSchema.findOne(query);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };
 
-exports.findOneById = async (id, includeTokens = false) => {
-    const result = includeTokens ? await Accounts.findById(id, '+refreshId +accessId') : await Accounts.findById(id);
+/* gets one account by id. Has a flag for returning tokens or not */
+export const findOneById = async (id, includeTokens = false) => {
+    const result = includeTokens ? await AccountSchema.findById(id, '+refreshId +accessId') : await AccountSchema.findById(id);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };
 
-exports.insertOne = async (account) => {
+/* Creates one account. Throws a duplicate field error if schema is violated */
+export const insertOne = async (account) => {
 
     try {
-        return await Accounts.create(account);
+        return await AccountSchema.create(account);
     } catch(err) {
         if (err.code === 11000)
             throw new DuplicateFieldError('A unique index was violated by this insert');
@@ -34,14 +38,16 @@ exports.insertOne = async (account) => {
     }
 };
 
-exports.updateOne = async (id, account) => {
-    const result = await Accounts.findByIdAndUpdate(id, account, { new: true });
+// updates an account by ID to the arguments in account
+export const updateOne = async (id, account) => {
+    const result = await AccountSchema.findByIdAndUpdate(id, account, { new: true });
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };
 
-exports.deleteOne = async (id) => {
-    const result = await Accounts.findByIdAndDelete(id);
+// finds an account by id and then deletes it
+export const deleteOne = async (id) => {
+    const result = await AccountSchema.findByIdAndDelete(id);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };

@@ -1,23 +1,27 @@
-const express = require('express');
-const cookieParser = require("cookie-parser");
+import express from 'express';
+import cookieParser from "cookie-parser";
 const app = express();
 
 /* Middlewares */
-const loggingMiddleware = require('./middlewares/logging.middleware');
-const errorMiddleware = require('./middlewares/error.middleware'); 
+import logger from './middlewares/logging.middleware.js';
+import errorHandler from './middlewares/error.middleware.js'; 
+
+/* Routers */
+import accountsRouter from './routers/accounts.router.js';
+import authRouter from './routers/auth.router.js';
 
 /* Imported Middlewares */
 app.use(express.json());
 app.use(cookieParser());
 
 /* Custom Middlewares */
-app.use(loggingMiddleware);
+app.use(logger);
 
 /* Implementing Routes */
-app.use('/api/accounts', require('./routers/accounts.router'));
-app.use('/api/auth', require('./routers/auth.router'));
+app.use('/api/accounts', accountsRouter);
+app.use('/api/auth', authRouter);
 
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
-app.use(errorMiddleware);
+app.use(errorHandler);
 
-module.exports = app;
+export default app;

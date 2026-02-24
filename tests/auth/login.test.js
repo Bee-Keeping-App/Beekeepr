@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../../backend/app');
-const Account = require('../../backend/models/accounts.model');
+import request from 'supertest';
+import app from '../../backend/app.js';
+import Account from '../../backend/models/accounts.model.js';
 
 async function insertUser(user) {
     const response = await request(app)
@@ -13,6 +13,7 @@ async function insertUser(user) {
     expect(response.body).toHaveProperty('accessToken');
     expect(response.headers).toHaveProperty('set-cookie');
 
+    // get the user's tokens (necessary for future ops)
     return {
         access: response.body.accessToken,
         refresh: response.headers['set-cookie']
@@ -39,6 +40,14 @@ describe('POST /login', () => {
             errMsg: null
         };
 
+        /* The flow for login is weird 
+            Because login is different from register,
+            You need to register first, log the user out,
+            THEN test login because register is different
+        */
+
+
+        // registering the user
         const auth = await insertUser(validUser);
 
         // log out validUser
@@ -52,7 +61,7 @@ describe('POST /login', () => {
         
 
         // now try logging them in again
-        // login implies no active auth tokens
+        // login implies no active auth tokens, so don't send any
         const response = await request(app)
             .post('/api/auth/login')
             .send(validUser.fields)
@@ -68,6 +77,7 @@ describe('POST /login', () => {
         const refresh = response.headers['set-cookie'];
         const access = response.body.accessToken;
 
+        // ensures a user gets their tokens upon login
         expect(refresh).toBeDefined();
         expect(access).toBeDefined();
     });
@@ -79,6 +89,7 @@ describe('POST /login', () => {
             errMsg: null
         };
 
+        // register a valid user
         const auth = await insertUser(invalidUser);
 
         // call /accounts with one of the tokens
@@ -91,25 +102,32 @@ describe('POST /login', () => {
             .expect(200);
         
 
+        // now try logging in with a null password
         invalidUser.fields['password'] = null;
 
+        // this should fail
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
             .expect(400);
 
+        // try again, but with a null email (should still fail)
         invalidUser.fields['email'] = null;
         invalidUser.fields['password'] = 'qwertyuiop';
         
+        // expect a 400 (failure)
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
             .expect(400);
 
+
+        // now everything is null
         invalidUser.fields['password'] = null;
 
+        // expect a failure
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
@@ -124,6 +142,7 @@ describe('POST /login', () => {
             errMsg: null
         };
 
+        // register
         const auth = await insertUser(invalidUser);
 
         // call /accounts with one of the tokens
@@ -136,25 +155,31 @@ describe('POST /login', () => {
             .expect(200);
         
 
+        // now test with an invalid password
         invalidUser.fields['password'] = '123bananas';
 
+        // expect failure
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
             .expect(401);
 
+        // try with right password wrong email
         invalidUser.fields['email'] = 'bademail@gmail.com';
         invalidUser.fields['password'] = 'qwertyuiop';
         
+        // expect failure
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)
             .set('Accept', 'application/json')
             .expect(401);
 
+        // everything is now wrong 
         invalidUser.fields['password'] = '123bananas';
 
+        // expect failure
         await request(app)
             .post('/api/auth/login')
             .send(invalidUser.fields)

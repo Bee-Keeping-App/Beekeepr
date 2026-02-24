@@ -1,1 +1,2 @@
-require('dotenv').config();
+// configures environment variables
+import 'dotenv/config';

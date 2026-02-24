@@ -1,4 +1,4 @@
-const {
+import {
     FailedValidationError,
     InvalidTokenError,
     ExpiredTokenError,
@@ -9,19 +9,31 @@ const {
     UnauthorizedUserError,
     UnauthenticatedUserError
 
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
-module.exports = (err, req, res, next) => {
+export default (err, req, res, next) => {
 
+    // ensures responses have basic info attached
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 
     // log the error
     console.log(`======================================ERROR======================================\n\n
         %O\n\n
-        ===================================END OF ERROR==================================`,
-        err);
+        ===================================END OF ERROR==================================`, err
+    );
 
+    /* This massive switch statement might look like shit
+        Mostly bc it is. If someone has a better idea for it shoot. 
+
+        The object was to map an error state to a response pattern.
+        A better way to do this would be to modify the error inheritance pattern
+        and add a way to generate the fields for a response from the error
+
+        Ex: each error would have a toResponse function that could be attached to the
+        response object and would negate any need to to a massive switch statement
+    */
+    
     switch (err.constructor) {
 
         case FailedValidationError:
@@ -52,6 +64,9 @@ module.exports = (err, req, res, next) => {
             return res.status(409).json(err.message);
     }
 
+    // this if statement controls how much info we send
+    // In development, send everything to be helpful
+    // In production, be more secretive
     if (process.env.USE_PROD == 'false') {
         // send a detailed response
         res.status(err.statusCode).json({
