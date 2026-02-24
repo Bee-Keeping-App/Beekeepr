@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Run Tests
-        run: npm test:coverage
+        run: npm run test:coverage
         env:
           # --- Secrets (From GitHub Settings > Secrets) ---
           ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
