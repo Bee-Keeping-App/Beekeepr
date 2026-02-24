@@ -10,17 +10,18 @@
     "scheme": "beekeepr",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.beekeepr"
+      "bundleIdentifier": "com.beekeepr",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Beekeepr uses your location to show local weather and radar."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.beekeepr"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.beekeepr",
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
     },
     "plugins": [
       "expo-asset",
@@ -29,6 +30,12 @@
         {
           "backgroundColor": "#ffffff",
           "image": "./assets/splash-icon.png"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Beekeepr to access your location to show local weather and radar."
         }
       ]
     ]

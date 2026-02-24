@@ -1,24 +1,21 @@
-//1) A 7-day forecast bar for Troy (I need to make it automatically get the long/lat of the user)
-//2) A radar map in the bottom 4/5 of the screen.
-
 import * as React from 'react';
-import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, View,} from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+import * as Location from 'expo-location';
 
-//get key from env
+// get key from env
 const OPENWEATHER_KEY = process.env.EXPO_PUBLIC_OPENWEATHER_KEY ?? '';
 
-//Hard-coded coordinates for troy
-const TROY_LAT = 42.7284;
-const TROY_LON = -73.6918;
+// Fallback coordinates (Troy) used if permission denied / location unavailable
+const DEFAULT_LAT = 42.7284;
+const DEFAULT_LON = -73.6918;
 
-//one day of forecast data
-type ForecastDay = { date: string; max: number; min: number; code: number;};
+// one day of forecast data
+type ForecastDay = { date: string; max: number; min: number; code: number };
 
-//This builds the HTML string that Leaflet will use to render the radar map.
-//It centers the map on Troy, adds an OSM baselayer, and a precipitation overlay
-//from OpenWeather as a tile layer.
-const mapHtml = (key: string) => `<!doctype html>
+// Leaflet HTML for radar map, centered at provided lat/lon.
+// If no OpenWeather key is present, it shows just the OSM basemap (no radar overlay).
+const mapHtml = (key: string, lat: number, lon: number) => `<!doctype html>
 <html><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
@@ -31,22 +28,42 @@ const mapHtml = (key: string) => `<!doctype html>
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  const map = L.map('map',{worldCopyJump:true}).setView([${TROY_LAT}, ${TROY_LON}], 11);
+  const map = L.map('map',{worldCopyJump:true}).setView([${lat}, ${lon}], 11);
 
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
     attribution:'&copy; OpenStreetMap'
   }).addTo(map);
 
-  const radar = L.tileLayer(
-    'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${key}',
-    { opacity: 0.8 }
-  ).addTo(map);
+  // Build an overlays collection for the layer control.
+  const overlays = {};
 
-  L.control.layers(null,{'Radar (OpenWeather)':radar}).addTo(map);
+  // Current location marker layer (ON by default)
+  const hereMarker = L.marker([${lat}, ${lon}]).bindPopup('Current location');
+  const hereLayer = L.layerGroup([hereMarker]).addTo(map);
+  overlays['Current location'] = hereLayer;
+
+  const key = ${JSON.stringify(key || '')};
+  if (key) {
+    // Radar / precipitation (ON by default)
+    const radar = L.tileLayer(
+      'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=' + key,
+      { opacity: 0.8 }
+    ).addTo(map);
+    overlays['Radar (OpenWeather)'] = radar;
+
+    // Temperature (ON by default)
+    const temp = L.tileLayer(
+      'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=' + key,
+      { opacity: 0.55 }
+    ).addTo(map);
+    overlays['Temperature (OpenWeather)'] = temp;
+  }
+
+  // Layer toggle UI (all overlays that were .addTo(map) start checked)
+  L.control.layers(null, overlays).addTo(map);
 </script>
 </body></html>`;
 
-//Converts Open-Meteo “weathercode” weather data into readable descriptions
 function mapWeatherCodeToLabel(code: number): string {
   if (code === 0) return 'Clear';
   if (code === 1 || code === 2) return 'Partly cloudy';
@@ -65,14 +82,12 @@ function mapWeatherCodeToLabel(code: number): string {
   return 'N/A';
 }
 
-//Turns date format into fdays of the week
 function formatDayLabel(dateStr: string): string {
   const d = new Date(dateStr);
   if (Number.isNaN(d.getTime())) return dateStr;
   return d.toLocaleDateString('en-US', { weekday: 'short' });
 }
 
-//Formats date as MM/DD (no year) for the small label under the weekday.
 function formatDateLabel(dateStr: string): string {
   const d = new Date(dateStr);
   if (Number.isNaN(d.getTime())) return dateStr;
@@ -80,18 +95,51 @@ function formatDateLabel(dateStr: string): string {
 }
 
 export function WeatherMap() {
-  //Forecast state
   const [forecast, setForecast] = React.useState<ForecastDay[]>([]);
-  //loading + error flags
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  //On mount: call the Open-Meteo API once, parse the JSON,
-  //and store the first 7 days in state.
+  // Current coordinates used by both forecast + map
+  const [lat, setLat] = React.useState<number>(DEFAULT_LAT);
+  const [lon, setLon] = React.useState<number>(DEFAULT_LON);
+
+  // 1) On mount: request permission and attempt to read current location.
+  // If denied/unavailable, we keep DEFAULT_* (Troy).
+  React.useEffect(() => {
+    const getLocation = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setError('Location permission denied; showing Troy, NY.');
+          return;
+        }
+
+        const pos = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+
+        setLat(pos.coords.latitude);
+        setLon(pos.coords.longitude);
+        setError(null);
+      } catch (e) {
+        console.error('Location error', e);
+        setError('Unable to get current location; showing Troy, NY.');
+      }
+    };
+
+    getLocation();
+  }, []);
+
+  // 2) Whenever lat/lon changes, fetch the forecast for that location.
   React.useEffect(() => {
     const fetchForecast = async () => {
+      setLoading(true);
       try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${TROY_LAT}&longitude=${TROY_LON}&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=auto`.replace(/\s+/g, '');
+        const url =
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+          `&daily=temperature_2m_max,temperature_2m_min,weathercode` +
+          `&temperature_unit=fahrenheit&timezone=auto`;
+
         const res = await fetch(url);
         const json = await res.json();
 
@@ -105,19 +153,18 @@ export function WeatherMap() {
         );
 
         setForecast(days.slice(0, 7));
-        setError(null);
+        // don't wipe an existing location warning unless the fetch succeeded with real coords
       } catch (e) {
         console.error('Forecast fetch error', e);
-        setError('Failed to load forecast');
+        setError((prev) => prev ?? 'Failed to load forecast');
       } finally {
         setLoading(false);
       }
     };
 
     fetchForecast();
-  }, []);
+  }, [lat, lon]);
 
-  //Renders the top “forecast bar” section.
   const renderForecastContent = () => {
     if (loading) {
       return (
@@ -128,59 +175,42 @@ export function WeatherMap() {
       );
     }
 
-    if (error || forecast.length === 0) {
+    if (forecast.length === 0) {
       return (
         <View style={styles.forecastCenter}>
-          <Text style={styles.forecastErrorText}>
-            {error || 'No forecast data'}
-          </Text>
+          <Text style={styles.forecastErrorText}>{error || 'No forecast data'}</Text>
         </View>
       );
     }
 
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.forecastScrollContent}
-      >
-        {forecast.map((day) => (
-          <View key={day.date} style={styles.forecastBox}>
-            <Text style={styles.forecastDay}>{formatDayLabel(day.date)}</Text>
-            <Text style={styles.forecastDate}>{formatDateLabel(day.date)}</Text>
-            <Text style={styles.forecastTemp}>
-              {Math.round(day.max)}°
-            </Text>
-            <Text style={styles.forecastMin}>
-              L {Math.round(day.min)}°
-            </Text>
-            <Text style={styles.forecastDesc}>
-              {mapWeatherCodeToLabel(day.code)}
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
+      <>
+        {error ? <Text style={styles.forecastBanner}>{error}</Text> : null}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.forecastScrollContent}
+        >
+          {forecast.map((day) => (
+            <View key={day.date} style={styles.forecastBox}>
+              <Text style={styles.forecastDay}>{formatDayLabel(day.date)}</Text>
+              <Text style={styles.forecastDate}>{formatDateLabel(day.date)}</Text>
+              <Text style={styles.forecastTemp}>{Math.round(day.max)}°</Text>
+              <Text style={styles.forecastMin}>L {Math.round(day.min)}°</Text>
+              <Text style={styles.forecastDesc}>{mapWeatherCodeToLabel(day.code)}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </>
     );
   };
 
-  //Renders the bottom map section.
-  //On web we use a raw <iframe>, on native we use a WebView, but both show the same HTML map.
+  // render native WebView.
   const renderMap = () => {
-    if (Platform.OS === 'web') {
-      return (
-        <iframe
-          srcDoc={mapHtml(OPENWEATHER_KEY)}
-          style={styles.webMapIframe as any}
-          sandbox="allow-scripts allow-same-origin"
-        />
-      );
-    }
-
-    //Native: WebView to render the same Leaflet HTML.
     return (
       <WebView
         originWhitelist={['*']}
-        source={{ html: mapHtml(OPENWEATHER_KEY) }}
+        source={{ html: mapHtml(OPENWEATHER_KEY, lat, lon) }}
         setSupportMultipleWindows={false}
         javaScriptEnabled
         domStorageEnabled
@@ -190,7 +220,6 @@ export function WeatherMap() {
     );
   };
 
-  //top 1/5th of the screen is the forecast, bottom is the map
   return (
     <View style={styles.screen}>
       <View style={styles.forecastSection}>{renderForecastContent()}</View>
@@ -199,21 +228,18 @@ export function WeatherMap() {
   );
 }
 
-//Styles
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#000',
   },
-  //Container for the top forecast area
   forecastSection: {
-    flex: 1, //1/5 of the screen for forecast
+    flex: 1,
     paddingHorizontal: 12,
     paddingTop: 12,
     paddingBottom: 6,
     backgroundColor: '#050505',
   },
-  //layout used for loading/error
   forecastCenter: {
     flex: 1,
     justifyContent: 'center',
@@ -228,12 +254,15 @@ const styles = StyleSheet.create({
     color: '#f88',
     fontSize: 14,
   },
-  //styling for the horizontal scrolling
+  forecastBanner: {
+    color: '#ddd',
+    fontSize: 12,
+    marginBottom: 6,
+  },
   forecastScrollContent: {
     alignItems: 'stretch',
     gap: 8,
   },
-  //forecast care for each day
   forecastBox: {
     width: 80,
     paddingVertical: 8,
@@ -269,15 +298,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 4,
   },
-  //map 4/5 bottom screen
   mapSection: {
     flex: 4,
-    backgroundColor: '#000',
-  },
-  //Styles for the web iframe
-  webMapIframe: {
-    width: '100%',
-    height: '100%',
     backgroundColor: '#000',
   },
 });
