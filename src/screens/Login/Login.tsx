@@ -2,6 +2,7 @@ import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { attemptLogin, tokenReturn, attemptRegister } from '../../utils/BackendRequests';
 
 
 export function Login() {
@@ -11,9 +12,15 @@ export function Login() {
     const [passValue, setPassValue] = useState('');
     
 
-    //eventually will call login logic
+
     const loginPressed = () => {
-        alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    attemptRegister(userValue, passValue).then((tokens: tokenReturn) => {
+        if (tokens.successful == false) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
+        else {alert('Login successful!');}
+    }).catch((error: unknown) => {
+        alert("ERROR: " + error);
+    });
     };
 
     //eventually will hold navigation logic

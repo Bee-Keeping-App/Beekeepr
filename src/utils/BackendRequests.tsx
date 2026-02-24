@@ -2,14 +2,14 @@
 const curURL:string = "http://localhost:3000";
 
 
-type tokenReturn = {
+export type tokenReturn = {
     successful: boolean;
     accessToken: string | null;
     refreshToekn: string | null;
 };
 
 //attempts a login and retuns the tokens for the user successfull
-async function attemptLogin(email: string, password: string): Promise<tokenReturn> {
+export async function attemptLogin(email: string, password: string): Promise<tokenReturn> {
     const response = await fetch(curURL + "/api/auth/login", {
         method: "POST",
         body: JSON.stringify({
@@ -36,9 +36,13 @@ async function attemptLogin(email: string, password: string): Promise<tokenRetur
 }
 
 //attempts to register a user and returns the tokens required to access if true
-async function attepmtRegister(email: string, password: string): Promise<tokenReturn> {
+
+export async function attemptRegister(email: string, password: string): Promise<tokenReturn> {
     const response = await fetch(curURL + "/api/accounts", {
         method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
             email: email,
             password: password
