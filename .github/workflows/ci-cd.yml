@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test-and-build:
+  build-and-test-coverage:
     runs-on: ubuntu-latest
 
     # Spins up a local MongoDB for the test suite
@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Run Tests
-        run: npm test
+        run: npm test:coverage
         env:
           # --- Secrets (From GitHub Settings > Secrets) ---
           ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
@@ -49,3 +49,10 @@ jobs:
           
           # Environment helper
           NODE_ENV: test
+      
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
