@@ -7,7 +7,7 @@
     "start": "expo start --dev-client",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
-    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --coverageReporters=\"text-summary\"",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "web": "expo start --web",
     "android": "expo run:android",
     "ios": "expo run:ios"
