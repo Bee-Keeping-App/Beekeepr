@@ -71,3 +71,18 @@ export default defineConfig([
   },
 ])
 ```
+## Architecture Diagrams
+
+The following diagrams can used as a visual guide to the form and function of this application. Currently a work in progress.
+
+Below is the simplified, dependency diagram (WIP - Please Advise!).
+
+![Dependency Architecture](assets/docs/Dependency Architecture.png)
+
+## Request Flow Diagram
+
+This diagram models the architecture of this application during request flow. It is a blown up version of the relationship between Frontend, Backend, and Database. Not included from the simple diagram above are the supporting directories: assets (pulled by frontend exclusively), tests (pulled by backend exclusively), and ios (frontend wrapper).
+
+(WIP - Please Advise!)
+
+![Request Flow](assets/docs/Request Flow.png)
