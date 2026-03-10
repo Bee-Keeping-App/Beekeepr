@@ -24,15 +24,6 @@ export const validEmail = Joi.string()
 const phoneRegex = new RegExp(/(\+\d{1,3}\s?)?((\(\d{3}\)\s?)|(\d{3})(\s|-?))(\d{3}(\s|-?))(\d{4})(\s?(([E|e]xt[:|.|]?)|x|X)(\s?\d+))?/);
 
 // accepts a number, but coerces to string before checking against a regex
-export const validPhone = Joi.number()
-    .custom((value, helpers) => {
-        const str = String(value);
-
-        if (!phoneRegex.test(str)) {
-            return helpers.error('any.invalid');
-        }
-
-        return str;
-    }, 'phone validation');
+export const validPhone = Joi.string().max(50).pattern(phoneRegex);
 
     
