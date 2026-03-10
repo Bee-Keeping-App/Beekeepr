@@ -24,7 +24,7 @@ const AccountSchema = new mongoose.Schema({
         lowercase: true // sets all characters to lowercase
     },
     phone: {
-        type: Number,
+        type: String,
         required: false,
         unique: true,
         sparse: true    // IMPORTANT: when using unique, it considers documents that don't have this key
