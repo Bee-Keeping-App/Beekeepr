@@ -56,7 +56,10 @@ export default [
         files: ['**/*.ts', '**/*.tsx'],
         languageOptions: {
             parser: tsParser,
-            globals: globals.browser,
+            globals: {
+                ...globals.browser,
+                process: 'readonly',
+            },
         },
         plugins: {
             '@typescript-eslint': tsPlugin,
