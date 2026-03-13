@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-export function Community() {
+export function Settings() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Community</Text>
+      <Text>Settings</Text>
     </View>
   );
 }
