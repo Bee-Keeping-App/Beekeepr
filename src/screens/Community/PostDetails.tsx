@@ -6,7 +6,7 @@ type Props = StaticScreenProps<{
   user: string;
 }>;
 
-export function PostDetails({ route }: Props) {
+export function PostDetails({ route }: Props) { // eslint-disable-line @typescript-eslint/no-unused-vars
   return (
     <View style={styles.container}>
       <Text>PostDetails</Text>
