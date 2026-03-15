@@ -9,7 +9,7 @@ describe('GET /accounts', () => {
     });
 
     test('successfully read all users', async () => {
-        const tokensA = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+        await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
         const tokensB = await registerUser({ email: 'goodemail@gmail.com', password: 'blablabla' });
 
         const response = await withAuth(
@@ -27,7 +27,7 @@ describe('GET /accounts', () => {
 
     test('successfully read 1 user', async () => {
         const tokensA = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
-        const tokensB = await registerUser({ email: 'goodemail@gmail.com', password: 'blablabla' });
+        await registerUser({ email: 'goodemail@gmail.com', password: 'blablabla' });
 
         // fetch all users to get target ID
         const allUsers = await withAuth(

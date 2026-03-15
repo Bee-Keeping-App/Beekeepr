@@ -1,11 +1,9 @@
 import * as TokenManager from '../services/tokens.service.js';
-import * as SessionManager from '../services/session.service.js';
 import * as Accounts from '../services/accounts.service.js';
 
 import {
     WrongPasswordError,
     NullQueryError,
-    ExpiredTokenError,
     UnauthenticatedUserError,
     InvalidTokenError
 } from '../classes/errors.class.js';

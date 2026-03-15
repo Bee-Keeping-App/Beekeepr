@@ -42,7 +42,7 @@ describe('POST /refresh', () => {
 
     test('fail to get new access token with logged-out user\'s refresh token', async () => {
         const authA = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
-        const authB = await registerUser({ email: 'goodemail@gmail.com', password: 'blablabla' });
+        await registerUser({ email: 'goodemail@gmail.com', password: 'blablabla' });
 
         // log out user A
         await withAuth(
