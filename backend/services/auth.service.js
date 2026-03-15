@@ -119,43 +119,43 @@ export const handleSignup = async (info) => {
 
 
 // this function is not used, but don't delete it yet
-export const validateTokenOwnership = async (accessString, refreshString) => {
+// export const validateTokenOwnership = async (accessString, refreshString) => {
 
 
-    /*
-    * 1. validate access and refresh strings
-    * 2. check that their user ids match
-    * 3. check that their token versions match in db
-    */
+//     /*
+//     * 1. validate access and refresh strings
+//     * 2. check that their user ids match
+//     * 3. check that their token versions match in db
+//     */
 
 
-    let accessPayload, refreshPayload, accessToken;
+//     let accessPayload, refreshPayload, accessToken;
     
-    // try validating the access token, and auto-refresh if it throws ExpiredTokenError
-    try {
-        accessPayload = TokenManager.validateAccessToken(accessString);
-    } catch (error) {
-        if (error instanceof ExpiredTokenError)
-            accessPayload, accessToken = await SessionManager.refreshSession(refreshString);
-        else
-            throw error;
-    }
+//     // try validating the access token, and auto-refresh if it throws ExpiredTokenError
+//     try {
+//         accessPayload = TokenManager.validateAccessToken(accessString);
+//     } catch (error) {
+//         if (error instanceof ExpiredTokenError)
+//             accessPayload, accessToken = await SessionManager.refreshSession(refreshString);
+//         else
+//             throw error;
+//     }
 
-    // now try validating the refresh token
-    // if this throws ExpiredTokenError then that tells auth to trigger login
-    // SessionManager.refreshSession() also throws ExpiredTokenError if refresh is expired
-    refreshPayload = TokenManager.validateRefreshToken(refreshString);
+//     // now try validating the refresh token
+//     // if this throws ExpiredTokenError then that tells auth to trigger login
+//     // SessionManager.refreshSession() also throws ExpiredTokenError if refresh is expired
+//     refreshPayload = TokenManager.validateRefreshToken(refreshString);
 
-    // implies these tokens belong to different users
-    if (refreshPayload.owner.id != accessPayload.owner.id)
-        throw new UnauthenticatedUserError('User has mismatched tokens');
+//     // implies these tokens belong to different users
+//     if (refreshPayload.owner.id != accessPayload.owner.id)
+//         throw new UnauthenticatedUserError('User has mismatched tokens');
 
 
-    // get the user associated with these tokens
-    const user = await Accounts.findOneById(refreshOwner.owner.id);
-    if (user.refreshId != refreshPayload.version
-        || user.accessId != accessPayload.version) 
-        throw new UnauthenticatedUserError('User has invalid tokens');
+//     // get the user associated with these tokens
+//     const user = await Accounts.findOneById(refreshOwner.owner.id);
+//     if (user.refreshId != refreshPayload.version
+//         || user.accessId != accessPayload.version) 
+//         throw new UnauthenticatedUserError('User has invalid tokens');
     
-    return accessToken;
-};
+//     return accessToken;
+// };
