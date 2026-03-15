@@ -34,12 +34,13 @@ describe('session.service - refreshSession', () => {
         await expect(refreshSession('garbage.token.here')).rejects.toThrow(InvalidTokenError);
     });
 
-    /**
-     * NOTE: session.service.js line 15 checks `user.refreshId != owner.version`,
-     * but `owner` is `{ id }` (no version key) and `user.refreshId` is undefined
-     * (select: false). The condition is always false, so this branch is currently
-     * unreachable — it's a bug in the source code.
-     */
+    test('throws InvalidTokenError when token version does not match user refreshId', async () => {
+        const user = await createUser('session-revoked@gmail.com');
+        // version: 0 is stale — user's refreshId is 1 (e.g. after a logout incremented it)
+        const staleToken = signRefreshToken({ owner: { id: user.id }, version: 0 });
+
+        await expect(refreshSession(staleToken)).rejects.toThrow(InvalidTokenError);
+    });
 
     test('throws ExpiredTokenError for an expired refresh token', async () => {
         const user = await createUser();
