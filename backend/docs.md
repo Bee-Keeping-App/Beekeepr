@@ -111,7 +111,7 @@ Tests use `MongoMemoryServer`, which is an in-memory MongoDB instance that start
 - `afterEach` clears all collections (so each test starts with a clean slate)
 - `afterAll` tears down the server and disconnects Mongoose
 
-**Do not mock the database.** Tests hit the real (in-memory) Mongo so that schema constraints, indexes, pre-save hooks (like password hashing), and query behavior are all exercised for real.
+**I am actively avoiding mocking the DB.** Tests hit the real (in-memory) Mongo. There's a few cases where this matters (a save() call could fail or silently drop fields, but not if you're mocking) and the speed tradeoff is tiny for a project this size.
 
 ---
 
