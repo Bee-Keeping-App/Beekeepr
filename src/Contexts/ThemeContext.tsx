@@ -1,5 +1,5 @@
 // ThemeContext.tsx
-import React, { createContext, useContext, useMemo, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect, ReactNode, JSX } from "react";
 import { TouchableOpacity, Text, ViewStyle, TextStyle, Switch, View, Appearance } from "react-native";
 import { colorThemes, ColorTheme } from "../styles/colors";
 
@@ -49,7 +49,7 @@ const styles = {
     color: c.primaryText,
     fontWeight: "700",
   }),
-  switchRow: (c: ColorTheme): ViewStyle => ({
+  switchRow: (_c: ColorTheme): ViewStyle => ({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,

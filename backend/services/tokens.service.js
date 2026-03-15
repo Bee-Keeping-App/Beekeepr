@@ -28,7 +28,7 @@ function signToken(payload, secret, expiry) {
     { 
         expiresIn: expiry 
     });
-};
+}
 
 // template function
 function validateToken(tokenString, secret) {

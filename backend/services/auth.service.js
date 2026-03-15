@@ -152,7 +152,7 @@ export const handleSignup = async (info) => {
 
 
 //     // get the user associated with these tokens
-//     const user = await Accounts.findOneById(refreshOwner.owner.id);
+//     const user = await Accounts.findOneById(refreshPayload.owner.id);
 //     if (user.refreshId != refreshPayload.version
 //         || user.accessId != accessPayload.version) 
 //         throw new UnauthenticatedUserError('User has invalid tokens');

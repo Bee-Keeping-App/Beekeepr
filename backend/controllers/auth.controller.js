@@ -2,7 +2,7 @@ import * as Auth from '../services/auth.service.js';
 import catchAsync from '../utils/catchAsync.js';
 
 /* Uses the refreshToken to refresh an expired AccessToken */
-export const refreshToken = catchAsync(async (req, res, next) => {
+export const refreshToken = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
 
     // get new access token
     const accessToken = await Auth.refreshToken(req.cookies.refreshToken);
@@ -10,7 +10,7 @@ export const refreshToken = catchAsync(async (req, res, next) => {
 });
 
 /* attempts signup, generates tokens on success and stores them in the response */
-export const register = catchAsync(async (req, res, next) => {
+export const register = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     // delegate to auth
     const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
@@ -22,7 +22,7 @@ export const register = catchAsync(async (req, res, next) => {
 
 
 /* attempts login, generates tokens on success. Stores them in the resposne object */
-export const login = catchAsync(async (req, res, next) => {
+export const login = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
 
     // get tokens from Auth
     const { email, password } = req.body;
@@ -34,7 +34,7 @@ export const login = catchAsync(async (req, res, next) => {
 });
 
 /* attempts logout, removes refresh token on success */
-export const logout = catchAsync(async (req, res, next) => {
+export const logout = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
     
     // do logout using auth
     await Auth.handleLogout(req.user);
