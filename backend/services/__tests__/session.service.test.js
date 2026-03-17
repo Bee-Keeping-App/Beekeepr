@@ -36,7 +36,7 @@ describe('session.service - refreshSession', () => {
 
     test('throws InvalidTokenError when token version does not match user refreshId', async () => {
         const user = await createUser('session-revoked@gmail.com');
-        // version: 0 is stale — user's refreshId is 1 (e.g. after a logout incremented it)
+        // version: 0 is stale -- user's refreshId is 1 (e.g. after a logout incremented it)
         const staleToken = signRefreshToken({ owner: { id: user.id }, version: 0 });
 
         await expect(refreshSession(staleToken)).rejects.toThrow(InvalidTokenError);
