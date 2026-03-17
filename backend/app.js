@@ -10,6 +10,14 @@ import errorHandler from './middlewares/error.middleware.js';
 import accountsRouter from './routers/accounts.router.js';
 import authRouter from './routers/auth.router.js';
 
+import cors from 'cors';
+
+
+app.use(cors({
+    origin: ['http://localhost:8081'],
+    credentials: true,
+}))
+
 /* Imported Middlewares */
 app.use(express.json());
 app.use(cookieParser());
