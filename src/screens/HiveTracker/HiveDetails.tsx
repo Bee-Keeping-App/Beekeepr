@@ -6,7 +6,7 @@ type Props = StaticScreenProps<{
   user: string;
 }>;
 
-export function HiveDetails({ route }: Props) {
+export function HiveDetails({ route }: Props) { // eslint-disable-line @typescript-eslint/no-unused-vars
   return (
     <View style={styles.container}>
       <Text>HiveDetails</Text>
