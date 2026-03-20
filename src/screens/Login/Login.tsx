@@ -19,7 +19,7 @@ export function Login() {
         if (tokens.successful == false) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
         else {alert('Login successful!');}
     }).catch((error: unknown) => {
-        alert("ERROR: " + error);
+        alert("ERR: " + error);
     });
     };
 

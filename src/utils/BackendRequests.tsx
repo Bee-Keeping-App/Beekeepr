@@ -52,6 +52,8 @@ export async function attemptRegister(email: string, password: string): Promise<
 
     const body = await response.json();
 
+    alert(response.status);
+
     if(response.status != 201) {
         return {successful: false, accessToken: null, refreshToekn: null};
     }
