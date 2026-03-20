@@ -40,13 +40,13 @@ export default [
         },
     },
 
-    // tests (jest)
+    // tests (jest) — colocated __tests__ dirs inherit node/jest globals
     {
-        files: ['tests/**/*.js'],
+        files: ['**/__tests__/**/*.js'],
         languageOptions: {
             globals: {
                 ...globals.jest,
-                ...globals.node, //this is bad btw (since tests folder may contain front-end tests)
+                ...globals.node,
             }
         },
     },
