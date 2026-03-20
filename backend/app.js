@@ -9,6 +9,7 @@ import errorHandler from './middlewares/error.middleware.js';
 /* Routers */
 import accountsRouter from './routers/accounts.router.js';
 import authRouter from './routers/auth.router.js';
+import weatherRouter from './routers/weather.router.js';
 
 /* Imported Middlewares */
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use(logger);
 /* Implementing Routes */
 app.use('/api/accounts', accountsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/weather', weatherRouter);
 
 /* errorMiddleware MUST BE AT THE BOTTOM LIKE SO */
 app.use(errorHandler);
