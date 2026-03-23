@@ -1,12 +1,19 @@
 export default {
     testEnvironment: 'node',
-    setupFiles: ['<rootDir>/tests/setupEnv.js'],
-    setupFilesAfterEnv: ['<rootDir>/tests/setupTests.js'],
+    setupFiles: ['<rootDir>/backend/__tests__/setupEnv.js'],
+    setupFilesAfterEnv: ['<rootDir>/backend/__tests__/setupTests.js'],
+    testMatch: ['<rootDir>/backend/**/__tests__/**/*.test.js'],
     transform: {},
     verbose: true,
     testTimeout: 20000,
     collectCoverage: true,
     coverageDirectory: "coverage",
+    collectCoverageFrom: [
+        'backend/**/*.js',
+        '!backend/__tests__/**',
+        '!backend/**/__tests__/**',
+        '!backend/server.js',
+    ],
     coverageThreshold: {
         global: {
             branches: 40,
