@@ -88,9 +88,13 @@ export const handleSignup = async (info) => {
 
     const initialVersion = 1;
 
+    // strip falsy phone values so MongoDB's sparse unique index works correctly
+    const { phone, ...rest } = info;
+    const accountData = phone ? { ...rest, phone } : rest;
+
     // data has passed validation, now needs to pass db insert
     const user = await Accounts.insertOne({
-        ...info,
+        ...accountData,
         accessId: initialVersion,
         refreshId: initialVersion
     });
