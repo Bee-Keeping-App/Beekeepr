@@ -1,3 +1,7 @@
+// THIS FILE IS NOT COMPLETE YET
+// CURRENTY BEING WORKED ON IN ANOTHER BRANCH
+
+
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
