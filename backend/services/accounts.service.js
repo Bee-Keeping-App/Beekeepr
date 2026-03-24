@@ -31,7 +31,6 @@ export const insertOne = async (account) => {
 
     try {
         console.log(account)
-        account.phone = null;
         return await AccountSchema.create(account);
     } catch(err) {
         if (err.code === 11000)

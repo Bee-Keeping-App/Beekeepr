@@ -46,7 +46,7 @@ export async function attemptRegister(email: string, password: string): Promise<
         },
         body: JSON.stringify({
             email: email,
-            password: password
+            password: password,
         })
     });
 
