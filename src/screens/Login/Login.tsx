@@ -15,9 +15,13 @@ export function Login() {
 
     const loginPressed = () => {
     alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
-    attemptRegister(userValue, passValue).then((tokens: tokenReturn) => {
-        if (tokens.successful == false) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
-        else {alert('Login successful!');}
+    attemptLogin(userValue, passValue).then((tokens: tokenReturn) => {
+        if (tokens.code != 200) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
+        else {
+            alert('Login successful!');
+            localStorage.setItem('accessToken', tokens.accessToken ?? '');
+            localStorage.setItem('refreshToken', tokens.refreshToekn ?? '');
+        }
     }).catch((error: unknown) => {
         alert("ERR: " + error);
     });
@@ -25,7 +29,17 @@ export function Login() {
 
     //eventually will hold navigation logic
     const navigaiteToNewAccount = () => {
-
+    alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    attemptRegister(userValue, passValue).then((tokens: tokenReturn) => {
+        if (tokens.code != 201) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
+        else {
+            alert('Register successful!');
+            localStorage.setItem('accessToken', tokens.accessToken ?? '');
+            localStorage.setItem('refreshToken', tokens.refreshToekn ?? '');
+        }
+    }).catch((error: unknown) => {
+        alert("ERR: " + error);
+    });
     };
 
 
