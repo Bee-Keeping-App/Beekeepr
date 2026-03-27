@@ -15,7 +15,7 @@ export const hasRefreshToken = () => {
 // checks for login credentials
 export const login = () => {
     return Joi.object({
-        email: validEmail.optional(),
+        email: validEmail.required(),
         password: validPassword.required()
     });
 };
