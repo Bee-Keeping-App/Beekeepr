@@ -1,11 +1,11 @@
 // THIS FILE IS NOT COMPLETE YET
 // CURRENTY BEING WORKED ON IN ANOTHER BRANCH
 
-import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
+// import { Text } from '@react-navigation/elements';
+// import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, Button, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
-
+import { ImageBackground, TextInput, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import placeholderBackground from '../../assets/placeholderBackground.png';
 
 export function Register() {
     
@@ -27,7 +27,7 @@ export function Register() {
 
     return (
         //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
-        <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
+        <ImageBackground source={placeholderBackground} style={styles.background}>
             <View style={styles.container}></View>
             <View style={styles.container}>
                 <TextInput
@@ -57,8 +57,7 @@ export function Register() {
     );
 }
 
-
-const {width, height} = Dimensions.get('window');
+const {width, } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {

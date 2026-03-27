@@ -2,11 +2,13 @@
 // CURRENTY BEING WORKED ON IN ANOTHER BRANCH
 
 
-import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
+// import { Text } from '@react-navigation/elements';
+// import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
 import { attemptLogin, tokenReturn, attemptRegister } from '../../utils/BackendRequests';
+import placeholderBackground from '../../assets/placeholderBackground.png';
+import placeholderLogo from '../../assets/placeholderLogo.png';
 
 
 export function Login() {
@@ -49,11 +51,11 @@ export function Login() {
 
     return (
         //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
-        <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
+        <ImageBackground source={placeholderBackground} style={styles.background}>
             <View style={styles.container}>
             </View>
             <View style={styles.container}>
-                <View style={styles.logoBox}><Image source={require('../../assets/placeholderLogo.png')} style={styles.logo}></Image></View>
+                <View style={styles.logoBox}><Image source={placeholderLogo} style={styles.logo}></Image></View>
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"
@@ -82,7 +84,7 @@ export function Login() {
 }
 
 
-const {width, height} = Dimensions.get('window');
+const {width, } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
