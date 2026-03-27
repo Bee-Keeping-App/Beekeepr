@@ -9,6 +9,10 @@ export function Almanac() {
         <Button screen="Article" params={{}} >
           Go to Article
         </Button>
+
+        <Button screen="Weather" params={{}}>
+          Go to Weather
+        </Button>
         
       </View>
     );

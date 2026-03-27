@@ -6,7 +6,7 @@ type Props = StaticScreenProps<{
   user: string;
 }>;
 
-export function Article({ route }: Props) {
+export function Article({ route }: Props) { // eslint-disable-line @typescript-eslint/no-unused-vars
   return (
     <View style={styles.container}>
       <Text>Temp article</Text>

@@ -1,50 +1,55 @@
-const router = require("express").Router();
+import { Router } from 'express';
 
 /* middlewares do validation, authorization */
-const validate = require('../middlewares/validation.middleware');
-const auth = require('../middlewares/auth.middleware');
+import validate from '../middlewares/validation.middleware.js';
+import authenticate from '../middlewares/auth.middleware.js';
 
 /* validator contains schemes for each endpoint, checked by middleware */
-const validator = require('../validators/accounts.validator');
+import * as schema from '../validators/accounts.validator.js';
 
 /* controller calls logic for implementing actions upon successful auth / validation */
-const controller = require('../controllers/accounts.controller');
+import * as controller from '../controllers/accounts.controller.js';
 
-/* Registering an account should not need prior authorization */
+// router object will hold the routes, and gets passed into the app.use() call
+var router = Router();
+
+/* Account registration path. It validates fields then calls the controller. It doesn't check auth */
 router.post(
     "/",
-    validate(validator.create()),
+    validate(schema.create()),
     controller.registerAccount
 );
 
-/* WARNING: All routes after this line WILL CHECK FOR AUTH TOKENS */
-router.use(auth);
-
-// get all users
+/* Account GET ALL path. It checks for auth, then calls the controller method for reading all accounts */
 router.get(
     "/",
+    authenticate,
     controller.getAllAccounts
 );
 
-// get one user
+/* Account GET one path. It expects an account id param, checks tokens, validates args, then calls the controller */
 router.get(
     "/:id",
-    validate(validator.findOne()),
+    authenticate,
+    validate(schema.findOne()),
     controller.getOneAccount
 );
 
-// update an account
+/* Account PUT path. It checks tokens, parses id, validates fields, then calls the controller to update */
+// This operation is IDEMPOTENT, which means if you call it multiple times the resource will always be the same on the server
 router.put(
     "/",
-    validate(validator.update()),
+    authenticate,
+    validate(schema.update()),
     controller.updateAccountInfo
 );
 
-// delete an account
+/* Account DELETE path. It checks tokens, parses id, then deletes that account with the controller */
 router.delete(
     "/",
+    authenticate,
     controller.deleteAccount
 );
 
 // this is how app.js accesses the account routes
-module.exports = router;
+export default router;

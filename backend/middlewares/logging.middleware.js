@@ -1,12 +1,19 @@
-module.exports = (req, res, next) => {
-    const start = Date.now();
+/* Again another example of a single-logic function.
+    That's why its export default and anonymized.
+
+    The logger is called when the request hits, and 
+    logs once it resolves (with the .on("finish") signal). 
+*/
+
+export default (req, res, next) => {
+    const start = Date.now();   // gets the time a request is received
 
     res.on("finish", () => {
-        const duration = Date.now() - start;
+        const duration = Date.now() - start;    // gets the elapsed time
         console.log(
             `${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`
         );
     });
 
-    next();
+    next(); // triggers next call
 };

@@ -1,17 +1,17 @@
-const Accounts = require('../services/accounts.service');
-const TokenManager = require('../services/tokens.service');
-const {
+import * as Accounts from '../services/accounts.service.js';
+import * as TokenManager from '../services/tokens.service.js';
+import {
     InvalidTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
-exports.refreshSession = async (refreshTokenString) => {
+export const refreshSession = async (refreshTokenString) => {
 
     // if validate throws ==> force login
-    const owner = TokenManager.validateRefreshToken(refreshTokenString).owner;
-    
+    const { owner, version } = TokenManager.validateRefreshToken(refreshTokenString);
+
     // check that user owns this refresh token
-    const user = await Accounts.findOneById(owner.id);
-    if (user.refreshId != owner.version)
+    const user = await Accounts.findOneById(owner.id, true);
+    if (user.refreshId != version)
         throw new InvalidTokenError('User does not own this refresh token');
 
     // generate new access token

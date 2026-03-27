@@ -1,17 +1,15 @@
-const TokenManager = require('../services/tokens.service');
-const SessionManager = require('../services/session.service');
-const Accounts = require('../services/accounts.service');
+import * as TokenManager from '../services/tokens.service.js';
+import * as Accounts from '../services/accounts.service.js';
 
-const {
+import {
     WrongPasswordError,
     NullQueryError,
-    ExpiredTokenError,
     UnauthenticatedUserError,
     InvalidTokenError
-} = require('../classes/errors.class');
+} from '../classes/errors.class.js';
 
-
-exports.refreshToken = async (refreshString) => {
+// used to refresh an access token and update the db token ids
+export const refreshToken = async (refreshString) => {
 
     // validate the token
     var payload = TokenManager.validateRefreshToken(refreshString);
@@ -23,6 +21,7 @@ exports.refreshToken = async (refreshString) => {
     console.log('DB Refresh version:', user.refreshId);
     console.log('user in db:\n', user);
 
+    // checks if the refresh id in db matches the refresh token's id
     if (user.refreshId != payload.version)
         throw new InvalidTokenError('Refresh token is invalid');
     
@@ -35,7 +34,7 @@ exports.refreshToken = async (refreshString) => {
 };
 
 // you should definitely put some specs here
-exports.handleLogin = async (email, password) => {
+export const handleLogin = async (email, password) => {
 
     // find user
     let user;
@@ -73,7 +72,7 @@ exports.handleLogin = async (email, password) => {
 };
 
 // you should definitely put some specs here
-exports.handleLogout = async (id) => {
+export const handleLogout = async (id) => {
 
     // find user
     const user = await Accounts.findOneById(id);
@@ -85,7 +84,7 @@ exports.handleLogout = async (id) => {
     });
 };
 
-exports.handleSignup = async (info) => {
+export const handleSignup = async (info) => {
 
     const initialVersion = 1;
 
@@ -116,43 +115,45 @@ exports.handleSignup = async (info) => {
     return { accessToken, refreshToken };
 };
 
-exports.validateTokenOwnership = async (accessString, refreshString) => {
+
+// this function is not used, but don't delete it yet
+// export const validateTokenOwnership = async (accessString, refreshString) => {
 
 
-    /*
-    * 1. validate access and refresh strings
-    * 2. check that their user ids match
-    * 3. check that their token versions match in db
-    */
+//     /*
+//     * 1. validate access and refresh strings
+//     * 2. check that their user ids match
+//     * 3. check that their token versions match in db
+//     */
 
 
-    let accessPayload, refreshPayload, accessToken;
+//     let accessPayload, refreshPayload, accessToken;
     
-    // try validating the access token, and auto-refresh if it throws ExpiredTokenError
-    try {
-        accessPayload = TokenManager.validateAccessToken(accessString);
-    } catch (error) {
-        if (error instanceof ExpiredTokenError)
-            accessPayload, accessToken = await SessionManager.refreshSession(refreshString);
-        else
-            throw error;
-    }
+//     // try validating the access token, and auto-refresh if it throws ExpiredTokenError
+//     try {
+//         accessPayload = TokenManager.validateAccessToken(accessString);
+//     } catch (error) {
+//         if (error instanceof ExpiredTokenError)
+//             accessPayload, accessToken = await SessionManager.refreshSession(refreshString);
+//         else
+//             throw error;
+//     }
 
-    // now try validating the refresh token
-    // if this throws ExpiredTokenError then that tells auth to trigger login
-    // SessionManager.refreshSession() also throws ExpiredTokenError if refresh is expired
-    refreshPayload = TokenManager.validateRefreshToken(refreshString);
+//     // now try validating the refresh token
+//     // if this throws ExpiredTokenError then that tells auth to trigger login
+//     // SessionManager.refreshSession() also throws ExpiredTokenError if refresh is expired
+//     refreshPayload = TokenManager.validateRefreshToken(refreshString);
 
-    // implies these tokens belong to different users
-    if (refreshPayload.owner.id != accessPayload.owner.id)
-        throw new UnauthenticatedUserError('User has mismatched tokens');
+//     // implies these tokens belong to different users
+//     if (refreshPayload.owner.id != accessPayload.owner.id)
+//         throw new UnauthenticatedUserError('User has mismatched tokens');
 
 
-    // get the user associated with these tokens
-    const user = await Accounts.findOneById(refreshOwner.owner.id);
-    if (user.refreshId != refreshPayload.version
-        || user.accessId != accessPayload.version) 
-        throw new UnauthenticatedUserError('User has invalid tokens');
+//     // get the user associated with these tokens
+//     const user = await Accounts.findOneById(refreshPayload.owner.id);
+//     if (user.refreshId != refreshPayload.version
+//         || user.accessId != accessPayload.version) 
+//         throw new UnauthenticatedUserError('User has invalid tokens');
     
-    return accessToken;
-};
+//     return accessToken;
+// };

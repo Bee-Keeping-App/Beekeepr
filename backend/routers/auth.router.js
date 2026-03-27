@@ -1,29 +1,32 @@
-const router = require('express').Router();
+import { Router } from 'express';
 
 /* Middlewares */
-const validationMiddleware = require('../middlewares/validation.middleware');
-const authMiddleware = require('../middlewares/auth.middleware');
-const controller = require('../controllers/auth.controller');
-const validator = require('../validators/auth.validator.js');
+import validate from '../middlewares/validation.middleware.js';
+import authenticate from '../middlewares/auth.middleware.js';
+import * as controller from '../controllers/auth.controller.js';
+import * as schema from '../validators/auth.validator.js';
 
+var router = Router();
+
+/* Login route. It expects a body with login credentials, will validate, then verify with the controller */
 router.post(
     "/login",
-    validationMiddleware(validator.login()),
+    validate(schema.login()),
     controller.login
 );
 
+/* Token refresh route. It is missing a validation call to check for a refresh token */
 router.post(
     "/refresh",
     controller.refreshToken
 );
 
-// All endpoints past this line implement auth checking
-router.use(authMiddleware);
-
+/* Logout route. It checks for tokens, then calls logout, which revokes them */
 router.post(
     "/logout",
+    authenticate,
     controller.logout
 );
 
 // this is how app.js accesses the auth routes
-module.exports = router;
+export default router;
