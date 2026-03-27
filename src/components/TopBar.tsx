@@ -2,12 +2,12 @@ import React from "react";
 import { View, Text, StyleSheet, Platform, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function StaticTopBarHeader() {
+export default function TopBar() {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.container}>
         <Text style={styles.leftText}>Beekeepr</Text>
-        <Text style={styles.rightText}>Temperature placeholder</Text>
+        <Text style={styles.rightText}>Temp Placeholder</Text>
       </View>
     </SafeAreaView>
   );
@@ -16,11 +16,11 @@ export default function StaticTopBarHeader() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#1F2937",
+    backgroundColor: "#e3ad19",
   },
   container: {
     height: 56,
-    backgroundColor: "#1F2937",
+    backgroundColor: "#e3ad19",
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",

@@ -1,42 +1,32 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { HomeStack } from '../stacks/HomeStack';
-import { LogBookStack } from '../stacks/LogBookStack';
 import { AnalyticsStack } from '../stacks/AnalyticsStack';
 import { CommunityStack } from '../stacks/CommunityStack';
+import { HomeStack } from '../stacks/HomeStack';
+import { LogBookStack } from '../stacks/LogBookStack';
 import { SettingsStack } from '../stacks/SettingsStack';
 
 export const Tabs = createBottomTabNavigator({
   screens: {
     Home: {
       screen: HomeStack,
-      options: {
-        tabBarLabel: 'Home',
-      },
-    },
-    LogBook: {
-      screen: LogBookStack,
-      options: {
-        tabBarLabel: 'Log Book',
-      },
-    },
-    Analytics: {
-      screen: AnalyticsStack,
-      options: {
-        tabBarLabel: 'Analytics',
-      },
+      options: { headerShown: false, title: 'Home' },
     },
     Community: {
       screen: CommunityStack,
-      options: {
-        tabBarLabel: 'Community',
-      },
+      options: { headerShown: false, title: 'Community' },
+    },
+    LogBook: {
+      screen: LogBookStack,
+      options: { headerShown: false, title: 'Log Book' },
+    },
+    Analytics: {
+      screen: AnalyticsStack,
+      options: { headerShown: false, title: 'Analytics' },
     },
     Settings: {
       screen: SettingsStack,
-      options: {
-        tabBarLabel: 'Settings',
-      },
+      options: { headerShown: false, title: 'Settings' },
     },
   },
 });
