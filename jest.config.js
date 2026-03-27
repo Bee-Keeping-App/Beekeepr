@@ -4,7 +4,7 @@ export default {
     setupFilesAfterEnv: ['<rootDir>/backend/__tests__/setupTests.js'],
     testMatch: ['<rootDir>/backend/**/__tests__/**/*.test.js'],
     transform: {},
-    verbose: true,
+    verbose: false,
     testTimeout: 20000,
     collectCoverage: true,
     coverageDirectory: "coverage",

@@ -30,6 +30,7 @@ export const findOneById = async (id, includeTokens = false) => {
 export const insertOne = async (account) => {
 
     try {
+        console.log(account)
         return await AccountSchema.create(account);
     } catch(err) {
         if (err.code === 11000)
