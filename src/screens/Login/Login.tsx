@@ -1,7 +1,8 @@
 import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { ImageBackground, TextInput, Image, View, TouchableOpacity } from 'react-native';
+import { styles } from './styles';
 
 
 export function Login() {
@@ -54,70 +55,3 @@ export function Login() {
         </ImageBackground>
     );
 }
-
-
-const {width, height} = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 0,
-
-    },
-    background: {
-        flex: 1,
-        resizeMode: 'contain', // Or 'contain', 'stretch', 'repeat', 'center'
-        justifyContent: 'center',
-        alignItems: 'center',
-        //width: width,
-        width: width,
-        height: '100%'
-    },
-    logo: {
-        flex: 1,
-        tintColor: 'black',
-        justifyContent: 'center',
-        resizeMode: 'contain',
-    },
-    logoBox: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: width * .2,
-        height: width * .2,
-        backgroundColor: 'darkorange',
-        borderRadius: 14,
-    },
-    text: {
-        color: 'white',
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    input: {
-        width: width * .5,
-        borderColor: 'darkgray',
-        backgroundColor: 'gray',
-        borderWidth: 2,
-        borderRadius: 5,
-        color: 'lightgray',
-    },
-    loginButton: {
-        width: width * .5,
-        backgroundColor: 'darkorange',
-        color: 'lightgray',
-        borderColor: 'darkgray',
-        borderWidth: 2,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    registerButton: {
-        width: width * .5,
-        color: 'darkorange',
-        borderColor: 'darkorange',
-        borderWidth: 2,
-        borderRadius: 5,
-        alignItems: 'center',
-    } 
-});
