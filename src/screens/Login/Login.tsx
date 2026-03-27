@@ -2,7 +2,7 @@ import { Text } from '@react-navigation/elements';
 import { StaticScreenProps } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, View, TouchableOpacity } from 'react-native';
-import { styles } from './styles';
+import { logo, background, styles } from './styles';
 
 
 export function Login() {
@@ -24,11 +24,11 @@ export function Login() {
 
 
     return (
-        <ImageBackground source={require('../../assets/placeholderBackground.png')} style={styles.background}>
+        <ImageBackground source={background} style={styles.background}>
             <View style={styles.container}>
             </View>
             <View style={styles.container}>
-                <View style={styles.logoBox}><Image source={require('../../assets/placeholderLogo.png')} style={styles.logo}></Image></View>
+                <View style={styles.logoBox}><Image source={logo} style={styles.logo}></Image></View>
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"

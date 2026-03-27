@@ -1,7 +1,11 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import backgroundImage from '../../assets/placeholderBackground.png';
+import logoImage from '../../assets/placeholderLogo.png';
 
 const { width, height } = Dimensions.get('window');
 
+export const logo = logoImage;
+export const background = backgroundImage;
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
