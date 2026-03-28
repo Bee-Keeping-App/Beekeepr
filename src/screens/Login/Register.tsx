@@ -1,5 +1,5 @@
 import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
+import { StaticScreenProps, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, View, TouchableOpacity } from 'react-native';
 import { styles, background, logo } from './styles';
@@ -11,8 +11,7 @@ export function Register() {
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
     const [confPassValue, setConfPassValue] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    
+    const navigation = useNavigation<any>();
 
     //eventually will call login logic
     const loginPressed = () => {
@@ -23,11 +22,10 @@ export function Register() {
         }
     };
 
-    const handleShowPassword = () => {
-        setShowPassword(!showPassword);
-    }
+
     //eventually will hold navigation logic
-    const navigaiteToNewAccount = () => {
+    const navigateToLogin = () => {
+        navigation.navigate('Login');
     };
 
 
@@ -36,7 +34,7 @@ export function Register() {
             <View style={styles.container}>
             </View>
             <View style={styles.container}>
-                <View style={styles.logoBox}><Image source={logo} style={styles.logo}></Image></View>
+                <View style={styles.logoBox}><Image source={logo}  style={styles.logo}></Image></View>
                 <TextInput
                     style={styles.input}
                     placeholder=" Username"
@@ -49,13 +47,10 @@ export function Register() {
                         style={styles.hiddenInput}
                         placeholder=" Password"
                         onChangeText={text => setPassValue(text)}
-                        secureTextEntry={showPassword}
+                        secureTextEntry={true}
                         value={passValue}
                     >
                     </TextInput>
-                    <TouchableOpacity style={styles.showPassword} onPress={handleShowPassword}>
-                        {showPassword ? ' o ' : ' 􀋯 '}
-                    </TouchableOpacity>
                 </View>
 
 
@@ -71,6 +66,10 @@ export function Register() {
 
                 <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
                     Create Account
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.registerButton} onPress={navigateToLogin}>
+                    Return to Login
                 </TouchableOpacity>
             </View>
             <View style={styles.container}></View>

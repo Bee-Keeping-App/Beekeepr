@@ -1,21 +1,10 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator  as  createNativeStackNavigator_1 } from '@react-navigation/native-stack';
 import { Login } from '../../screens/Login/Login';
 import { Register } from '../../screens/Login/Register';
 
-export const LoginStack = createNativeStackNavigator({
+export const LoginStack = createNativeStackNavigator_1({
 screens: {
-    LoginPage: {
-        screen: Login,
-        options: ({
-            headerShown: false,
-        })
-
-    },
-    RegisterPage: {
-        screen: Register,
-        options: ({
-            headerShown: false,
-        })
-    },
+Login: { screen: Login },
+Register: { screen: Register }
 },
 });

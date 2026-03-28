@@ -1,5 +1,5 @@
 import { Text } from '@react-navigation/elements';
-import { StaticScreenProps } from '@react-navigation/native';
+import { StaticScreenProps, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, View, TouchableOpacity } from 'react-native';
 import { logo, background, styles } from './styles';
@@ -11,6 +11,7 @@ export function Login() {
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
 
+    const navigation = useNavigation<any>();
     
 
     //eventually will call login logic
@@ -20,6 +21,7 @@ export function Login() {
 
     //eventually will hold navigation logic
     const navigaiteToNewAccount = () => {
+        navigation.navigate('Register');
     };
 
 

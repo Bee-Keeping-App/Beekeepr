@@ -4,11 +4,16 @@ import { createStaticNavigation, StaticParamList } from '@react-navigation/nativ
 
 import { Tabs } from './tabs/tabBar';
 import { NotFound } from '../screens/NotFound';
+import { LoginStack } from './stacks/LoginStack';
 
 
 // Root-level stack: anything here sits outside the tab bar (modals, 404, auth, etc.)
 const RootStack = createNativeStackNavigator({
 screens: {
+LoginStack: {
+screen: LoginStack,
+options: { headerShown: false }
+},
 Tabs: {
 screen: Tabs,
 options: { headerShown: false },
@@ -18,8 +23,8 @@ screen: NotFound,
 options: { title: '404' },
 linking: { path: '*' },
 },
-
 },
+initialRouteName: 'LoginStack',
 });
 
 
