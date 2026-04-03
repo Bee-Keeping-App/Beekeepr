@@ -4,6 +4,17 @@ import React, { useState } from 'react';
 import { ImageBackground, TextInput, Image, View, TouchableOpacity } from 'react-native';
 import { logo, background, styles } from './styles';
 
+//This page holds the login page that a user without credentials should be naviagited to
+//it should be linked to the register page.
+//
+//UNIMPLEMENTED FEATURES
+// - full navigation: needs to be linked to rest of navigation logic, opened only when user lacks remembered credentials
+// - logic for pluggin into the backend requests code
+// - logic to take successful credentails and naviagte to home page, with storage of tokens somewhere secure
+// - logic to change what image is being used based on day of year
+//      (background will be a photo of the same location with a different photo coenciding with each day of the year)
+// ALL OF THESE CHANGES ALSO NEEDED FOR REGISTER
+
 
 export function Login() {
     
