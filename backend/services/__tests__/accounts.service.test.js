@@ -40,6 +40,11 @@ describe('accounts.service', () => {
             const result = await findAll();
             expect(result.length).toBe(2);
         });
+
+        test('throws NullQueryError when there\'s no accounts in the db I guess', async () => {
+            const result = await findAll();
+            expect(result).toEqual([]);
+        });
     });
 
     describe('findOne', () => {

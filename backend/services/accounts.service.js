@@ -8,7 +8,7 @@ import {
 /* Gets every account. Can throw a NullQuery error if no accounts were found */
 export const findAll = async () => {
     const result = await AccountSchema.find();
-    if (!result) throw new NullQueryError('Account(s) not found');
+    // find() never returns null, it's just an empty list
     return result;
 };
 

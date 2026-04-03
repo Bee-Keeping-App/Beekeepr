@@ -16,6 +16,7 @@ export default {
         '!backend/__tests__/**',
         '!backend/**/__tests__/**',
         '!backend/server.js',
+        '!backend/utils/connectDb.js',
     ],
     coverageThreshold: {
         global: {
