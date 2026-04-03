@@ -10,13 +10,17 @@ export function Login() {
     //These hold and set the values in the password and username fields
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const navigation = useNavigation<any>();
     
 
     //eventually will call login logic
     const loginPressed = () => {
-        alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+        //add logic here to get status from the backend caller code
+        //and then trigger the error message or not
+        //same for register page
+
     };
 
     //eventually will hold navigation logic
@@ -52,6 +56,11 @@ export function Login() {
                 <TouchableOpacity style={styles.registerButton} onPress={navigaiteToNewAccount}>
                     Create an account
                 </TouchableOpacity>
+                
+                <Text style={styles.errorMessage}>
+                    {errorMessage}
+                </Text>
+
             </View>
             <View style={styles.container}></View>
         </ImageBackground>
