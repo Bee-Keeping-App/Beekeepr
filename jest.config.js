@@ -4,6 +4,9 @@ export default {
     setupFilesAfterEnv: ['<rootDir>/backend/__tests__/setupTests.js'],
     testMatch: ['<rootDir>/backend/**/__tests__/**/*.test.js'],
     transform: {},
+    moduleNameMapper: {
+        '^@clerk/express$': '<rootDir>/backend/__mocks__/clerk-express.js'
+    },
     verbose: true,
     testTimeout: 20000,
     collectCoverage: true,

@@ -7,21 +7,28 @@ import {
 
 /* Gets every account. Can throw a NullQuery error if no accounts were found */
 export const findAll = async () => {
-    const result = await AccountSchema.find();  // no args ==> find everything
+    const result = await AccountSchema.find();
     if (!result) throw new NullQueryError('Account(s) not found');
     return result;
 };
 
-/* gets 1 account. Has a flag for returning the password or not */
-export const findOne = async (query, includePassword = false) => {
-    const result = includePassword ? await AccountSchema.findOne(query, '+password') : await AccountSchema.findOne(query);
+/* Gets 1 account by query */
+export const findOne = async (query) => {
+    const result = await AccountSchema.findOne(query);
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };
 
-/* gets one account by id. Has a flag for returning tokens or not */
-export const findOneById = async (id, includeTokens = false) => {
-    const result = includeTokens ? await AccountSchema.findById(id, '+refreshId +accessId') : await AccountSchema.findById(id);
+/* Gets one account by id */
+export const findOneById = async (id) => {
+    const result = await AccountSchema.findById(id);
+    if (!result) throw new NullQueryError('Account not found');
+    return result;
+};
+
+/* Gets one account by Clerk user ID */
+export const findOneByClerkId = async (clerkId) => {
+    const result = await AccountSchema.findOne({ clerkId });
     if (!result) throw new NullQueryError('Account not found');
     return result;
 };
