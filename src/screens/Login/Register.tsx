@@ -11,17 +11,17 @@ export function Register() {
     const [userValue, setUserValue] = useState('');
     const [passValue, setPassValue] = useState('');
     const [confPassValue, setConfPassValue] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigation = useNavigation<any>();
 
     //eventually will call login logic
     const loginPressed = () => {
         if(confPassValue != passValue) {
-            alert("Password values are not equal");
+            setErrorMessage("Passwords do not match.");
         } else {
-            alert("Password values are equal!")
+            setErrorMessage("");
         }
     };
-
 
     //eventually will hold navigation logic
     const navigateToLogin = () => {
@@ -63,7 +63,6 @@ export function Register() {
                 >
                 </TextInput>
 
-
                 <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
                     Create Account
                 </TouchableOpacity>
@@ -71,6 +70,11 @@ export function Register() {
                 <TouchableOpacity style={styles.registerButton} onPress={navigateToLogin}>
                     Return to Login
                 </TouchableOpacity>
+                
+                <Text style={styles.errorMessage}>
+                    {errorMessage}
+                </Text>
+                
             </View>
             <View style={styles.container}></View>
         </ImageBackground>

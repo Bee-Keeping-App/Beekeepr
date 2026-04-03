@@ -91,4 +91,9 @@ export const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: 'center',
     },
+    errorMessage: {
+        color: 'red',
+        margin: 10,
+        minHeight: height * 0.1,
+    }
 });
