@@ -1,14 +1,39 @@
 import { Assets as NavigationAssets } from '@react-navigation/elements';
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Asset } from 'expo-asset';
 import { createURL } from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
-import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Navigation } from './navigation/AppNavigator';
+import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+import { RootGate } from './components/RootGate';
 import newspaper from './assets/newspaper.png';
 import bell from './assets/bell.png';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? '';
+
+// ─── Clerk token cache (uses expo-secure-store for persistence) ───────────────
+
+const tokenCache = {
+    async getToken(key: string) {
+        try {
+            return await SecureStore.getItemAsync(key);
+        } catch {
+            return null;
+        }
+    },
+    async saveToken(key: string, value: string) {
+        try {
+            await SecureStore.setItemAsync(key, value);
+        } catch {
+            // silently fail — user will re-auth on next launch
+        }
+    },
+};
+
+// ─── Asset preload ────────────────────────────────────────────────────────────
 
 Asset.loadAsync([
     ...NavigationAssets,
@@ -20,22 +45,16 @@ SplashScreen.preventAutoHideAsync();
 
 const prefix = createURL('/');
 
-export function App() {
-    const colorScheme = useColorScheme();
-    const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+// ─── App ──────────────────────────────────────────────────────────────────────
 
+export function App() {
     return (
-        <SafeAreaProvider>
-            <Navigation
-                theme={theme}
-                linking={{
-                    enabled: 'auto',
-                    prefixes: [prefix],
-                }}
-                onReady={() => {
-                    SplashScreen.hideAsync();
-                }}
-            />
-        </SafeAreaProvider>
+        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} tokenCache={tokenCache}>
+            <ClerkLoaded>
+                <SafeAreaProvider>
+                    <RootGate />
+                </SafeAreaProvider>
+            </ClerkLoaded>
+        </ClerkProvider>
     );
 }
