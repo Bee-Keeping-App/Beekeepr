@@ -5,13 +5,15 @@ import { createURL } from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Navigation } from './navigation/AppNavigator';
 import newspaper from './assets/newspaper.png';
 import bell from './assets/bell.png';
+
 Asset.loadAsync([
-  ...NavigationAssets,
-  newspaper,
-  bell,
+    ...NavigationAssets,
+    newspaper,
+    bell,
 ]);
 
 SplashScreen.preventAutoHideAsync();
@@ -19,20 +21,21 @@ SplashScreen.preventAutoHideAsync();
 const prefix = createURL('/');
 
 export function App() {
-  const colorScheme = useColorScheme();
+    const colorScheme = useColorScheme();
+    const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
-
-  return (
-    <Navigation
-      theme={theme}
-      linking={{
-        enabled: 'auto',
-        prefixes: [prefix],
-      }}
-      onReady={() => {
-        SplashScreen.hideAsync();
-      }}
-    />
-  );
+    return (
+        <SafeAreaProvider>
+            <Navigation
+                theme={theme}
+                linking={{
+                    enabled: 'auto',
+                    prefixes: [prefix],
+                }}
+                onReady={() => {
+                    SplashScreen.hideAsync();
+                }}
+            />
+        </SafeAreaProvider>
+    );
 }
