@@ -1,32 +1,19 @@
 import request from 'supertest';
 import app from '../app.js';
+import { setMockUserId } from '../__mocks__/clerk-express.js';
 
 /**
- * Registers a user via the API and returns their auth tokens.
- * @param {Object} fields - { email, password, phone? }
- * @returns {{ access: string, refresh: string[] }}
+ * Creates an account via the API as an authenticated Clerk user.
+ * @param {Object} fields - { email, phone? }
+ * @param {string} [clerkId='test_clerk_user_123'] - the mock Clerk user ID
+ * @returns {Object} the created account object
  */
-export async function registerUser(fields) {
+export async function createAccount(fields, clerkId = 'test_clerk_user_123') {
+    setMockUserId(clerkId);
     const response = await request(app)
         .post('/api/accounts')
         .set('Accept', 'application/json')
         .send(fields)
         .expect(201);
-
-    expect(response.body).toHaveProperty('accessToken');
-    expect(response.headers).toHaveProperty('set-cookie');
-
-    return {
-        access: response.body.accessToken,
-        refresh: response.headers['set-cookie']
-    };
-}
-
-/**
- * Applies auth headers (access token + refresh cookie) to a supertest request.
- */
-export function withAuth(req, tokens) {
-    return req
-        .set('Authorization', `Bearer ${tokens.access}`)
-        .set('Cookie', tokens.refresh[0].split(';')[0]);
+    return response.body.account;
 }

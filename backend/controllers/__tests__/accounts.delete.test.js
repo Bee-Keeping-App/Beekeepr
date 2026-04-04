@@ -1,31 +1,32 @@
 import request from 'supertest';
 import app from '../../app.js';
 import Account from '../../models/accounts.model.js';
-import { registerUser, withAuth } from '../../__tests__/helpers.js';
+import { createAccount } from '../../__tests__/helpers.js';
+import { setMockUserId } from '../../__mocks__/clerk-express.js';
 
 describe('DELETE /accounts', () => {
     beforeAll(async () => {
         await Account.syncIndexes();
     });
 
+    afterEach(() => {
+        setMockUserId('test_clerk_user_123');
+    });
+
     test('successfully delete an account', async () => {
-        const tokens = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+        await createAccount({ email: 'successEmail@gmail.com' });
 
         // sends a delete request
-        await withAuth(
-            request(app)
-                .delete('/api/accounts')
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(204);
+        await request(app)
+            .delete('/api/accounts')
+            .set('Accept', 'application/json')
+            .expect(204);
 
         // verify account was deleted
-        const response = await withAuth(
-            request(app)
-                .get('/api/accounts')
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(200);
+        const response = await request(app)
+            .get('/api/accounts')
+            .set('Accept', 'application/json')
+            .expect(200);
 
         expect(response.body).toHaveProperty('accounts');
         expect(response.body.accounts).toHaveLength(0);

@@ -1,4 +1,4 @@
-import { validUsername, validPassword, validEmail, validPhone } from '../fields.js';
+import { validUsername, validEmail, validPhone } from '../fields.js';
 
 function validates(schema, value) {
     return !schema.validate(value).error;
@@ -26,23 +26,6 @@ describe('Field validators', () => {
         test('rejects special characters', () => {
             expect(validates(validUsername, 'user name')).toBe(false);
             expect(validates(validUsername, 'user@name')).toBe(false);
-        });
-    });
-
-    describe('validPassword', () => {
-        test('accepts valid passwords', () => {
-            expect(validates(validPassword, 'password')).toBe(true); // 8 chars
-            expect(validates(validPassword, 'MyP@ss!23')).toBe(true);
-            expect(validates(validPassword, 'a'.repeat(30))).toBe(true); // max length
-        });
-
-        test('rejects too short', () => {
-            expect(validates(validPassword, 'short')).toBe(false);
-            expect(validates(validPassword, '1234567')).toBe(false); // 7 chars
-        });
-
-        test('rejects too long', () => {
-            expect(validates(validPassword, 'a'.repeat(31))).toBe(false);
         });
     });
 

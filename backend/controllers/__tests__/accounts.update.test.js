@@ -1,23 +1,26 @@
 import request from 'supertest';
 import app from '../../app.js';
 import Account from '../../models/accounts.model.js';
-import { registerUser, withAuth } from '../../__tests__/helpers.js';
+import { createAccount } from '../../__tests__/helpers.js';
+import { setMockUserId } from '../../__mocks__/clerk-express.js';
 
 describe('PUT /accounts', () => {
     beforeAll(async () => {
         await Account.syncIndexes();
     });
 
-    test('successfully update all fields', async () => {
-        const tokens = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+    afterEach(() => {
+        setMockUserId('test_clerk_user_123');
+    });
 
-        const response = await withAuth(
-            request(app)
-                .put('/api/accounts')
-                .send({ email: 'newEmail@gmail.com', password: 'newpassword' })
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(200);
+    test('successfully update email', async () => {
+        await createAccount({ email: 'successEmail@gmail.com' });
+
+        const response = await request(app)
+            .put('/api/accounts')
+            .send({ email: 'newEmail@gmail.com' })
+            .set('Accept', 'application/json')
+            .expect(200);
 
         expect(response.body).toHaveProperty('account');
         expect(response.body.account).toHaveProperty('email');
@@ -25,40 +28,34 @@ describe('PUT /accounts', () => {
     });
 
     test('fail because missing email', async () => {
-        const tokens = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+        await createAccount({ email: 'successEmail@gmail.com' });
 
-        await withAuth(
-            request(app)
-                .put('/api/accounts')
-                .send({ email: null, password: 'newpassword' })
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(400);
+        await request(app)
+            .put('/api/accounts')
+            .send({ email: null })
+            .set('Accept', 'application/json')
+            .expect(400);
     });
 
     test('fail because malformed phone', async () => {
-        const tokens = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+        await createAccount({ email: 'successEmail@gmail.com' });
 
-        await withAuth(
-            request(app)
-                .put('/api/accounts')
-                .send({ email: 'successEmail@gmail.com', password: 'qwertyuiop', phone: 'pancakes' })
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(400);
+        await request(app)
+            .put('/api/accounts')
+            .send({ email: 'successEmail@gmail.com', phone: 'pancakes' })
+            .set('Accept', 'application/json')
+            .expect(400);
     });
 
     test('successfully add phone number', async () => {
-        const tokens = await registerUser({ email: 'successEmail@gmail.com', password: 'qwertyuiop' });
+        await createAccount({ email: 'successEmail@gmail.com' });
         const phone = '1234567890';
 
-        const response = await withAuth(
-            request(app)
-                .put('/api/accounts')
-                .send({ email: 'successEmail@gmail.com', password: 'qwertyuiop', phone })
-                .set('Accept', 'application/json'),
-            tokens
-        ).expect(200);
+        const response = await request(app)
+            .put('/api/accounts')
+            .send({ email: 'successEmail@gmail.com', phone })
+            .set('Accept', 'application/json')
+            .expect(200);
 
         expect(response.body).toHaveProperty('account');
         expect(response.body.account).toHaveProperty('phone');
