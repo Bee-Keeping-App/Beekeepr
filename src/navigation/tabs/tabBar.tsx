@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { AnalyticsStack } from '../stacks/AnalyticsStack';
 import { CommunityStack } from '../stacks/CommunityStack';
-import { HomeStack } from '../stacks/HomeStack';
+import HomeStack from '../stacks/HomeStack';
 import { LogBookStack } from '../stacks/LogBookStack';
 import { SettingsStack } from '../stacks/SettingsStack';
 
