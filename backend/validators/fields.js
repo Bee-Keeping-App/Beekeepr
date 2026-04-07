@@ -18,7 +18,7 @@ export const validPassword = Joi.string()
             .pattern(new RegExp(/^[a-zA-Z0-9!@#$%^&*()?]{8,30}$/));
 
 export const validEmail = Joi.string()
-            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } });
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'edu', 'org'] } });
 
 // phone regex borrowed from https://stackoverflow.com/a/50122731
 const phoneRegex = new RegExp(/(\+\d{1,3}\s?)?((\(\d{3}\)\s?)|(\d{3})(\s|-?))(\d{3}(\s|-?))(\d{4})(\s?(([E|e]xt[:|.|]?)|x|X)(\s?\d+))?/);

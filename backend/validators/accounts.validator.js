@@ -18,7 +18,7 @@ export const create = () => {
     return Joi.object({
         email: validEmail.required(),
         password: validPassword.required(),
-        phone: validPhone.optional()
+        phone: validPhone.optional().allow(null)
     });
 };
 

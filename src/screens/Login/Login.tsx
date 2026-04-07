@@ -1,0 +1,151 @@
+// THIS FILE IS NOT COMPLETE YET
+// CURRENTY BEING WORKED ON IN ANOTHER BRANCH
+
+
+// import { Text } from '@react-navigation/elements';
+// import { StaticScreenProps } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { ImageBackground, TextInput, Image, StyleSheet, View, Dimensions, TouchableOpacity } from 'react-native';
+import { attemptLogin, tokenReturn, attemptRegister } from '../../utils/BackendRequests';
+import placeholderBackground from '../../assets/placeholderBackground.png';
+import placeholderLogo from '../../assets/placeholderLogo.png';
+
+
+export function Login() {
+    
+    //These hold and set the values in the password and username fields
+    const [userValue, setUserValue] = useState('');
+    const [passValue, setPassValue] = useState('');
+    
+
+
+    const loginPressed = () => {
+    alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    attemptLogin(userValue, passValue).then((tokens: tokenReturn) => {
+        if (tokens.code != 200) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
+        else {
+            alert('Login successful!');
+            localStorage.setItem('accessToken', tokens.accessToken ?? '');
+            localStorage.setItem('refreshToken', tokens.refreshToekn ?? '');
+        }
+    }).catch((error: unknown) => {
+        alert("ERR: " + error);
+    });
+    };
+
+    //eventually will hold navigation logic
+    const navigaiteToNewAccount = () => {
+    alert('The entered login value is ' + userValue + ' and the entered password is ' + passValue);
+    attemptRegister(userValue, passValue).then((tokens: tokenReturn) => {
+        if (tokens.code != 201) { alert('The entered login values of ' + userValue + ' and ' + passValue + ' are not in the database.');}
+        else {
+            alert('Register successful!');
+            localStorage.setItem('accessToken', tokens.accessToken ?? '');
+            localStorage.setItem('refreshToken', tokens.refreshToekn ?? '');
+        }
+    }).catch((error: unknown) => {
+        alert("ERR: " + error);
+    });
+    };
+
+
+    return (
+        //don't like this local based navigation to the background image but I'm not sure where // starts us until i double check`
+        <ImageBackground source={placeholderBackground} style={styles.background}>
+            <View style={styles.container}>
+            </View>
+            <View style={styles.container}>
+                <View style={styles.logoBox}><Image source={placeholderLogo} style={styles.logo}></Image></View>
+                <TextInput
+                    style={styles.input}
+                    placeholder=" Username"
+                    onChangeText={text => setUserValue(text)}
+                    value={userValue}
+                >
+                </TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder=" Password"
+                    onChangeText={text => setPassValue(text)}
+                    secureTextEntry={true}
+                    value={passValue}
+                >
+                </TextInput>
+                <TouchableOpacity style={styles.loginButton} onPress={loginPressed}>
+                    Login
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.registerButton} onPress={navigaiteToNewAccount}>
+                    Create an account
+                </TouchableOpacity>
+            </View>
+            <View style={styles.container}></View>
+        </ImageBackground>
+    );
+}
+
+
+const {width, } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 0,
+
+    },
+    background: {
+        flex: 1,
+        resizeMode: 'contain', // Or 'contain', 'stretch', 'repeat', 'center'
+        justifyContent: 'center',
+        alignItems: 'center',
+        //width: width,
+        width: width,
+        height: '100%'
+    },
+    logo: {
+        flex: 1,
+        tintColor: 'black',
+        justifyContent: 'center',
+        resizeMode: 'contain',
+    },
+    logoBox: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: width * .2,
+        height: width * .2,
+        backgroundColor: 'darkorange',
+        borderRadius: 14,
+    },
+    text: {
+        color: 'white',
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    input: {
+        width: width * .5,
+        borderColor: 'darkgray',
+        backgroundColor: 'gray',
+        borderWidth: 2,
+        borderRadius: 5,
+        color: 'lightgray',
+    },
+    loginButton: {
+        width: width * .5,
+        backgroundColor: 'darkorange',
+        color: 'lightgray',
+        borderColor: 'darkgray',
+        borderWidth: 2,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    registerButton: {
+        width: width * .5,
+        color: 'darkorange',
+        borderColor: 'darkorange',
+        borderWidth: 2,
+        borderRadius: 5,
+        alignItems: 'center',
+    } 
+});

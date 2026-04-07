@@ -57,7 +57,7 @@ describe('Field validators', () => {
         });
 
         test('rejects unsupported TLD', () => {
-            expect(validates(validEmail, 'user@example.org')).toBe(false);
+            expect(validates(validEmail, 'user@example.zsh')).toBe(false);
             expect(validates(validEmail, 'user@example.io')).toBe(false);
         });
 

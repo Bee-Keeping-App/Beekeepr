@@ -105,7 +105,7 @@ describe('Protected account routes (auth middleware)', () => {
             await request(app)
                 .post('/api/accounts')
                 .set('Accept', 'application/json')
-                .send({ email: 'test@example.org', password: 'qwertyuiop' })
+                .send({ email: 'test@example.cum', password: 'qwertyuiop' })
                 .expect(400);
         });
 
