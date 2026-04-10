@@ -1,7 +1,5 @@
 import Joi from 'joi';
 import {
-    validUsername,
-    validPassword,
     validEmail,
     validPhone
 } from './fields.js';
@@ -13,28 +11,18 @@ export const findOne = () => {
     });
 };
 
-// validation logic for account POST
+// validation logic for account POST (no password, Clerk handles auth)
 export const create = () => {
     return Joi.object({
         email: validEmail.required(),
-        password: validPassword.required(),
         phone: validPhone.optional()
     });
 };
 
-// validation logic for account PATCH
+// validation logic for account PUT
 export const update = () => {
     return Joi.object({
         email: validEmail.optional(),
-        password: validPassword.optional(),
         phone: validPhone.optional()
-    });
-};
-
-// validation logic for account DELETE
-export const deleteOne = () => {
-    return Joi.object({
-        username: validUsername.required(),
-        password: validPassword.required()
     });
 };

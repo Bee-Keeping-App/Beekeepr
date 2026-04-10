@@ -1,5 +1,4 @@
 import * as Accounts from "../services/accounts.service.js";
-import * as Auth from '../services/auth.service.js';
 import catchAsync from '../utils/catchAsync.js';
 
 /* Read all caller */
@@ -14,38 +13,25 @@ export const getOneAccount = catchAsync(async (req, res, next) => { // eslint-di
     res.status(200).json({ account });
 });
 
-/* Make an Account */
+/* Create an Account profile linked to the authenticated Clerk user */
 export const registerAccount = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
-
-    // login handled by auth service
-    const { accessToken, refreshToken } = await Auth.handleSignup(req.body);
-
-    // attach tokens and send request
-    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: (process.env.USE_PROD == 'true') });
-    return res.status(201).json({ accessToken });
-
+    const account = await Accounts.insertOne({
+        clerkId: req.auth.userId,
+        ...req.body
+    });
+    return res.status(201).json({ account });
 });
 
 /* Update caller */
 export const updateAccountInfo = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
-    
-    // finds an account by id then updates it (idempotent operation)
-    const account = await Accounts.updateOne(
-        req.user,
-        req.body
-    );
-
+    const existing = await Accounts.findOneByClerkId(req.auth.userId);
+    const account = await Accounts.updateOne(existing.id, req.body);
     res.status(200).json({ account });
 });
 
 /* Delete caller */
 export const deleteAccount = catchAsync(async (req, res, next) => { // eslint-disable-line no-unused-vars
-    
-    // deletes the account
-    await Accounts.deleteOne(req.user);
-    
-    // removes the refresh token from the request
-    res.cookie('refreshToken', null, { httpOnly: true, secure: (process.env.USE_PROD == 'true'), maxAge: 0 });
-    
+    const existing = await Accounts.findOneByClerkId(req.auth.userId);
+    await Accounts.deleteOne(existing.id);
     res.status(204).send();
 });

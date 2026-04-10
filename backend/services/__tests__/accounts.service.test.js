@@ -1,4 +1,4 @@
-import { insertOne, findOne, findOneById, findAll, updateOne, deleteOne } from '../accounts.service.js';
+import { insertOne, findOne, findOneById, findOneByClerkId, findAll, updateOne, deleteOne } from '../accounts.service.js';
 import Account from '../../models/accounts.model.js';
 import { NullQueryError, DuplicateFieldError } from '../../classes/errors.class.js';
 
@@ -9,23 +9,23 @@ describe('accounts.service', () => {
 
     describe('insertOne', () => {
         test('throws DuplicateFieldError on duplicate email', async () => {
-            await insertOne({ email: 'dupe@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+            await insertOne({ email: 'dupe@gmail.com', clerkId: 'clerk_1' });
 
             await expect(
-                insertOne({ email: 'dupe@gmail.com', password: 'differentpw', accessId: 1, refreshId: 1 })
+                insertOne({ email: 'dupe@gmail.com', clerkId: 'clerk_2' })
             ).rejects.toThrow(DuplicateFieldError);
         });
 
-        test('re-throws non-duplicate Mongoose errors (line 37)', async () => {
-            // Missing required 'password' field triggers a Mongoose ValidationError (no code 11000)
+        test('re-throws non-duplicate Mongoose errors', async () => {
+            // Missing required 'email' field triggers a Mongoose ValidationError
             await expect(
-                insertOne({ email: 'test@gmail.com', accessId: 1, refreshId: 1 })
-            ).rejects.toThrow(); // Mongoose ValidationError — not DuplicateFieldError
+                insertOne({ clerkId: 'clerk_1' })
+            ).rejects.toThrow();
         });
 
         test('re-thrown error is not a DuplicateFieldError', async () => {
             try {
-                await insertOne({ email: 'test@gmail.com', accessId: 1, refreshId: 1 });
+                await insertOne({ clerkId: 'clerk_1' });
             } catch (err) {
                 expect(err).not.toBeInstanceOf(DuplicateFieldError);
             }
@@ -34,11 +34,16 @@ describe('accounts.service', () => {
 
     describe('findAll', () => {
         test('returns all accounts', async () => {
-            await insertOne({ email: 'a@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
-            await insertOne({ email: 'b@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+            await insertOne({ email: 'a@gmail.com', clerkId: 'clerk_a' });
+            await insertOne({ email: 'b@gmail.com', clerkId: 'clerk_b' });
 
             const result = await findAll();
             expect(result.length).toBe(2);
+        });
+
+        test('throws NullQueryError when there\'s no accounts in the db I guess', async () => {
+            const result = await findAll();
+            expect(result).toEqual([]);
         });
     });
 
@@ -47,16 +52,10 @@ describe('accounts.service', () => {
             await expect(findOne({ email: 'nobody@gmail.com' })).rejects.toThrow(NullQueryError);
         });
 
-        test('returns account without password by default', async () => {
-            await insertOne({ email: 'test@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+        test('returns account', async () => {
+            await insertOne({ email: 'test@gmail.com', clerkId: 'clerk_1' });
             const result = await findOne({ email: 'test@gmail.com' });
-            expect(result.password).toBeUndefined();
-        });
-
-        test('returns account with password when includePassword=true', async () => {
-            await insertOne({ email: 'test@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
-            const result = await findOne({ email: 'test@gmail.com' }, true);
-            expect(result.password).toBeDefined();
+            expect(result.email).toBe('test@gmail.com');
         });
     });
 
@@ -65,18 +64,22 @@ describe('accounts.service', () => {
             await expect(findOneById('507f1f77bcf86cd799439011')).rejects.toThrow(NullQueryError);
         });
 
-        test('returns account without tokens by default', async () => {
-            const created = await insertOne({ email: 'test@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+        test('returns account by id', async () => {
+            const created = await insertOne({ email: 'test@gmail.com', clerkId: 'clerk_1' });
             const result = await findOneById(created.id);
-            expect(result.accessId).toBeUndefined();
-            expect(result.refreshId).toBeUndefined();
+            expect(result.email).toBe('test@gmail.com');
+        });
+    });
+
+    describe('findOneByClerkId', () => {
+        test('throws NullQueryError for non-existent clerkId', async () => {
+            await expect(findOneByClerkId('nonexistent')).rejects.toThrow(NullQueryError);
         });
 
-        test('returns account with tokens when includeTokens=true', async () => {
-            const created = await insertOne({ email: 'test@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
-            const result = await findOneById(created.id, true);
-            expect(result.accessId).toBeDefined();
-            expect(result.refreshId).toBeDefined();
+        test('returns account by clerkId', async () => {
+            await insertOne({ email: 'test@gmail.com', clerkId: 'clerk_find_me' });
+            const result = await findOneByClerkId('clerk_find_me');
+            expect(result.email).toBe('test@gmail.com');
         });
     });
 
@@ -86,7 +89,7 @@ describe('accounts.service', () => {
         });
 
         test('updates and returns the new document', async () => {
-            const created = await insertOne({ email: 'old@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+            const created = await insertOne({ email: 'old@gmail.com', clerkId: 'clerk_1' });
             const updated = await updateOne(created.id, { email: 'new@gmail.com' });
             expect(updated.email).toBe('new@gmail.com');
         });
@@ -98,7 +101,7 @@ describe('accounts.service', () => {
         });
 
         test('deletes the account and returns the deleted document', async () => {
-            const created = await insertOne({ email: 'test@gmail.com', password: 'qwertyuiop', accessId: 1, refreshId: 1 });
+            const created = await insertOne({ email: 'test@gmail.com', clerkId: 'clerk_1' });
             const deleted = await deleteOne(created.id);
             expect(deleted.email).toBe('test@gmail.com');
 
