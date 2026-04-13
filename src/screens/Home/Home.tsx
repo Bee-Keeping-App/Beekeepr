@@ -1,11 +1,18 @@
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 
-export default function Home() {
+export default function Home({ navigation }: any) {
   const widgets = [
     //add more widgets here
-    { title: "Widget One", body: "text for the first widget." },
+    { title: "Weather", body: "Click me to get to the weather page" },
     { title: "Widget Two", body: "text for the second widget." },
     { title: "Widget Three", body: "text for the third widget." },
   ];
@@ -24,13 +31,35 @@ export default function Home() {
           </Text>
         </View>
 
+        {/*settings and reminder widgets*/}
+        <View style={styles.duoRow}>
+          <View style={styles.duoSquare}>
+            <Text style={styles.duoTitle}>Settings</Text>
+          </View>
+          <View style={styles.duoRect}>
+            <Text style={styles.duoTitle}>Reminders</Text>
+          </View>
+        </View>
+
         {/*widget contents*/}
         <View style={styles.widgets}>
           {widgets.map((w) => (
-            <View key={w.title} style={styles.widget}>
-              <Text style={styles.widgetTitle}>{w.title}</Text>
-              <Text style={styles.widgetBody}>{w.body}</Text>
-            </View>
+            <React.Fragment key={w.title}>
+              {w.title === "Weather" ? (
+                <Pressable
+                  style={styles.widget}
+                  onPress={() => navigation.navigate("Weather")}
+                >
+                  <Text style={styles.widgetTitle}>{w.title}</Text>
+                  <Text style={styles.widgetBody}>{w.body}</Text>
+                </Pressable>
+              ) : (
+                <View style={styles.widget}>
+                  <Text style={styles.widgetTitle}>{w.title}</Text>
+                  <Text style={styles.widgetBody}>{w.body}</Text>
+                </View>
+              )}
+            </React.Fragment>
           ))}
         </View>
       </ScrollView>
@@ -64,6 +93,38 @@ const styles = StyleSheet.create({
   },
   widgets: {
     gap: 12,
+  },
+  duoRow: {
+    width: "66%",
+    flexDirection: "row",
+    alignSelf: "flex-start",
+    marginBottom: 12,
+  },
+  duoSquare: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    padding: 10,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  duoRect: {
+    flex: 1,
+    height: 64,
+    borderRadius: 14,
+    padding: 10,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    justifyContent: "center",
+  },
+  duoTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#111",
   },
   widget: {
     width: "100%",
