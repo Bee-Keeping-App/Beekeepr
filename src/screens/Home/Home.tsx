@@ -25,6 +25,7 @@ export default function Home({ navigation }: any) {
         <View style={styles.header}>
           {/*title of page*/}
           <Text style={styles.title}>Good Morning, John</Text>
+          <Text style={styles.subtitle}>Reminders</Text>
           <Text style={styles.description}>
             {/*description of page*/}
             Here's what's happening in your apiary today.
@@ -62,6 +63,19 @@ export default function Home({ navigation }: any) {
             </React.Fragment>
           ))}
         </View>
+
+        {/*calender widget with subsquares for the reminders, will have to be dynamic*/}
+        <View style={styles.longWidget}>
+          <Text style={styles.widgetTitle}>Calender</Text>
+          <View style={styles.subSquares}>
+            <View style={styles.subSquare} />
+            <View style={styles.subSquare} />
+            <View style={styles.subSquare} />
+            <View style={styles.subSquare} />
+            <View style={styles.subSquare} />
+            <View style={styles.subSquare} />
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -83,6 +97,12 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "700",
     letterSpacing: 0.2,
+    marginBottom: 6,
+    color: "#111",
+  },
+  subtitle: {
+    fontSize: 22,
+    fontWeight: "600",
     marginBottom: 6,
     color: "#111",
   },
@@ -144,5 +164,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 19,
     color: "#444",
+  },
+  longWidget: {
+    width: "100%",
+    borderRadius: 14,
+    padding: 16,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginTop: 12,
+  },
+  subSquares: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 8,
+  },
+  subSquare: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginRight: 10,
+    marginBottom: 10,
   },
 });
