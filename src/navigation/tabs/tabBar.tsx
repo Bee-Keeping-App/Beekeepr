@@ -5,6 +5,7 @@ import { HomeStack } from '../stacks/HomeStack';
 import { AlmanacStack } from '../stacks/AlmanacStack';
 import { CommunityStack } from '../stacks/CommunityStack';
 import { HiveTrackerStack } from '../stacks/HiveTrackerStack';
+import { ApiaryManagerStack } from '../stacks/ApiaryManagerStack';
 
 
 
@@ -51,6 +52,15 @@ title: 'Hive Tracker',
 tabBarIcon: ({ color, size }) => (
 // <Image source={hiveIcon} tintColor={color} style={{ width: size, height: size }} />
 <Text style={{ color, fontSize: size }}></Text>
+),
+},
+},
+ApiaryManager: {
+screen: ApiaryManagerStack,
+options: {
+title: 'Apiaries',
+tabBarIcon: ({ color, size }) => (
+<Text style={{ color, fontSize: size }}>🐝</Text>
 ),
 },
 },
