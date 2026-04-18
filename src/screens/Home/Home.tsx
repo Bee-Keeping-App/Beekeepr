@@ -37,6 +37,8 @@ function mapWeatherCodeToLabel(code: number): string {
 export default function Home({ navigation }: any) {
   const [temperatureF, setTemperatureF] = React.useState<number | null>(null);
   const [description, setDescription] = React.useState<string | null>(null);
+  const [humidity, setHumidity] = React.useState<number | null>(null);
+  const [windSpeed, setWindSpeed] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -62,18 +64,23 @@ export default function Home({ navigation }: any) {
       try {
         const url =
           `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-          `&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=auto`;
+          `&current=temperature_2m,weathercode,relative_humidity_2m,wind_speed_10m` +
+          `&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
 
         const res = await fetch(url);
         const json = await res.json();
 
         const temp = typeof json?.current?.temperature_2m === "number" ? json.current.temperature_2m : null;
         const code = typeof json?.current?.weathercode === "number" ? json.current.weathercode : null;
+        const hum = typeof json?.current?.relative_humidity_2m === "number" ? json.current.relative_humidity_2m : null;
+        const wind = typeof json?.current?.wind_speed_10m === "number" ? json.current.wind_speed_10m : null;
         const desc = code == null ? null : mapWeatherCodeToLabel(code);
 
         if (cancelled) return;
         setTemperatureF(temp);
         setDescription(desc);
+        setHumidity(hum);
+        setWindSpeed(wind);
       } catch (e) {
         console.error("Home weather fetch error", e);
       }
@@ -85,16 +92,20 @@ export default function Home({ navigation }: any) {
     };
   }, []);
 
-  const widgets = [
-    //add more widgets here
-    { title: "Weather", body: "" },
-    { title: "Widget Two", body: "text for the second widget." },
-    { title: "Widget Three", body: "text for the third widget." },
-  ];
-
   const tempText =
     typeof temperatureF === "number" ? `${Math.round(temperatureF)}°F` : "--°F";
   const descText = description ?? "";
+  const humidityText =
+    typeof humidity === "number" ? `${Math.round(humidity)}%` : "--%";
+  const windText =
+    typeof windSpeed === "number" ? `${Math.round(windSpeed)} mph` : "-- mph";
+
+  const widgets = [
+    //add more widgets here
+    { title: "Weather", body: "" },
+    { title: "Humidity", body: humidityText },
+    { title: "Wind speed", body: windText },
+  ];
 
   return (
     <SafeAreaView style={styles.safe}>
