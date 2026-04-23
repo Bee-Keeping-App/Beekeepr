@@ -5,8 +5,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { lightColors } from "../../styles/colors";
 import * as Location from "expo-location";
@@ -39,6 +41,24 @@ export default function Home({ navigation }: any) {
   const [description, setDescription] = React.useState<string | null>(null);
   const [humidity, setHumidity] = React.useState<number | null>(null);
   const [windSpeed, setWindSpeed] = React.useState<number | null>(null);
+
+  const scrollRef = React.useRef<ScrollView>(null);
+  const remindersYRef = React.useRef(0);
+
+  type Reminder = {
+    id: string;
+    title: string;
+    description: string;
+  };
+
+  const [reminders, setReminders] = React.useState<Reminder[]>([
+    { id: "r1", title: "Inspect Hive #3", description: "Check brood pattern and food stores." },
+    { id: "r2", title: "Mite Treatment", description: "Prep supplies and plan application." },
+    { id: "r3", title: "Equipment Maintenance", description: "Clean smoker and inspect tools." },
+  ]);
+  const [isAddingReminder, setIsAddingReminder] = React.useState(false);
+  const [newReminderTitle, setNewReminderTitle] = React.useState("");
+  const [newReminderDescription, setNewReminderDescription] = React.useState("");
 
   React.useEffect(() => {
     let cancelled = false;
@@ -107,9 +127,42 @@ export default function Home({ navigation }: any) {
     { title: "Wind speed", body: windText },
   ];
 
+  const addReminder = () => {
+    const title = newReminderTitle.trim();
+    const desc = newReminderDescription.trim();
+    if (!title) return;
+
+    setReminders((prev) => [
+      ...prev,
+      {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title,
+        description: desc,
+      },
+    ]);
+    setNewReminderTitle("");
+    setNewReminderDescription("");
+    setIsAddingReminder(false);
+  };
+
+  const deleteReminder = (id: string) => {
+    setReminders((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const openAddReminder = () => {
+    setIsAddingReminder(true);
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ y: remindersYRef.current, animated: true });
+    });
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         {
         /*header text*/}
         <View style={styles.header}>
@@ -127,9 +180,9 @@ export default function Home({ navigation }: any) {
           <View style={styles.duoSquare}>
             <Text style={styles.duoTitle}>Settings</Text>
           </View>
-          <View style={styles.duoRect}>
-            <Text style={styles.duoTitle}>Reminders</Text>
-          </View>
+          <Pressable style={styles.duoRect} onPress={openAddReminder}>
+            <Text style={styles.duoTitle}>Add Reminder</Text>
+          </Pressable>
         </View>
 
         {/*widget contents*/}
@@ -157,7 +210,6 @@ export default function Home({ navigation }: any) {
           ))}
         </View>
 
-        {/*calender widget with subsquares for the reminders, will have to be dynamic*/}
         <View style={styles.longWidget}>
           <Text style={styles.widgetTitle}>Calender</Text>
           <View style={styles.subSquares}>
@@ -167,6 +219,87 @@ export default function Home({ navigation }: any) {
             <View style={styles.subSquare} />
             <View style={styles.subSquare} />
             <View style={styles.subSquare} />
+          </View>
+        </View>
+
+        {/*reminders section*/}
+        <View
+          style={styles.remindersSection}
+          onLayout={(e) => {
+            remindersYRef.current = e.nativeEvent.layout.y;
+          }}
+        >
+          <View style={styles.remindersHeaderRow}>
+            <Text style={styles.remindersHeader}>Reminders</Text>
+          </View>
+
+          {isAddingReminder ? (
+            <View style={styles.addReminderCard}>
+              <Text style={styles.addReminderLabel}>Title</Text>
+              <TextInput
+                style={styles.input}
+                value={newReminderTitle}
+                onChangeText={setNewReminderTitle}
+                placeholder="Reminder title"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="sentences"
+              />
+              <Text style={styles.addReminderLabel}>Description</Text>
+              <TextInput
+                style={[styles.input, styles.inputMultiline]}
+                value={newReminderDescription}
+                onChangeText={setNewReminderDescription}
+                placeholder="Reminder description"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="sentences"
+                multiline
+              />
+
+              <View style={styles.addReminderActions}>
+                <Pressable
+                  style={styles.actionButton}
+                  onPress={() => {
+                    setIsAddingReminder(false);
+                    setNewReminderTitle("");
+                    setNewReminderDescription("");
+                  }}
+                >
+                  <Text style={styles.actionButtonText}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  style={[
+                    styles.actionButton,
+                    !newReminderTitle.trim() ? styles.actionButtonDisabled : null,
+                  ]}
+                  onPress={addReminder}
+                  disabled={!newReminderTitle.trim()}
+                >
+                  <Text style={styles.actionButtonText}>Save</Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : null}
+
+          <View style={styles.remindersList}>
+            {reminders.map((r) => (
+              <View key={r.id} style={styles.reminderCard}>
+                <View style={styles.reminderTopRow}>
+                  <Text style={styles.reminderTitle}>{r.title}</Text>
+                  <Pressable
+                    onPress={() => deleteReminder(r.id)}
+                    hitSlop={10}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Delete reminder ${r.title}`}
+                    style={styles.reminderDeleteButton}
+                  >
+                    <Ionicons name="trash-outline" size={18} color="#111" />
+                  </Pressable>
+                </View>
+                {!!r.description && (
+                  <Text style={styles.reminderDescription}>{r.description}</Text>
+                )}
+              </View>
+            ))}
           </View>
         </View>
       </ScrollView>
@@ -257,6 +390,101 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 19,
     color: "#444",
+  },
+  remindersSection: {
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  remindersHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  remindersHeader: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111",
+  },
+  remindersList: {
+    gap: 10,
+  },
+  reminderCard: {
+    width: "100%",
+    borderRadius: 14,
+    padding: 14,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  reminderTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#111",
+  },
+  reminderTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+    marginBottom: 4,
+  },
+  reminderDeleteButton: {
+    padding: 4,
+  },
+  reminderDescription: {
+    fontSize: 14,
+    lineHeight: 19,
+    color: "#444",
+  },
+  addReminderCard: {
+    width: "100%",
+    borderRadius: 14,
+    padding: 14,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    marginBottom: 10,
+  },
+  addReminderLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#111",
+    marginBottom: 6,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: "#fff",
+    color: "#111",
+    marginBottom: 10,
+    fontSize: 14,
+  },
+  inputMultiline: {
+    minHeight: 72,
+    textAlignVertical: "top",
+  },
+  addReminderActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 10,
+  },
+  actionButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    backgroundColor: "#111",
+  },
+  actionButtonDisabled: {
+    opacity: 0.5,
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#fff",
   },
   weatherWidget: {
     width: "100%",
