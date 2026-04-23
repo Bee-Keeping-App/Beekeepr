@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as Location from "expo-location";
 
-// Fallback coordinates (Troy) used if permission denied / location unavailable
+//use troy coordinates as a fallback
 const DEFAULT_LAT = 42.7284;
 const DEFAULT_LON = -73.6918;
 
@@ -29,9 +29,9 @@ export default function TopBar() {
             lon = pos.coords.longitude;
           }
         } catch {
-          // ignore and fall back
+          //ignore
         }
-
+        //open-meteo api
         const url =
           `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
           `&current=temperature_2m&temperature_unit=fahrenheit&timezone=auto`;
