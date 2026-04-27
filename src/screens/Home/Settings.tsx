@@ -25,7 +25,8 @@ const JOURNAL_FIELDS = [
 ];
 
 export function Settings() {
-  const { colors } = useTheme();
+  const { colors, theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
   const [autoSchedule, setAutoSchedule] = useState(false);
   const [fieldChecks, setFieldChecks] = useState<Record<string, boolean>>(
     Object.fromEntries(JOURNAL_FIELDS.map((f) => [f, true]))
@@ -58,6 +59,30 @@ export function Settings() {
           <Text style={[styles.pageSubtitle, { color: colors.muted }]}>
             Manage your app preferences and journal fields.
           </Text>
+        </View>
+
+        {/* Appearance Card */}
+        <View style={styles.section}>
+          <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>Appearance</Text>
+            <Text style={[styles.cardSubtitle, { color: colors.muted }]}>
+              Choose your preferred color theme.
+            </Text>
+            <View style={[styles.settingRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={styles.settingInfo}>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>Dark Mode</Text>
+                <Text style={[styles.settingDesc, { color: colors.muted }]}>
+                  {isDark ? 'Currently using dark theme.' : 'Currently using light theme.'}
+                </Text>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: colors.border, true: AMBER }}
+                thumbColor={isDark ? '#fff' : colors.surface}
+              />
+            </View>
+          </View>
         </View>
 
         {/* Automation Card */}

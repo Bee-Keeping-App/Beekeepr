@@ -88,10 +88,10 @@ export function Almanac() {
       {/* Amber Header */}
       <View style={styles.header}>
         <Text style={styles.headerLogo}>beekeepr</Text>
-        <View style={styles.headerRight}>
+        <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('Weather')}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
           <Text style={styles.headerTemp}>72°F</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -217,6 +217,7 @@ export function Almanac() {
                               </TouchableOpacity>
                               <TouchableOpacity
                                 style={[styles.historyBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                                onPress={() => navigation.navigate('HiveDetails')}
                               >
                                 <Text style={[styles.historyBtnText, { color: colors.text }]}>∿  History</Text>
                               </TouchableOpacity>
@@ -245,9 +246,32 @@ export function Almanac() {
           </View>
         ) : (
           <View style={styles.content}>
-            <View style={[styles.emptyState, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <Text style={styles.emptyEmoji}>📖</Text>
-              <Text style={[styles.emptyTitle, { color: colors.text }]}>No journal entries yet</Text>
+            {[
+              { emoji: '✂️', category: 'Colony Management', title: 'Spring Splits: How to Divide a Hive and Prevent Swarming', author: 'Dr. Emily Carr', time: '6 min read' },
+              { emoji: '🐛', category: 'Pest Control', title: 'Varroa Mite Treatment Options: A Seasonal Guide', author: 'Tom Hargrove', time: '8 min read' },
+              { emoji: '🍯', category: 'Harvesting', title: 'When and How to Extract Honey Without Stressing Your Colony', author: 'Maria Chen', time: '5 min read' },
+            ].map((article) => (
+              <TouchableOpacity
+                key={article.title}
+                style={[styles.articleCard, { backgroundColor: colors.background, borderColor: colors.border }]}
+                onPress={() => navigation.navigate('Article')}
+                activeOpacity={0.75}
+              >
+                <View style={[styles.articleIconBox, { backgroundColor: colors.surface }]}>
+                  <Text style={styles.articleEmoji}>{article.emoji}</Text>
+                </View>
+                <View style={styles.articleInfo}>
+                  <Text style={[styles.articleCategory, { color: colors.muted }]}>{article.category}</Text>
+                  <Text style={[styles.articleTitle, { color: colors.text }]} numberOfLines={2}>{article.title}</Text>
+                  <Text style={[styles.articleMeta, { color: colors.muted }]}>{article.author} · {article.time}</Text>
+                </View>
+                <Text style={[styles.articleChevron, { color: colors.muted }]}>›</Text>
+              </TouchableOpacity>
+            ))}
+
+            <View style={[styles.emptyState, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 4 }]}>
+              <Text style={styles.emptyEmoji}>📝</Text>
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>No personal entries yet</Text>
               <Text style={[styles.emptySubtitle, { color: colors.muted }]}>
                 Use Quick Entry to start logging your beekeeping activities.
               </Text>
@@ -504,4 +528,28 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 40 },
   emptyTitle: { fontSize: 18, fontWeight: '700' },
   emptySubtitle: { fontSize: 14, lineHeight: 20, textAlign: 'center' },
+
+  articleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 12,
+    marginBottom: 10,
+    gap: 12,
+  },
+  articleIconBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  articleEmoji: { fontSize: 26 },
+  articleInfo: { flex: 1 },
+  articleCategory: { fontSize: 11, fontWeight: '700', letterSpacing: 0.5, marginBottom: 2 },
+  articleTitle: { fontSize: 14, fontWeight: '700', lineHeight: 20, marginBottom: 4 },
+  articleMeta: { fontSize: 12 },
+  articleChevron: { fontSize: 22, flexShrink: 0 },
 });

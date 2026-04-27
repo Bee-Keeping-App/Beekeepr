@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -67,6 +68,8 @@ type ViewMode = 'Day' | 'Week' | 'Month';
 
 export function Home() {
   const { colors } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navigation = useNavigation<any>();
   const [viewMode, setViewMode] = useState<ViewMode>('Day');
   const today = new Date();
 
