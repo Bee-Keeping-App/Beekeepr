@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -63,6 +64,8 @@ type TabMode = 'apiaries' | 'journal';
 
 export function Almanac() {
   const { colors } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<TabMode>('apiaries');
   const [expandedApiaries, setExpandedApiaries] = useState<Set<number>>(new Set([1]));
 
