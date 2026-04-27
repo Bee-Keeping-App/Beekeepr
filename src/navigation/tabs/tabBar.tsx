@@ -3,56 +3,65 @@ import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStack } from '../stacks/HomeStack';
 import { AlmanacStack } from '../stacks/AlmanacStack';
+import { AnalyticsStack } from '../stacks/AnalyticsStack';
 import { CommunityStack } from '../stacks/CommunityStack';
-import { HiveTrackerStack } from '../stacks/HiveTrackerStack';
+import { SettingsStack } from '../stacks/SettingsStack';
 
-
-
-// import homeIcon from '../../assets/home.png';
-// import bookIcon from '../../assets/book.png';
-// import usersIcon from '../../assets/users.png';
-// import hiveIcon from '../../assets/hive.png';
-
+const AMBER = '#F59E0B';
 
 export const Tabs = createBottomTabNavigator({
-screens: {
-Home: {
-screen: HomeStack,
-options: {
-title: 'Homepage',
-tabBarIcon: ({ color, size }) => (
-// <Image source={homeIcon} tintColor={color} style={{ width: size, height: size }} />
-<Text style={{ color, fontSize: size }}></Text>
-),
-},
-},
-Almanac: {
-screen: AlmanacStack,
-options: {
-tabBarIcon: ({ color, size }) => (
-// <Image source={bookIcon} tintColor={color} style={{ width: size, height: size }} />
-<Text style={{ color, fontSize: size }}></Text>
-),
-},
-},
-Community: {
-screen: CommunityStack,
-options: {
-tabBarIcon: ({ color, size }) => (
-// <Image source={usersIcon} tintColor={color} style={{ width: size, height: size }} />
-<Text style={{ color, fontSize: size }}></Text>
-),
-},
-},
-HiveTracker: {
-screen: HiveTrackerStack,
-options: {
-title: 'Hive Tracker',
-tabBarIcon: ({ color, size }) => (
-// <Image source={hiveIcon} tintColor={color} style={{ width: size, height: size }} />
-<Text style={{ color, fontSize: size }}></Text>
-),
-},
-},
-},
+  screenOptions: {
+    headerShown: false,
+    tabBarActiveTintColor: AMBER,
+    tabBarInactiveTintColor: '#6B7280',
+    tabBarLabelStyle: { fontSize: 10, fontWeight: '600', marginTop: 2 },
+    tabBarStyle: { paddingBottom: 4, paddingTop: 4, height: 60 },
+  },
+  screens: {
+    Home: {
+      screen: HomeStack,
+      options: {
+        title: 'HOME',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Text style={{ color, fontSize: size - 2 }}>🏠</Text>
+        ),
+      },
+    },
+    LogBook: {
+      screen: AlmanacStack,
+      options: {
+        title: 'LOG BOOK',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Text style={{ color, fontSize: size - 2 }}>📖</Text>
+        ),
+      },
+    },
+    Analytics: {
+      screen: AnalyticsStack,
+      options: {
+        title: 'ANALYTICS',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Text style={{ color, fontSize: size - 2 }}>📊</Text>
+        ),
+      },
+    },
+    Community: {
+      screen: CommunityStack,
+      options: {
+        title: 'COMMUNITY',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Text style={{ color, fontSize: size - 2 }}>👥</Text>
+        ),
+      },
+    },
+    Settings: {
+      screen: SettingsStack,
+      options: {
+        title: 'SETTINGS',
+        tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+          <Text style={{ color, fontSize: size - 2 }}>⚙️</Text>
+        ),
+      },
+    },
+  },
 });

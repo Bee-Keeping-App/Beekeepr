@@ -5,7 +5,7 @@ import { PostDetails } from '../../screens/Community/PostDetails';
 
 export const CommunityStack = createNativeStackNavigator_3({
 screens: {
-Community: { screen: Community },
+Community: { screen: Community, options: { headerShown: false } },
 PostDetails: { screen: PostDetails },
 },
 });

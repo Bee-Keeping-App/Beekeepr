@@ -6,7 +6,7 @@ import { WeatherMap } from '../../screens/Almanac/Weather';
 
 export const AlmanacStack = createNativeStackNavigator_2({
 screens: {
-Almanac: { screen: Almanac },
+Almanac: { screen: Almanac, options: { headerShown: false } },
 Article: { screen: Article },
 Weather: { screen: WeatherMap, options: { title: 'Weather' } },
 },

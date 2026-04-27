@@ -9,7 +9,7 @@ export const HomeStack = createNativeStackNavigator({
 screens: {
 HomePage: {
 screen: Home,
-options: { title: 'Homepage' },
+options: { headerShown: false },
 },
 Profile: {
 screen: Profile,
