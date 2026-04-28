@@ -21,18 +21,15 @@ const HIVE_COLORS = {
   hive3: '#3B82F6',
 };
 
-const CHART_DATA = {
-  labels: ['Mar 23', 'Jul 17', 'Nov 10', 'Mar 13'],
-  hive1: [52, 77, 95, 80],
-  hive2: [50, 80, 99, 82],
-  hive3: [43, 75, 88, 79],
-};
-
 const Y_LABELS = [100, 75, 50, 25, 0];
 
 const SAVED_REPORTS = [
-  { id: 1, title: 'Hive Weight Trends', tags: ['LINE', 'weight', '3 Hives'], active: true },
-  { id: 2, title: 'Mite Levels Warning', tags: ['BAR', 'miteCount', '3 Hives'], active: false },
+  { id: 1, title: 'Hive Weight Trends', tags: ['LINE', 'weight', '3 Hives'],
+    metric: 'Hive Weight (lbs)', average: '77.2', unit: 'lbs', trend: '+12%', trendGood: true,
+    data: { labels: ['Mar 23', 'Jul 17', 'Nov 10', 'Mar 13'], hive1: [52, 77, 95, 80], hive2: [50, 80, 99, 82], hive3: [43, 75, 88, 79] } },
+  { id: 2, title: 'Mite Levels Warning', tags: ['BAR', 'miteCount', '3 Hives'],
+    metric: 'Mite Count (/100 bees)', average: '2.1', unit: '/100', trend: '+40%', trendGood: false,
+    data: { labels: ['Mar 23', 'Jul 17', 'Nov 10', 'Mar 13'], hive1: [0, 1, 4, 2], hive2: [0, 2, 5, 3], hive3: [1, 1, 3, 1] } },
 ];
 
 interface LineSegmentProps {
@@ -111,12 +108,13 @@ function ChartLines({ data, color }: { data: number[]; color: string }) {
 }
 
 export function Analytics() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const [selectedReport, setSelectedReport] = useState(0);
+  const report = SAVED_REPORTS[selectedReport];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Amber Header */}
       <View style={styles.header}>
@@ -194,7 +192,7 @@ export function Analytics() {
           <View style={styles.breadcrumb}>
             <Text style={[styles.breadcrumbBase, { color: colors.muted }]}>Analysis</Text>
             <Text style={[styles.breadcrumbArrow, { color: colors.muted }]}> › </Text>
-            <Text style={[styles.breadcrumbActive, { color: colors.text }]}>Hive Weight Trends</Text>
+            <Text style={[styles.breadcrumbActive, { color: colors.text }]}>{report.title}</Text>
             <View style={{ flex: 1 }} />
             <TouchableOpacity>
               <Text style={[styles.editConfig, { color: colors.muted }]}>Edit{'\n'}Configuration</Text>
@@ -204,10 +202,10 @@ export function Analytics() {
           <View style={[styles.chartDivider, { backgroundColor: colors.border }]} />
 
           {/* Chart Title */}
-          <Text style={[styles.chartTitle, { color: colors.text }]}>Hive Weight Trends</Text>
+          <Text style={[styles.chartTitle, { color: colors.text }]}>{report.title}</Text>
           <Text style={[styles.chartSubtitle, { color: colors.muted }]}>
             Comparing{' '}
-            <Text style={{ color: ORANGE, fontWeight: '600' }}>Hive Weight (lbs)</Text>
+            <Text style={{ color: ORANGE, fontWeight: '600' }}>{report.metric}</Text>
             {' '}• 3 hives selected
           </Text>
 
@@ -232,7 +230,7 @@ export function Analytics() {
               {Y_LABELS.map((label) => (
                 <Text key={label} style={[styles.yLabel, { color: colors.muted }]}>{label}</Text>
               ))}
-              <Text style={[styles.yAxisTitle, { color: colors.muted }]}>Hive Weight (lbs)</Text>
+              <Text style={[styles.yAxisTitle, { color: colors.muted }]}>{report.metric}</Text>
             </View>
 
             {/* Chart Canvas */}
@@ -250,14 +248,14 @@ export function Analytics() {
                 ))}
 
                 {/* Data lines */}
-                <ChartLines data={CHART_DATA.hive1} color={HIVE_COLORS.hive1} />
-                <ChartLines data={CHART_DATA.hive2} color={HIVE_COLORS.hive2} />
-                <ChartLines data={CHART_DATA.hive3} color={HIVE_COLORS.hive3} />
+                <ChartLines data={report.data.hive1} color={HIVE_COLORS.hive1} />
+                <ChartLines data={report.data.hive2} color={HIVE_COLORS.hive2} />
+                <ChartLines data={report.data.hive3} color={HIVE_COLORS.hive3} />
               </View>
 
               {/* X Axis Labels */}
               <View style={styles.xAxis}>
-                {CHART_DATA.labels.map((label) => (
+                {report.data.labels.map((label) => (
                   <Text key={label} style={[styles.xLabel, { color: colors.muted }]}>{label}</Text>
                 ))}
               </View>
@@ -271,14 +269,16 @@ export function Analytics() {
             <View style={styles.statBlock}>
               <Text style={[styles.statLabel, { color: colors.muted }]}>AVERAGE</Text>
               <View style={styles.statValueRow}>
-                <Text style={[styles.statValue, { color: colors.text }]}>77.2</Text>
-                <Text style={[styles.statUnit, { color: colors.muted }]}> lbs</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>{report.average}</Text>
+                <Text style={[styles.statUnit, { color: colors.muted }]}> {report.unit}</Text>
               </View>
             </View>
             <View style={styles.statBlock}>
               <Text style={[styles.statLabel, { color: colors.muted }]}>TREND</Text>
               <View style={styles.statValueRow}>
-                <Text style={[styles.statTrend]}>+12%</Text>
+                <Text style={[styles.statTrend, { color: report.trendGood ? '#16A34A' : '#DC2626' }]}>
+                  {report.trend}
+                </Text>
                 <Text style={[styles.statUnit, { color: colors.muted }]}> vs last period</Text>
               </View>
             </View>

@@ -76,7 +76,7 @@ const COMMENTS = [
 ];
 
 export function PostDetails() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const [liked, setLiked] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [likedComments, setLikedComments] = useState<Set<number>>(new Set());
@@ -91,7 +91,7 @@ export function PostDetails() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Header */}
       <View style={styles.header}>

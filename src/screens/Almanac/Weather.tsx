@@ -7,9 +7,11 @@ import {
   View,
   StatusBar,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView } from 'react-native-webview';
+// WebView is native-only; on web we use a real iframe via React.createElement
+const WebView = Platform.OS !== 'web' ? require('react-native-webview').WebView : null;
 import * as Location from 'expo-location';
 import { useTheme } from '../../Contexts/ThemeContext';
 
@@ -103,7 +105,7 @@ function formatDateLabel(dateStr: string): string {
 }
 
 export function WeatherMap() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const [forecast, setForecast] = React.useState<ForecastDay[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [locationName, setLocationName] = React.useState(DEFAULT_LOCATION_NAME);
@@ -166,7 +168,7 @@ export function WeatherMap() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Amber Header */}
       <View style={styles.header}>
@@ -276,15 +278,22 @@ export function WeatherMap() {
           </View>
         ) : (
           <View style={styles.mapContainer}>
-            <WebView
-              originWhitelist={['*']}
-              source={{ html: mapHtml(OPENWEATHER_KEY, lat, lon) }}
-              setSupportMultipleWindows={false}
-              javaScriptEnabled
-              domStorageEnabled
-              mixedContentMode="always"
-              allowsInlineMediaPlayback
-            />
+            {Platform.OS === 'web'
+              ? React.createElement('iframe', {
+                  srcDoc: mapHtml(OPENWEATHER_KEY, lat, lon),
+                  style: { width: '100%', height: '100%', border: 'none' },
+                  title: 'Weather Radar Map',
+                })
+              : WebView && React.createElement(WebView, {
+                  originWhitelist: ['*'],
+                  source: { html: mapHtml(OPENWEATHER_KEY, lat, lon) },
+                  setSupportMultipleWindows: false,
+                  javaScriptEnabled: true,
+                  domStorageEnabled: true,
+                  mixedContentMode: 'always',
+                  allowsInlineMediaPlayback: true,
+                })
+            }
           </View>
         )}
       </View>

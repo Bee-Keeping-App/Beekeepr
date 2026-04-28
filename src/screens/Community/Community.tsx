@@ -9,6 +9,7 @@ import {
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -107,7 +108,9 @@ const ADMIN_TOOLS = [
 ];
 
 export function Community() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navigation = useNavigation<any>();
   const [selectedClub] = useState<Club>(CLUBS[0]);
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
 
@@ -125,7 +128,7 @@ export function Community() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Amber Header */}
       <View style={styles.header}>
@@ -283,7 +286,12 @@ export function Community() {
         {POSTS.map((post) => {
           const liked = likedPosts.has(post.id);
           return (
-            <View style={styles.section} key={post.id}>
+            <TouchableOpacity
+              style={styles.section}
+              key={post.id}
+              activeOpacity={0.95}
+              onPress={() => navigation.navigate('PostDetails')}
+            >
               <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 {/* Post Header */}
                 <View style={styles.postHeader}>
@@ -335,7 +343,7 @@ export function Community() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
 

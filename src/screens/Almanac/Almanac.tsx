@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -63,7 +64,7 @@ const STATUS_CONFIG: Record<HiveStatus, { label: string; bg: string; text: strin
 type TabMode = 'apiaries' | 'journal';
 
 export function Almanac() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<TabMode>('apiaries');
@@ -83,7 +84,7 @@ export function Almanac() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Amber Header */}
       <View style={styles.header}>
@@ -111,7 +112,15 @@ export function Almanac() {
             >
               <Text style={styles.gearEmoji}>⚙️</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.quickEntryBtn}>
+            <TouchableOpacity
+              style={styles.quickEntryBtn}
+              onPress={() => Alert.alert('Quick Entry', 'What would you like to log?', [
+                { text: 'Inspection', onPress: () => navigation.navigate('HiveDetails') },
+                { text: 'Weight', onPress: () => {} },
+                { text: 'Treatment', onPress: () => {} },
+                { text: 'Cancel', style: 'cancel' },
+              ])}
+            >
               <Text style={styles.quickEntryText}>+  Quick Entry</Text>
             </TouchableOpacity>
           </View>

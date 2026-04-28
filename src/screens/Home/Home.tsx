@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -67,7 +68,7 @@ function formatDate(date: Date) {
 type ViewMode = 'Day' | 'Week' | 'Month';
 
 export function Home() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navigation = useNavigation<any>();
   const [viewMode, setViewMode] = useState<ViewMode>('Day');
@@ -75,7 +76,7 @@ export function Home() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Amber Header */}
       <View style={styles.header}>
@@ -103,10 +104,18 @@ export function Home() {
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={[styles.iconBtn, { borderColor: colors.border, backgroundColor: colors.background }]}
+              onPress={() => navigation.navigate('Settings')}
             >
               <Text style={styles.gearEmoji}>⚙️</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.addReminderBtn}>
+            <TouchableOpacity
+              style={styles.addReminderBtn}
+              onPress={() => Alert.alert('Add Reminder', 'Choose a task to schedule a reminder for.', [
+                { text: 'Inspect Hive #3', onPress: () => {} },
+                { text: 'Mite Treatment', onPress: () => {} },
+                { text: 'Cancel', style: 'cancel' },
+              ])}
+            >
               <Text style={styles.addReminderText}>+  Add Reminder</Text>
             </TouchableOpacity>
           </View>
@@ -114,14 +123,19 @@ export function Home() {
 
         {/* Weather Section */}
         <View style={styles.weatherSection}>
-          <View style={styles.weatherCard}>
+          <TouchableOpacity
+            style={styles.weatherCard}
+            onPress={() => navigation.navigate('LogBook', { screen: 'Weather' })}
+            activeOpacity={0.85}
+          >
             <View>
               <Text style={styles.weatherCardLabel}>Current Weather</Text>
               <Text style={styles.weatherTemp}>72°F</Text>
               <Text style={styles.weatherCondition}>Partly Cloudy</Text>
+              <Text style={styles.weatherTapHint}>Tap for full forecast →</Text>
             </View>
             <Text style={styles.bigSunEmoji}>☀️</Text>
-          </View>
+          </TouchableOpacity>
 
           <View style={[styles.metricCard, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <Text style={styles.metricEmoji}>💧</Text>
@@ -364,6 +378,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
     opacity: 0.9,
+  },
+  weatherTapHint: {
+    color: '#fff',
+    fontSize: 12,
+    opacity: 0.7,
+    marginTop: 8,
   },
   bigSunEmoji: { fontSize: 60 },
   metricCard: {

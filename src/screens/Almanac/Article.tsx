@@ -52,11 +52,11 @@ const ARTICLE = {
 };
 
 export function Article() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Header */}
       <View style={styles.header}>

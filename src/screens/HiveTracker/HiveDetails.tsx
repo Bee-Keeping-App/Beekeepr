@@ -78,13 +78,13 @@ const QUICK_ACTIONS = [
 ];
 
 export function HiveDetails() {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const [activeTab, setActiveTab] = useState<'overview' | 'history'>('overview');
   const statusCfg = STATUS_CONFIG[HIVE.status];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Header */}
       <View style={styles.header}>

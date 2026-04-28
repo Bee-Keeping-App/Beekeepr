@@ -45,12 +45,12 @@ const PROFILE = {
 };
 
 export function Profile({ route }: Props) {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
   const username = route.params.user || PROFILE.username;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={AMBER} />
+      <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={AMBER} />
 
       {/* Header */}
       <View style={styles.header}>
