@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -53,6 +55,7 @@ const ARTICLE = {
 
 export function Article() {
   const { colors, theme } = useTheme();
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
@@ -60,6 +63,9 @@ export function Article() {
 
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
         <Text style={styles.headerLogo}>beekeepr</Text>
         <View style={styles.headerRight}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
@@ -123,6 +129,7 @@ export function Article() {
                 styles.relatedRow,
                 idx < ARTICLE.relatedArticles.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
               ]}
+              onPress={() => Alert.alert(title, 'This article is not yet available.\n\nTODO: fetch article content from database by slug.', [{ text: 'OK' }])}
             >
               <Text style={[styles.relatedRowText, { color: colors.text }]}>{title}</Text>
               <Text style={[styles.relatedArrow, { color: colors.muted }]}>›</Text>
@@ -130,15 +137,7 @@ export function Article() {
           ))}
         </View>
 
-        {/* Beekeeping Tip Callout */}
-        <View style={[styles.tipCard, { backgroundColor: AMBER_LIGHT }]}>
-          <Text style={styles.tipTitle}>🐝  Pro Tip</Text>
-          <Text style={styles.tipBody}>
-            Mark your calendar 28 days after a walk-away split. If no queen is laying by then, you may have a queen-less hive — act quickly by adding a frame of fresh eggs from a healthy colony.
-          </Text>
-        </View>
-
-        <View style={{ height: 32 }} />
+<View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -153,7 +152,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3 },
+  backButton: { marginRight: 8, padding: 4 },
+  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
+  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3, flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerWeatherIcon: { fontSize: 15 },
   headerTemp: { fontSize: 15, fontWeight: '600', color: '#1C1917' },

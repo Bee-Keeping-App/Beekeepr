@@ -10,31 +10,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useLogSettings } from '../../Contexts/LogSettingsContext';
 
 const AMBER = '#F59E0B';
 
-const JOURNAL_FIELDS = [
-  'Queen Status',
-  'Temperament',
-  'Brood Pattern',
-  'Mite Count',
-  'Weather',
-  'Photos',
-  'Harvest Weight',
-  'Feeding Type',
-];
-
 export function Settings() {
   const { colors, theme, toggleTheme } = useTheme();
+  const { fields, toggleField } = useLogSettings();
   const isDark = theme === 'dark';
   const [autoSchedule, setAutoSchedule] = useState(false);
-  const [fieldChecks, setFieldChecks] = useState<Record<string, boolean>>(
-    Object.fromEntries(JOURNAL_FIELDS.map((f) => [f, true]))
-  );
-
-  function toggleField(field: string) {
-    setFieldChecks((prev: Record<string, boolean>) => ({ ...prev, [field]: !prev[field] }));
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
@@ -118,32 +102,32 @@ export function Settings() {
               Customize which fields appear when you log data. Turn off fields you don't use to keep things simple.
             </Text>
 
-            {JOURNAL_FIELDS.map((field, idx) => {
-              const checked = fieldChecks[field];
-              return (
-                <TouchableOpacity
-                  key={field}
+            {fields.map((field, idx) => (
+              <TouchableOpacity
+                key={field.key}
+                style={[
+                  styles.fieldRow,
+                  idx < fields.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+                ]}
+                onPress={() => toggleField(field.key)}
+                activeOpacity={0.7}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.fieldLabel, { color: colors.text }]}>{field.label}</Text>
+                  <Text style={[styles.fieldDesc, { color: colors.muted }]}>{field.description}</Text>
+                </View>
+                <View
                   style={[
-                    styles.fieldRow,
-                    idx < JOURNAL_FIELDS.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+                    styles.checkbox,
+                    field.enabled
+                      ? styles.checkboxChecked
+                      : [styles.checkboxUnchecked, { borderColor: colors.border }],
                   ]}
-                  onPress={() => toggleField(field)}
-                  activeOpacity={0.7}
                 >
-                  <Text style={[styles.fieldLabel, { color: colors.text }]}>{field}</Text>
-                  <View
-                    style={[
-                      styles.checkbox,
-                      checked
-                        ? styles.checkboxChecked
-                        : [styles.checkboxUnchecked, { borderColor: colors.border }],
-                    ]}
-                  >
-                    {checked && <Text style={styles.checkmark}>✓</Text>}
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
+                  {field.enabled && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -157,7 +141,7 @@ export function Settings() {
           </View>
         </View>
 
-        <View style={{ height: 32 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -215,7 +199,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
   },
-  fieldLabel: { fontSize: 15 },
+  fieldLabel: { fontSize: 15, fontWeight: '600', marginBottom: 2 },
+  fieldDesc: { fontSize: 12, lineHeight: 16 },
   checkbox: {
     width: 26,
     height: 26,

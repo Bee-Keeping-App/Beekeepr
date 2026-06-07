@@ -166,24 +166,17 @@ export function Analytics() {
                 idx === selectedReport && { backgroundColor: AMBER_LIGHT },
               ]}
             >
-              <Text style={[styles.reportTitle, { color: colors.text }]}>{report.title}</Text>
+              <Text style={[styles.reportTitle, { color: idx === selectedReport ? '#1C1917' : colors.text }]}>{report.title}</Text>
               <View style={styles.tagRow}>
                 {report.tags.map((tag) => (
-                  <View key={tag} style={[styles.tag, { backgroundColor: colors.surface }]}>
-                    <Text style={[styles.tagText, { color: colors.muted }]}>{tag}</Text>
+                  <View key={tag} style={[styles.tag, { backgroundColor: idx === selectedReport ? '#FDE68A' : colors.surface }]}>
+                    <Text style={[styles.tagText, { color: idx === selectedReport ? '#92400E' : colors.muted }]}>{tag}</Text>
                   </View>
                 ))}
               </View>
             </TouchableOpacity>
           ))}
 
-          {/* Pro Tip */}
-          <View style={[styles.proTipCard, { backgroundColor: AMBER_LIGHT, borderColor: AMBER }]}>
-            <Text style={[styles.proTipIcon, { color: AMBER_DARK }]}>ⓘ</Text>
-            <Text style={[styles.proTipText, { color: AMBER_DARK }]}>
-              Pro Tip: Compare your hive weight against local blooming periods to predict honey flows.
-            </Text>
-          </View>
         </View>
 
         {/* Chart Card */}
@@ -285,7 +278,7 @@ export function Analytics() {
           </View>
         </View>
 
-        <View style={{ height: 32 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
   );

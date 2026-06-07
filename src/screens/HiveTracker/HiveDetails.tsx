@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -17,6 +19,7 @@ const ORANGE = '#F97316';
 const BLUE_LABEL = '#1D4ED8';
 
 const HIVE = {
+  id: 1,
   name: 'Hive #1',
   apiary: 'North Apiary',
   status: 'healthy' as const,
@@ -64,22 +67,26 @@ const INSPECTIONS = [
   },
 ];
 
-const STATUS_CONFIG = {
-  healthy: { label: 'Healthy', bg: '#DCFCE7', text: '#16A34A' },
-  attention: { label: 'Needs Attention', bg: '#FEF3C7', text: '#D97706' },
-  critical: { label: 'Critical', bg: '#FEE2E2', text: '#DC2626' },
-};
+function getStatusConfig(isDark: boolean) {
+  return {
+    healthy: { label: 'Healthy', bg: isDark ? '#14532D' : '#DCFCE7', text: isDark ? '#4ADE80' : '#16A34A' },
+    attention: { label: 'Needs Attention', bg: isDark ? '#451A03' : '#FEF3C7', text: isDark ? '#FCD34D' : '#D97706' },
+    critical: { label: 'Critical', bg: isDark ? '#450A0A' : '#FEE2E2', text: isDark ? '#F87171' : '#DC2626' },
+  };
+}
 
 const QUICK_ACTIONS = [
-  { emoji: '📝', label: 'Log Inspection' },
-  { emoji: '⚖️', label: 'Log Weight' },
-  { emoji: '💊', label: 'Treatment' },
-  { emoji: '📷', label: 'Add Photo' },
+  { emoji: '📝', label: 'Log Inspection', alert: { title: 'Log Inspection', message: 'Record a full hive inspection.\n\nFields: Date, Queen Seen, Brood Pattern, Mite Count, Weight, Notes, Status.\n\nDatabase hook not yet connected.' } },
+  { emoji: '⚖️', label: 'Log Weight', alert: { title: 'Log Weight', message: 'Record hive weight.\n\nFields: Date, Weight (lbs), Notes.\n\nDatabase hook not yet connected.' } },
+  { emoji: '💊', label: 'Treatment', alert: { title: 'Log Treatment', message: 'Record a treatment application.\n\nFields: Date, Treatment Type, Dosage, Duration, Notes.\n\nDatabase hook not yet connected.' } },
+  { emoji: '📷', label: 'Add Photo', alert: { title: 'Add Photo', message: 'Attach a photo to this hive.\n\nTODO: open camera/gallery and upload to storage.' } },
 ];
 
 export function HiveDetails() {
   const { colors, theme } = useTheme();
+  const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<'overview' | 'history'>('overview');
+  const STATUS_CONFIG = getStatusConfig(theme === 'dark');
   const statusCfg = STATUS_CONFIG[HIVE.status];
 
   return (
@@ -130,6 +137,10 @@ export function HiveDetails() {
             <TouchableOpacity
               key={action.label}
               style={[styles.quickActionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+              onPress={() => Alert.alert(action.alert.title, action.alert.message, [
+                { text: action.label, onPress: () => { /* TODO: open form */ } },
+                { text: 'Cancel', style: 'cancel' },
+              ])}
             >
               <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
               <Text style={[styles.quickActionLabel, { color: colors.text }]}>{action.label}</Text>
@@ -179,13 +190,6 @@ export function HiveDetails() {
               <Text style={[styles.notesText, { color: colors.muted }]}>{HIVE.notes}</Text>
             </View>
 
-            {/* Beekeeping Tip */}
-            <View style={[styles.tipCard, { backgroundColor: AMBER_LIGHT }]}>
-              <Text style={styles.tipTitle}>💡  Tip</Text>
-              <Text style={styles.tipBody}>
-                A blue-marked queen from 2024 is in her prime laying year. Monitor for supercedure cells next spring as she enters her second season.
-              </Text>
-            </View>
           </View>
         ) : (
           <View style={styles.tabContent}>
@@ -228,12 +232,15 @@ export function HiveDetails() {
           </View>
         )}
 
-        <View style={{ height: 32 }} />
+        <View style={{ height: 120 }} />
       </ScrollView>
 
       {/* Floating Log Button */}
       <View style={[styles.fab, { bottom: 24 }]}>
-        <TouchableOpacity style={[styles.fabBtn, { backgroundColor: ORANGE }]}>
+        <TouchableOpacity
+          style={[styles.fabBtn, { backgroundColor: ORANGE }]}
+          onPress={() => navigation.navigate('LogEntry', { hiveName: HIVE.name, hiveId: String(HIVE.id) })}
+        >
           <Text style={styles.fabText}>+  Log Inspection</Text>
         </TouchableOpacity>
       </View>

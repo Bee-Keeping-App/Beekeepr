@@ -73,6 +73,11 @@ export function Home() {
   const navigation = useNavigation<any>();
   const [viewMode, setViewMode] = useState<ViewMode>('Day');
   const today = new Date();
+  const isDark = theme === 'dark';
+  const pendingBg = isDark ? '#451A03' : '#FEF3C7';
+  const pendingText = isDark ? '#FCD34D' : '#D97706';
+  const completedBg = isDark ? '#14532D' : '#DCFCE7';
+  const completedText = isDark ? '#4ADE80' : '#16A34A';
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
@@ -125,7 +130,7 @@ export function Home() {
         <View style={styles.weatherSection}>
           <TouchableOpacity
             style={styles.weatherCard}
-            onPress={() => navigation.navigate('LogBook', { screen: 'Weather' })}
+            onPress={() => navigation.navigate('WeatherModal')}
             activeOpacity={0.85}
           >
             <View>
@@ -175,7 +180,7 @@ export function Home() {
             {(['Day', 'Week', 'Month'] as ViewMode[]).map((mode) => (
               <TouchableOpacity
                 key={mode}
-                style={[styles.tab, viewMode === mode && styles.activeTab]}
+                style={[styles.tab, viewMode === mode && { backgroundColor: colors.background, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 2 }]}
                 onPress={() => setViewMode(mode)}
               >
                 <Text
@@ -203,7 +208,7 @@ export function Home() {
               <View
                 style={[
                   styles.taskIconCircle,
-                  { backgroundColor: task.status === 'completed' ? '#DCFCE7' : '#FEF3C7' },
+                  { backgroundColor: task.status === 'completed' ? completedBg : pendingBg },
                 ]}
               >
                 <Text style={styles.taskClockEmoji}>🕐</Text>
@@ -225,13 +230,13 @@ export function Home() {
                 <View
                   style={[
                     styles.badge,
-                    task.status === 'completed' ? styles.badgeCompleted : styles.badgePending,
+                    { backgroundColor: task.status === 'completed' ? completedBg : pendingBg },
                   ]}
                 >
                   <Text
                     style={[
                       styles.badgeText,
-                      task.status === 'completed' ? styles.badgeTextCompleted : styles.badgeTextPending,
+                      { color: task.status === 'completed' ? completedText : pendingText },
                     ]}
                   >
                     {task.status === 'completed' ? 'Completed' : 'Pending'}
@@ -262,13 +267,6 @@ export function Home() {
           ))}
         </View>
 
-        {/* Did you know? */}
-        <View style={styles.factSection}>
-          <View style={styles.factCard}>
-            <Text style={styles.factTitle}>Did you know?</Text>
-            <Text style={styles.factBody}>{BEE_FACTS[0]}</Text>
-          </View>
-        </View>
 
         <View style={styles.bottomPad} />
       </ScrollView>
@@ -304,7 +302,7 @@ const styles = StyleSheet.create({
   },
 
   scrollView: { flex: 1 },
-  scrollContent: { paddingBottom: 0 },
+  scrollContent: { paddingBottom: 20 },
 
   greetingSection: {
     paddingHorizontal: 20,
@@ -566,5 +564,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  bottomPad: { height: 32 },
+  bottomPad: { height: 100 },
 });

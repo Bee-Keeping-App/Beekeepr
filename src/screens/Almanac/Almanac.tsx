@@ -55,11 +55,13 @@ const APIARIES: Apiary[] = [
   },
 ];
 
-const STATUS_CONFIG: Record<HiveStatus, { label: string; bg: string; text: string }> = {
-  healthy: { label: 'Healthy', bg: '#DCFCE7', text: '#16A34A' },
-  attention: { label: 'Needs Attention', bg: '#FEF3C7', text: '#D97706' },
-  critical: { label: 'Critical', bg: '#FEE2E2', text: '#DC2626' },
-};
+function getStatusConfig(isDark: boolean): Record<HiveStatus, { label: string; bg: string; text: string }> {
+  return {
+    healthy: { label: 'Healthy', bg: isDark ? '#14532D' : '#DCFCE7', text: isDark ? '#4ADE80' : '#16A34A' },
+    attention: { label: 'Needs Attention', bg: isDark ? '#451A03' : '#FEF3C7', text: isDark ? '#FCD34D' : '#D97706' },
+    critical: { label: 'Critical', bg: isDark ? '#450A0A' : '#FEE2E2', text: isDark ? '#F87171' : '#DC2626' },
+  };
+}
 
 type TabMode = 'apiaries' | 'journal';
 
@@ -69,6 +71,7 @@ export function Almanac() {
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<TabMode>('apiaries');
   const [expandedApiaries, setExpandedApiaries] = useState<Set<number>>(new Set([1]));
+  const STATUS_CONFIG = getStatusConfig(theme === 'dark');
 
   function toggleApiary(id: number) {
     setExpandedApiaries((prev: Set<number>) => {
@@ -89,7 +92,7 @@ export function Almanac() {
       {/* Amber Header */}
       <View style={styles.header}>
         <Text style={styles.headerLogo}>beekeepr</Text>
-        <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('Weather')}>
+        <TouchableOpacity style={styles.headerRight} onPress={() => navigation.navigate('WeatherModal')}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
           <Text style={styles.headerTemp}>72°F</Text>
         </TouchableOpacity>
@@ -109,15 +112,20 @@ export function Almanac() {
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={[styles.iconBtn, { borderColor: colors.border, backgroundColor: colors.background }]}
+              onPress={() => Alert.alert('Apiary Settings', 'Manage your apiaries.', [
+                { text: 'Rename Apiary', onPress: () => { /* TODO: open rename input modal */ } },
+                { text: 'Delete Apiary', style: 'destructive', onPress: () => { /* TODO: confirm + delete via API */ } },
+                { text: 'Cancel', style: 'cancel' },
+              ])}
             >
               <Text style={styles.gearEmoji}>⚙️</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.quickEntryBtn}
               onPress={() => Alert.alert('Quick Entry', 'What would you like to log?', [
-                { text: 'Inspection', onPress: () => navigation.navigate('HiveDetails') },
-                { text: 'Weight', onPress: () => {} },
-                { text: 'Treatment', onPress: () => {} },
+                { text: 'Inspection', onPress: () => navigation.navigate('LogEntry') },
+                { text: 'Weight', onPress: () => Alert.alert('Log Weight', 'Record the current hive weight.\n\nFields: Hive, Date, Weight (lbs), Notes.\n\nDatabase hook not yet connected.', [{ text: 'OK' }]) /* TODO: open weight log form */ },
+                { text: 'Treatment', onPress: () => Alert.alert('Log Treatment', 'Record a treatment application.\n\nFields: Hive, Date, Treatment Type, Dosage, Notes.\n\nDatabase hook not yet connected.', [{ text: 'OK' }]) /* TODO: open treatment log form */ },
                 { text: 'Cancel', style: 'cancel' },
               ])}
             >
@@ -209,7 +217,7 @@ export function Almanac() {
                               <Text style={[styles.statusText, { color: statusCfg.text }]}>{statusCfg.label}</Text>
                             </View>
 
-                            <View style={styles.hiveInfoRow}>
+                            <View style={[styles.hiveInfoRow, { borderBottomColor: colors.border }]}>
                               <Text style={[styles.hiveInfoKey, { color: colors.muted }]}>Queen</Text>
                               <Text style={[styles.hiveInfoVal, { color: colors.text }]}>{hive.queen}</Text>
                             </View>
@@ -221,6 +229,12 @@ export function Almanac() {
                             <View style={styles.hiveActions}>
                               <TouchableOpacity
                                 style={[styles.logBtn, { borderColor: AMBER }]}
+                                onPress={() => Alert.alert(`Log for ${hive.name}`, 'What would you like to record?', [
+                                  { text: 'Inspection', onPress: () => navigation.navigate('LogEntry') },
+                                  { text: 'Weight', onPress: () => Alert.alert('Log Weight', `Logging weight for ${hive.name}.\n\nDatabase hook not yet connected.`, [{ text: 'OK' }]) /* TODO: open weight form pre-filled with hive id */ },
+                                  { text: 'Treatment', onPress: () => Alert.alert('Log Treatment', `Logging treatment for ${hive.name}.\n\nDatabase hook not yet connected.`, [{ text: 'OK' }]) /* TODO: open treatment form pre-filled with hive id */ },
+                                  { text: 'Cancel', style: 'cancel' },
+                                ])}
                               >
                                 <Text style={[styles.logBtnText, { color: AMBER_DARK }]}>+  Log</Text>
                               </TouchableOpacity>
@@ -236,7 +250,13 @@ export function Almanac() {
                       })}
 
                       {/* Add Hive placeholder */}
-                      <TouchableOpacity style={[styles.addHiveCard, { borderColor: colors.border }]}>
+                      <TouchableOpacity
+                        style={[styles.addHiveCard, { borderColor: colors.border }]}
+                        onPress={() => Alert.alert('Add Hive', `Add a new hive to ${apiary.name}.\n\nFields: Hive Name, Queen Color, Queen Year, Notes.\n\nDatabase hook not yet connected.`, [
+                          { text: 'Add Hive', onPress: () => { /* TODO: POST /api/hives with apiary id */ } },
+                          { text: 'Cancel', style: 'cancel' },
+                        ])}
+                      >
                         <Text style={[styles.addHivePlus, { color: colors.muted }]}>+</Text>
                         <Text style={[styles.addHiveLabel, { color: colors.muted }]}>Add Hive</Text>
                       </TouchableOpacity>
@@ -247,11 +267,17 @@ export function Almanac() {
             })}
 
             {/* Create New Apiary */}
-            <TouchableOpacity style={[styles.createApiaryBtn, { borderColor: colors.border }]}>
+            <TouchableOpacity
+              style={[styles.createApiaryBtn, { borderColor: colors.border }]}
+              onPress={() => Alert.alert('Create New Apiary', 'Set up a new apiary location.\n\nFields: Apiary Name, Location Description.\n\nDatabase hook not yet connected.', [
+                { text: 'Create', onPress: () => { /* TODO: POST /api/apiaries */ } },
+                { text: 'Cancel', style: 'cancel' },
+              ])}
+            >
               <Text style={[styles.createApiaryText, { color: colors.muted }]}>+  Create New Apiary</Text>
             </TouchableOpacity>
 
-            <View style={{ height: 32 }} />
+            <View style={{ height: 100 }} />
           </View>
         ) : (
           <View style={styles.content}>
@@ -479,7 +505,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E5E7EB',
   },
   hiveInfoKey: { fontSize: 14 },
   hiveInfoVal: { fontSize: 14, fontWeight: '700' },

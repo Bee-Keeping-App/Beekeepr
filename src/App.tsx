@@ -8,6 +8,7 @@ import { useColorScheme } from 'react-native';
 import { Navigation } from './navigation/AppNavigator';
 import { ThemeProvider } from './Contexts/ThemeContext';
 import AccountProvider from './Contexts/AuthContext';
+import { LogSettingsProvider } from './Contexts/LogSettingsContext';
 import newspaper from './assets/newspaper.png';
 import bell from './assets/bell.png';
 Asset.loadAsync([
@@ -27,6 +28,7 @@ export function App() {
 
   return (
     <ThemeProvider respectSystem>
+      <LogSettingsProvider>
       <AccountProvider>
         <Navigation
           theme={theme}
@@ -39,6 +41,7 @@ export function App() {
           }}
         />
       </AccountProvider>
+      </LogSettingsProvider>
     </ThemeProvider>
   );
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   ActivityIndicator,
+  BackHandler,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 // WebView is native-only; on web we use a real iframe via React.createElement
 const WebView = Platform.OS !== 'web' ? require('react-native-webview').WebView : null;
 import * as Location from 'expo-location';
@@ -106,6 +108,7 @@ function formatDateLabel(dateStr: string): string {
 
 export function WeatherMap() {
   const { colors, theme } = useTheme();
+  const navigation = useNavigation();
   const [forecast, setForecast] = React.useState<ForecastDay[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [locationName, setLocationName] = React.useState(DEFAULT_LOCATION_NAME);
@@ -113,6 +116,17 @@ export function WeatherMap() {
   const [lat, setLat] = React.useState(DEFAULT_LAT);
   const [lon, setLon] = React.useState(DEFAULT_LON);
   const [activeTab, setActiveTab] = React.useState<'forecast' | 'map'>('forecast');
+
+  React.useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+        return true;
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, [navigation]);
 
   React.useEffect(() => {
     (async () => {
@@ -172,6 +186,9 @@ export function WeatherMap() {
 
       {/* Amber Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
         <Text style={styles.headerLogo}>beekeepr</Text>
         <View style={styles.headerRight}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
@@ -264,15 +281,6 @@ export function WeatherMap() {
                   </View>
                 ))}
 
-                {/* Beekeeping insight card */}
-                <View style={[styles.insightCard, { backgroundColor: '#FEF3C7' }]}>
-                  <Text style={styles.insightTitle}>🐝  Beekeeping Outlook</Text>
-                  <Text style={styles.insightBody}>
-                    {today && today.max >= 60
-                      ? `Good conditions for hive inspections. Temps reaching ${Math.round(today.max)}°F — bees will be active and foraging.`
-                      : `Cool conditions ahead. Limit hive openings and ensure adequate winter stores. Inspect only on warmer afternoons.`}
-                  </Text>
-                </View>
               </ScrollView>
             )}
           </View>
@@ -310,7 +318,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3 },
+  backButton: { marginRight: 8, padding: 4 },
+  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
+  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3, flex: 1 },
+  backButton: { marginRight: 8, padding: 4 },
+  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerWeatherIcon: { fontSize: 15 },
   headerTemp: { fontSize: 15, fontWeight: '600', color: '#1C1917' },
