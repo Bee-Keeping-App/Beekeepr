@@ -122,14 +122,9 @@ export function Almanac() {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.quickEntryBtn}
-              onPress={() => Alert.alert('Quick Entry', 'What would you like to log?', [
-                { text: 'Inspection', onPress: () => navigation.navigate('LogEntry') },
-                { text: 'Weight', onPress: () => Alert.alert('Log Weight', 'Record the current hive weight.\n\nFields: Hive, Date, Weight (lbs), Notes.\n\nDatabase hook not yet connected.', [{ text: 'OK' }]) /* TODO: open weight log form */ },
-                { text: 'Treatment', onPress: () => Alert.alert('Log Treatment', 'Record a treatment application.\n\nFields: Hive, Date, Treatment Type, Dosage, Notes.\n\nDatabase hook not yet connected.', [{ text: 'OK' }]) /* TODO: open treatment log form */ },
-                { text: 'Cancel', style: 'cancel' },
-              ])}
+              onPress={() => navigation.navigate('LogEntry' as never)}
             >
-              <Text style={styles.quickEntryText}>+  Quick Entry</Text>
+              <Text style={styles.quickEntryText}>+  Log Entry</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -229,12 +224,7 @@ export function Almanac() {
                             <View style={styles.hiveActions}>
                               <TouchableOpacity
                                 style={[styles.logBtn, { borderColor: AMBER }]}
-                                onPress={() => Alert.alert(`Log for ${hive.name}`, 'What would you like to record?', [
-                                  { text: 'Inspection', onPress: () => navigation.navigate('LogEntry') },
-                                  { text: 'Weight', onPress: () => Alert.alert('Log Weight', `Logging weight for ${hive.name}.\n\nDatabase hook not yet connected.`, [{ text: 'OK' }]) /* TODO: open weight form pre-filled with hive id */ },
-                                  { text: 'Treatment', onPress: () => Alert.alert('Log Treatment', `Logging treatment for ${hive.name}.\n\nDatabase hook not yet connected.`, [{ text: 'OK' }]) /* TODO: open treatment form pre-filled with hive id */ },
-                                  { text: 'Cancel', style: 'cancel' },
-                                ])}
+                                onPress={() => navigation.navigate('LogEntry' as never, { hiveId: String(hive.id), hiveName: hive.name } as never)}
                               >
                                 <Text style={[styles.logBtnText, { color: AMBER_DARK }]}>+  Log</Text>
                               </TouchableOpacity>
@@ -308,7 +298,7 @@ export function Almanac() {
               <Text style={styles.emptyEmoji}>📝</Text>
               <Text style={[styles.emptyTitle, { color: colors.text }]}>No personal entries yet</Text>
               <Text style={[styles.emptySubtitle, { color: colors.muted }]}>
-                Use Quick Entry to start logging your beekeeping activities.
+                Tap + Log on any hive, or use Log Entry from any apiary.
               </Text>
             </View>
           </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -14,7 +15,6 @@ import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
 const AMBER_DARK = '#D97706';
-const AMBER_LIGHT = '#FEF3C7';
 const ORANGE = '#F97316';
 const BLUE_LABEL = '#1D4ED8';
 
@@ -75,17 +75,27 @@ function getStatusConfig(isDark: boolean) {
   };
 }
 
+// Log Inspection, Log Weight, Treatment → all go to the unified LogEntry form
+// Add Photo → Alert stub until expo-image-picker is wired (see ToDo.md)
 const QUICK_ACTIONS = [
-  { emoji: '📝', label: 'Log Inspection', alert: { title: 'Log Inspection', message: 'Record a full hive inspection.\n\nFields: Date, Queen Seen, Brood Pattern, Mite Count, Weight, Notes, Status.\n\nDatabase hook not yet connected.' } },
-  { emoji: '⚖️', label: 'Log Weight', alert: { title: 'Log Weight', message: 'Record hive weight.\n\nFields: Date, Weight (lbs), Notes.\n\nDatabase hook not yet connected.' } },
-  { emoji: '💊', label: 'Treatment', alert: { title: 'Log Treatment', message: 'Record a treatment application.\n\nFields: Date, Treatment Type, Dosage, Duration, Notes.\n\nDatabase hook not yet connected.' } },
-  { emoji: '📷', label: 'Add Photo', alert: { title: 'Add Photo', message: 'Attach a photo to this hive.\n\nTODO: open camera/gallery and upload to storage.' } },
+  { emoji: '📝', label: 'Log Inspection', toLogEntry: true },
+  { emoji: '⚖️', label: 'Log Weight',     toLogEntry: true },
+  { emoji: '💊', label: 'Treatment',       toLogEntry: true },
+  { emoji: '📷', label: 'Add Photo',       toLogEntry: false },
 ];
 
 export function HiveDetails() {
   const { colors, theme } = useTheme();
   const navigation = useNavigation<any>();
   const [activeTab, setActiveTab] = useState<'overview' | 'history'>('overview');
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      navigation.goBack();
+      return true;
+    });
+    return () => sub.remove();
+  }, [navigation]);
   const STATUS_CONFIG = getStatusConfig(theme === 'dark');
   const statusCfg = STATUS_CONFIG[HIVE.status];
 
@@ -95,6 +105,9 @@ export function HiveDetails() {
 
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
         <Text style={styles.headerLogo}>beekeepr</Text>
         <View style={styles.headerRight}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
@@ -137,10 +150,13 @@ export function HiveDetails() {
             <TouchableOpacity
               key={action.label}
               style={[styles.quickActionBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
-              onPress={() => Alert.alert(action.alert.title, action.alert.message, [
-                { text: action.label, onPress: () => { /* TODO: open form */ } },
-                { text: 'Cancel', style: 'cancel' },
-              ])}
+              onPress={() => {
+                if (action.toLogEntry) {
+                  navigation.navigate('LogEntry', { hiveName: HIVE.name, hiveId: String(HIVE.id) });
+                } else {
+                  Alert.alert('Add Photo', 'Attach a photo to this hive.\n\nTODO: open camera/gallery via expo-image-picker and upload to storage.', [{ text: 'OK' }]);
+                }
+              }}
             >
               <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
               <Text style={[styles.quickActionLabel, { color: colors.text }]}>{action.label}</Text>
@@ -257,7 +273,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3 },
+  backButton: { marginRight: 8, padding: 4 },
+  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
+  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3, flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerWeatherIcon: { fontSize: 15 },
   headerTemp: { fontSize: 15, fontWeight: '600', color: '#1C1917' },

@@ -109,6 +109,7 @@ const ADMIN_TOOLS = [
 
 export function Community() {
   const { colors, theme } = useTheme();
+  const isDark = theme === 'dark';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navigation = useNavigation<any>();
   const [selectedClub] = useState<Club>(CLUBS[0]);
@@ -166,7 +167,7 @@ export function Community() {
                 key={club.id}
                 style={[
                   styles.clubRow,
-                  club.id === selectedClub.id && { backgroundColor: AMBER_LIGHT },
+                  club.id === selectedClub.id && { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT },
                   { borderColor: colors.border },
                 ]}
               >
@@ -192,7 +193,7 @@ export function Community() {
                   </Text>
                 </View>
                 {club.id === selectedClub.id && (
-                  <View style={[styles.selectedBadge, { backgroundColor: AMBER_LIGHT, borderColor: AMBER }]}>
+                  <View style={[styles.selectedBadge, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT, borderColor: AMBER }]}>
                     <Text style={{ color: AMBER, fontSize: 14 }}>✓</Text>
                   </View>
                 )}
@@ -209,7 +210,7 @@ export function Community() {
               <Text style={[styles.clubDetailDesc, { color: colors.muted }]}>{selectedClub.description}</Text>
 
               {/* Admin Tools */}
-              <View style={[styles.adminToolsBox, { backgroundColor: AMBER_LIGHT }]}>
+              <View style={[styles.adminToolsBox, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT }]}>
                 <View style={styles.adminToolsHeader}>
                   <Text style={[styles.adminToolsIcon, { color: ORANGE }]}>🛡</Text>
                   <Text style={[styles.adminToolsTitle, { color: ORANGE }]}>ADMIN TOOLS</Text>
@@ -229,8 +230,8 @@ export function Community() {
               <View style={styles.onlineMembersSection}>
                 <View style={styles.onlineMembersHeader}>
                   <Text style={[styles.onlineMembersTitle, { color: colors.muted }]}>ONLINE MEMBERS</Text>
-                  <View style={styles.activeCountBadge}>
-                    <Text style={styles.activeCountText}>3 ACTIVE</Text>
+                  <View style={[styles.activeCountBadge, { backgroundColor: isDark ? '#14532D' : '#DCFCE7' }]}>
+                    <Text style={[styles.activeCountText, { color: isDark ? '#4ADE80' : '#16A34A' }]}>3 ACTIVE</Text>
                   </View>
                 </View>
                 {ONLINE_MEMBERS.map((member) => (
@@ -253,7 +254,7 @@ export function Community() {
         <View style={styles.section}>
           <View style={[styles.feedHeaderCard, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <View
-              style={[styles.clubAvatar, { backgroundColor: AMBER_LIGHT, width: 48, height: 48, borderRadius: 24 }]}
+              style={[styles.clubAvatar, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT, width: 48, height: 48, borderRadius: 24 }]}
             >
               <Text style={[styles.clubAvatarText, { color: ORANGE, fontSize: 15 }]}>PC</Text>
             </View>
@@ -261,7 +262,7 @@ export function Community() {
               <Text style={[styles.clubName, { color: colors.text }]}>{selectedClub.name}</Text>
               <Text style={[styles.clubMeta, { color: colors.muted }]}>Feed</Text>
             </View>
-            <TouchableOpacity style={[styles.adminViewBadge, { backgroundColor: AMBER_LIGHT, borderColor: AMBER }]}>
+            <TouchableOpacity style={[styles.adminViewBadge, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT, borderColor: isDark ? AMBER_DARK : AMBER }]}>
               <Text style={[styles.adminViewText, { color: AMBER_DARK }]}>🛡 Admin View</Text>
             </TouchableOpacity>
           </View>
@@ -473,12 +474,11 @@ const styles = StyleSheet.create({
   },
   onlineMembersTitle: { fontSize: 11, fontWeight: '700', letterSpacing: 1 },
   activeCountBadge: {
-    backgroundColor: '#DCFCE7',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 3,
   },
-  activeCountText: { fontSize: 11, fontWeight: '700', color: '#16A34A' },
+  activeCountText: { fontSize: 11, fontWeight: '700' },
   memberRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

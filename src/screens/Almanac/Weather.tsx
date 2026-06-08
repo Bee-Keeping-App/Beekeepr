@@ -248,7 +248,7 @@ export function WeatherMap() {
                 <Text style={[styles.loadingText, { color: colors.muted }]}>Loading forecast…</Text>
               </View>
             ) : (
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
                 {forecast.map((day, idx) => (
                   <View
                     key={day.date}
@@ -321,8 +321,6 @@ const styles = StyleSheet.create({
   backButton: { marginRight: 8, padding: 4 },
   backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
   headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3, flex: 1 },
-  backButton: { marginRight: 8, padding: 4 },
-  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerWeatherIcon: { fontSize: 15 },
   headerTemp: { fontSize: 15, fontWeight: '600', color: '#1C1917' },

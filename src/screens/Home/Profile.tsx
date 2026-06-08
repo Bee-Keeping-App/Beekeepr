@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StaticScreenProps } from '@react-navigation/native';
+import { StaticScreenProps, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../Contexts/ThemeContext';
 
 const AMBER = '#F59E0B';
@@ -46,7 +47,16 @@ const PROFILE = {
 
 export function Profile({ route }: Props) {
   const { colors, theme } = useTheme();
+  const navigation = useNavigation();
   const username = route.params.user || PROFILE.username;
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      navigation.goBack();
+      return true;
+    });
+    return () => sub.remove();
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: AMBER }} edges={['top']}>
@@ -54,6 +64,9 @@ export function Profile({ route }: Props) {
 
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
         <Text style={styles.headerLogo}>beekeepr</Text>
         <View style={styles.headerRight}>
           <Text style={styles.headerWeatherIcon}>☀️</Text>
@@ -166,7 +179,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
-  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3 },
+  backButton: { marginRight: 8, padding: 4 },
+  backArrow: { fontSize: 22, fontWeight: '700', color: '#1C1917' },
+  headerLogo: { fontSize: 20, fontWeight: '800', color: '#1C1917', letterSpacing: -0.3, flex: 1 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headerWeatherIcon: { fontSize: 15 },
   headerTemp: { fontSize: 15, fontWeight: '600', color: '#1C1917' },
