@@ -47,6 +47,7 @@ const PROFILE = {
 
 export function Profile({ route }: Props) {
   const { colors, theme } = useTheme();
+  const isDark = theme === 'dark';
   const navigation = useNavigation();
   const username = route.params.user || PROFILE.username;
 
@@ -88,8 +89,8 @@ export function Profile({ route }: Props) {
           <Text style={[styles.displayName, { color: colors.text }]}>{PROFILE.name}</Text>
           <Text style={[styles.usernameText, { color: colors.muted }]}>@{username}</Text>
 
-          <View style={[styles.levelBadge, { backgroundColor: AMBER_LIGHT }]}>
-            <Text style={[styles.levelText, { color: AMBER_DARK }]}>🐝  {PROFILE.level} Beekeeper</Text>
+          <View style={[styles.levelBadge, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT }]}>
+            <Text style={[styles.levelText, { color: isDark ? '#FCD34D' : AMBER_DARK }]}>🐝  {PROFILE.level} Beekeeper</Text>
           </View>
 
           <View style={styles.locationRow}>
@@ -127,8 +128,8 @@ export function Profile({ route }: Props) {
                   idx < PROFILE.clubs.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
                 ]}
               >
-                <View style={[styles.clubAvatar, { backgroundColor: idx === 0 ? ORANGE : '#E5E7EB' }]}>
-                  <Text style={[styles.clubAvatarText, { color: idx === 0 ? '#fff' : colors.muted }]}>
+                <View style={[styles.clubAvatar, { backgroundColor: idx === 0 ? AMBER_DARK : '#E5E7EB' }]}>
+                  <Text style={[styles.clubAvatarText, { color: idx === 0 ? '#1C1917' : colors.muted }]}>
                     {club.initials}
                   </Text>
                 </View>
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   avatar: { width: 78, height: 78, borderRadius: 39, justifyContent: 'center', alignItems: 'center' },
-  avatarText: { color: '#fff', fontSize: 28, fontWeight: '800' },
+  avatarText: { color: '#1C1917', fontSize: 28, fontWeight: '800' },
   displayName: { fontSize: 24, fontWeight: '800' },
   usernameText: { fontSize: 15 },
   levelBadge: { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 5, marginVertical: 4 },

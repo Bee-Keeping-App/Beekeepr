@@ -55,6 +55,7 @@ const ARTICLE = {
 
 export function Article() {
   const { colors, theme } = useTheme();
+  const isDark = theme === 'dark';
   const navigation = useNavigation();
 
   return (
@@ -76,8 +77,8 @@ export function Article() {
       <ScrollView style={[styles.scrollView, { backgroundColor: colors.surface }]} showsVerticalScrollIndicator={false}>
         {/* Category Tag */}
         <View style={styles.metaSection}>
-          <View style={[styles.categoryBadge, { backgroundColor: AMBER_LIGHT }]}>
-            <Text style={[styles.categoryText, { color: AMBER_DARK }]}>{ARTICLE.category}</Text>
+          <View style={[styles.categoryBadge, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT }]}>
+            <Text style={[styles.categoryText, { color: isDark ? '#FCD34D' : AMBER_DARK }]}>{ARTICLE.category}</Text>
           </View>
 
           <Text style={[styles.articleTitle, { color: colors.text }]}>{ARTICLE.title}</Text>
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   authorAvatar: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  authorAvatarText: { color: '#fff', fontWeight: '800', fontSize: 14 },
+  authorAvatarText: { color: '#1C1917', fontWeight: '800', fontSize: 14 },
   authorInfo: { flex: 1 },
   authorName: { fontSize: 14, fontWeight: '700' },
   authorRole: { fontSize: 12, marginTop: 1 },

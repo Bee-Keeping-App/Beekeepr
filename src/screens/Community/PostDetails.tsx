@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
   },
-  replyAvatarText: { color: '#fff', fontWeight: '700', fontSize: 12 },
+  replyAvatarText: { color: '#1C1917', fontWeight: '700', fontSize: 12 },
   replyInput: {
     flex: 1,
     borderRadius: 20,

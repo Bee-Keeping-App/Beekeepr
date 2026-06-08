@@ -108,6 +108,7 @@ function formatDateLabel(dateStr: string): string {
 
 export function WeatherMap() {
   const { colors, theme } = useTheme();
+  const isDark = theme === 'dark';
   const navigation = useNavigation();
   const [forecast, setForecast] = React.useState<ForecastDay[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -219,8 +220,8 @@ export function WeatherMap() {
         </View>
 
         {error ? (
-          <View style={[styles.bannerRow, { backgroundColor: '#FEF3C7' }]}>
-            <Text style={styles.bannerText}>⚠️  {error}</Text>
+          <View style={[styles.bannerRow, { backgroundColor: isDark ? '#451A03' : '#FEF3C7' }]}>
+            <Text style={[styles.bannerText, { color: isDark ? '#FCD34D' : '#92400E' }]}>⚠️  {error}</Text>
           </View>
         ) : null}
 

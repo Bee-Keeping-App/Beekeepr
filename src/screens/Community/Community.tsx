@@ -174,7 +174,7 @@ export function Community() {
                 <View
                   style={[
                     styles.clubAvatar,
-                    { backgroundColor: club.id === selectedClub.id ? ORANGE : '#E5E7EB' },
+                    { backgroundColor: club.id === selectedClub.id ? AMBER_DARK : '#E5E7EB' },
                   ]}
                 >
                   <Text
@@ -212,8 +212,8 @@ export function Community() {
               {/* Admin Tools */}
               <View style={[styles.adminToolsBox, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT }]}>
                 <View style={styles.adminToolsHeader}>
-                  <Text style={[styles.adminToolsIcon, { color: ORANGE }]}>🛡</Text>
-                  <Text style={[styles.adminToolsTitle, { color: ORANGE }]}>ADMIN TOOLS</Text>
+                  <Text style={[styles.adminToolsIcon, { color: isDark ? '#FCD34D' : AMBER_DARK }]}>🛡</Text>
+                  <Text style={[styles.adminToolsTitle, { color: isDark ? '#FCD34D' : AMBER_DARK }]}>ADMIN TOOLS</Text>
                 </View>
                 {ADMIN_TOOLS.map((tool) => (
                   <TouchableOpacity
@@ -256,7 +256,7 @@ export function Community() {
             <View
               style={[styles.clubAvatar, { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT, width: 48, height: 48, borderRadius: 24 }]}
             >
-              <Text style={[styles.clubAvatarText, { color: ORANGE, fontSize: 15 }]}>PC</Text>
+              <Text style={[styles.clubAvatarText, { color: isDark ? AMBER : AMBER_DARK, fontSize: 15 }]}>PC</Text>
             </View>
             <View style={styles.feedHeaderInfo}>
               <Text style={[styles.clubName, { color: colors.text }]}>{selectedClub.name}</Text>
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarSmallText: { fontWeight: '700', fontSize: 13, color: '#fff' },
+  avatarSmallText: { fontWeight: '700', fontSize: 13, color: '#1C1917' },
   composeInput: { flex: 1, fontSize: 15 },
 
   postHeader: {

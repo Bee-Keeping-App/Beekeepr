@@ -109,6 +109,7 @@ function ChartLines({ data, color }: { data: number[]; color: string }) {
 
 export function Analytics() {
   const { colors, theme } = useTheme();
+  const isDark = theme === 'dark';
   const [selectedReport, setSelectedReport] = useState(0);
   const report = SAVED_REPORTS[selectedReport];
 
@@ -163,14 +164,14 @@ export function Analytics() {
                   borderColor: idx === selectedReport ? AMBER : colors.border,
                   borderWidth: idx === selectedReport ? 2 : 1,
                 },
-                idx === selectedReport && { backgroundColor: AMBER_LIGHT },
+                idx === selectedReport && { backgroundColor: isDark ? '#451A03' : AMBER_LIGHT },
               ]}
             >
-              <Text style={[styles.reportTitle, { color: idx === selectedReport ? '#1C1917' : colors.text }]}>{report.title}</Text>
+              <Text style={[styles.reportTitle, { color: idx === selectedReport ? (isDark ? '#FCD34D' : '#1C1917') : colors.text }]}>{report.title}</Text>
               <View style={styles.tagRow}>
                 {report.tags.map((tag) => (
-                  <View key={tag} style={[styles.tag, { backgroundColor: idx === selectedReport ? '#FDE68A' : colors.surface }]}>
-                    <Text style={[styles.tagText, { color: idx === selectedReport ? '#92400E' : colors.muted }]}>{tag}</Text>
+                  <View key={tag} style={[styles.tag, { backgroundColor: idx === selectedReport ? (isDark ? '#78350F' : '#FDE68A') : colors.surface }]}>
+                    <Text style={[styles.tagText, { color: idx === selectedReport ? (isDark ? '#FCD34D' : '#92400E') : colors.muted }]}>{tag}</Text>
                   </View>
                 ))}
               </View>
