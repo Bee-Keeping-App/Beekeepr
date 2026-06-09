@@ -39,6 +39,17 @@ interface Post {
   comments: number;
 }
 
+// TODO [API]: GET /api/clubs?userId=:userId
+// Returns clubs the user belongs to (owned or joined).
+// Response shape: Club[] where Club = { _id: string, name: string, initials: string,
+//   role: 'Owner'|'Member', members: number, description: string, isAdmin: boolean }
+// isAdmin is true when userId matches club.ownerId or userId is in club.adminIds[].
+// Wire: const [clubs, setClubs] = useState<Club[]>([]);
+//       useEffect(() => { fetch(`/api/clubs?userId=${userId}`)
+//         .then(r => r.json()).then(setClubs); }, [userId]);
+// POST /api/clubs — body: { name, description } — creates a new club, sets userId as owner
+// POST /api/clubs/:id/join — body: { userId } — joins an existing club as Member
+// DELETE /api/clubs/:id/leave — removes userId from club members
 const CLUBS: Club[] = [
   {
     id: 1,
@@ -60,6 +71,13 @@ const CLUBS: Club[] = [
   },
 ];
 
+// TODO [API]: GET /api/clubs/:clubId/members/online
+// Returns currently online members for the selected club (real-time via WebSocket or polled).
+// Response shape: { name: string, status: 'online'|'away'|'offline' }[]
+// Wire with a WebSocket subscription or poll every 30s:
+//   useEffect(() => { const ws = new WebSocket(`ws://host/clubs/${selectedClub.id}/presence`);
+//     ws.onmessage = e => setOnlineMembers(JSON.parse(e.data));
+//     return () => ws.close(); }, [selectedClub?.id]);
 const ONLINE_MEMBERS = [
   { name: 'Alice Walker', status: 'online' as const },
   { name: 'Bob Smith', status: 'away' as const },
@@ -72,6 +90,20 @@ const STATUS_DOT: Record<string, string> = {
   offline: '#D1D5DB',
 };
 
+// TODO [API]: GET /api/posts?clubId=:clubId&page=:page&limit=20
+// Returns paginated posts for the selected club's feed.
+// Response shape: Post[] where Post = { _id: string, clubId: string, userId: string,
+//   author: string, initial: string, role: string, time: string (relative or ISO),
+//   location: string, content: string, hasImage: boolean, imageUrl?: string,
+//   likes: number, comments: number, likedByMe: boolean }
+// likedByMe is computed server-side using the requesting userId.
+// Wire with pagination: const [posts, setPosts] = useState<Post[]>([]);
+//   useEffect(() => { fetch(`/api/posts?clubId=${selectedClub.id}&page=1`)
+//     .then(r => r.json()).then(setPosts); }, [selectedClub?.id]);
+// Implement infinite scroll: on ScrollView onEndReached fetch next page and append.
+// POST /api/posts — body: { clubId, content, imageUrl? } — creates a post
+// POST /api/posts/:id/like — toggles like for userId; returns { likes: number, likedByMe: boolean }
+// DELETE /api/posts/:id — only allowed if userId === post.userId or user isAdmin of club
 const POSTS: Post[] = [
   {
     id: 1,

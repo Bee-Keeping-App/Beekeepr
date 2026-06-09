@@ -27,8 +27,18 @@ interface SelectedHive {
   apiaryName: string;
 }
 
-// TODO [API]: Replace with GET /api/apiaries?userId=:id
-// Returns: [{ id, name, location, hives: [{ id, name, status }] }]
+// TODO [API]: GET /api/apiaries?userId=:userId
+// Returns all apiaries + their hives for the hive-selector step of this form.
+// Response shape: { id: string, name: string, hives: { id: string, name: string }[] }[]
+// Only id and name are needed here — no status/queen detail required for selection.
+// Wire: const [apiaries, setApiaries] = useState(DEMO_APIARIES);
+//   const { userId } = useAuth();
+//   useEffect(() => { fetch(`/api/apiaries?userId=${userId}`)
+//     .then(r => r.json())
+//     .then(data => setApiaries(data.map(a => ({ id: a._id, name: a.name,
+//       hives: a.hives.map(h => ({ id: h._id, name: h.name })) })))); }, [userId]);
+// When apiaries is empty, the selector step should show an empty state:
+//   "No hives yet — add one from the Apiary Manager tab."
 const DEMO_APIARIES = [
   {
     id: '1',

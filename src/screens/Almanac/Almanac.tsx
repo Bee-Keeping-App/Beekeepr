@@ -34,6 +34,19 @@ interface Apiary {
   hives: Hive[];
 }
 
+// TODO [API]: GET /api/apiaries?userId=:userId
+// Returns all apiaries owned by the user with their nested hives.
+// Response shape: Apiary[] where Apiary = { _id: string, userId: string, name: string,
+//   location: string, hives: Hive[] }
+// Hive = { _id: string, apiaryId: string, name: string,
+//   status: 'healthy'|'attention'|'critical', queen: string, lastCheck: string (ISO date) }
+// Wire: const [apiaries, setApiaries] = useState<Apiary[]>([]);
+//       useEffect(() => { fetch(`/api/apiaries?userId=${userId}`)
+//         .then(r => r.json()).then(setApiaries); }, [userId]);
+// POST /api/apiaries — body: { userId, name, location }
+// DELETE /api/apiaries/:id — should cascade-delete all hives and inspections under it
+// POST /api/hives — body: { apiaryId, name, queen, status: 'healthy' }
+// DELETE /api/hives/:id — should cascade-delete all inspections for that hive
 const APIARIES: Apiary[] = [
   {
     id: 1,

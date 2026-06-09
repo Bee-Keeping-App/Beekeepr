@@ -23,6 +23,22 @@ const HIVE_COLORS = {
 
 const Y_LABELS = [100, 75, 50, 25, 0];
 
+// TODO [API]: GET /api/reports?userId=:userId
+// Returns the user's saved analytics report configurations.
+// Response shape: Report[] where Report = { _id: string, userId: string, title: string,
+//   chartType: 'LINE'|'BAR', metric: string, hiveIds: string[], unit: string,
+//   createdAt: string }
+// The chart *data* is fetched separately per report:
+//   GET /api/reports/:id/data?startDate=&endDate=
+//   Returns: { labels: string[], series: { hiveId: string, hiveName: string, values: number[] }[] }
+//   The component then maps series onto hive1/hive2/hive3 color slots.
+// Aggregate stats (average, trend) are computed server-side and included in the data response:
+//   { ..., average: string, unit: string, trend: string, trendGood: boolean }
+// Wire: const [reports, setReports] = useState<Report[]>([]);
+//       useEffect(() => { fetch(`/api/reports?userId=${userId}`)
+//         .then(r => r.json()).then(setReports); }, [userId]);
+// POST /api/reports — body: { userId, title, chartType, metric, hiveIds }
+// DELETE /api/reports/:id
 const SAVED_REPORTS = [
   { id: 1, title: 'Hive Weight Trends', tags: ['LINE', 'weight', '3 Hives'],
     metric: 'Hive Weight (lbs)', average: '77.2', unit: 'lbs', trend: '+12%', trendGood: true,

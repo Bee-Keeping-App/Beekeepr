@@ -18,6 +18,15 @@ const AMBER_DARK = '#D97706';
 const ORANGE = '#F97316';
 const BLUE_LABEL = '#1D4ED8';
 
+// TODO [API]: This screen receives hiveId via route.params (navigation already passes it).
+// GET /api/hives/:hiveId
+// Response shape: { _id, apiaryId, apiaryName, name, status, queen: { color, year, temperament },
+//   weight, lastCheck (ISO), frames, supers, notes }
+// Wire: replace HIVE with useState + useEffect:
+//   const { hiveId } = route.params;
+//   const [hive, setHive] = useState(HIVE);
+//   useEffect(() => { fetch(`/api/hives/${hiveId}`).then(r => r.json()).then(setHive); }, [hiveId]);
+// PATCH /api/hives/:hiveId — body: partial hive fields (notes, frames, supers, status, queen)
 const HIVE = {
   id: 1,
   name: 'Hive #1',
@@ -31,6 +40,17 @@ const HIVE = {
   notes: 'Strong colony. Queen laying well — solid brood pattern across 6 frames. Honey stores filling the top super. No signs of disease or mites detected during alcohol wash.',
 };
 
+// TODO [API]: GET /api/inspections?hiveId=:hiveId&page=:page&limit=20
+// Returns paginated inspection history for this hive, sorted newest-first.
+// Response shape: Inspection[] where Inspection = { _id, hiveId, userId, date (ISO),
+//   inspector: string (user's display name), queenSeen: boolean, broodPattern: string,
+//   miteCount: number, weight: number, notes: string, status: 'healthy'|'attention'|'critical',
+//   treatmentApplied: boolean, treatmentType?: string, feedType?: string }
+// Wire: const [inspections, setInspections] = useState(INSPECTIONS);
+//   useEffect(() => { fetch(`/api/inspections?hiveId=${hiveId}&page=1`)
+//     .then(r => r.json()).then(setInspections); }, [hiveId]);
+// Inspections are created via LogEntry (POST /api/inspections) — not directly from this screen.
+// DELETE /api/inspections/:id — admin/owner only
 const INSPECTIONS = [
   {
     id: 1,

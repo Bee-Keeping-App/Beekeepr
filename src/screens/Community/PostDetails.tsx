@@ -16,6 +16,15 @@ import { useTheme } from '../../Contexts/ThemeContext';
 const AMBER = '#F59E0B';
 const ORANGE = '#F97316';
 
+// TODO [API]: GET /api/posts/:postId
+// Fetches full post detail including full content and image URL.
+// This screen should receive postId via route params: route.params.postId
+// Response shape: { _id, clubId, userId, author, initial, role, time, location,
+//   content, hasImage, imageUrl?: string, likes, comments, likedByMe: boolean }
+// Wire: const [post, setPost] = useState(POST); // replace POST with null and show loading state
+//   useEffect(() => { fetch(`/api/posts/${route.params.postId}`)
+//     .then(r => r.json()).then(setPost); }, [route.params.postId]);
+// POST /api/posts/:id/like — toggle like; update local likes count optimistically
 const POST = {
   author: 'Sarah Jenkins',
   initial: 'S',
@@ -29,6 +38,17 @@ const POST = {
   comments: 5,
 };
 
+// TODO [API]: GET /api/posts/:postId/comments?page=:page&limit=20
+// Returns paginated comments for the post, sorted oldest-first.
+// Response shape: Comment[] where Comment = { _id: string, postId: string, userId: string,
+//   author: string, initial: string, role: string, time: string (relative or ISO),
+//   text: string, likes: number, likedByMe: boolean }
+// Wire: const [comments, setComments] = useState(COMMENTS);
+//   useEffect(() => { fetch(`/api/posts/${route.params.postId}/comments?page=1`)
+//     .then(r => r.json()).then(setComments); }, [route.params.postId]);
+// POST /api/posts/:id/comments — body: { text } — creates a comment as the authenticated user
+//   On success, append the returned comment to local state and increment post.comments count.
+// POST /api/comments/:id/like — toggle like on a comment
 const COMMENTS = [
   {
     id: 1,

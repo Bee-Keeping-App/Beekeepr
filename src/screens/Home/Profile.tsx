@@ -19,6 +19,33 @@ const ORANGE = '#F97316';
 
 type Props = StaticScreenProps<{ user: string }>;
 
+// TODO [API]: GET /api/accounts/:userId  (already partially built — see accounts.controller.js)
+// Returns the authenticated user's profile. Pass Clerk userId from useAuth().
+// Response shape: { _id, clerkId, name, username, level, location, memberSince (ISO),
+//   bio, avatarUrl?: string }
+// Wire: replace PROFILE with useState + useEffect fetch on mount.
+//   const { userId } = useAuth(); // from @clerk/clerk-expo
+//   useEffect(() => { fetch(`/api/accounts/${userId}`, { headers: { Authorization: `Bearer ${token}` } })
+//     .then(r => r.json()).then(setProfile); }, [userId]);
+// PATCH /api/accounts/:userId — body: { name?, username?, bio?, location?, level? }
+//   Used by the "Edit Profile" button (not yet wired).
+//
+// TODO [API]: Stats are computed server-side — add a dedicated endpoint:
+//   GET /api/accounts/:userId/stats
+//   Returns: { hives: number, inspections: number, posts: number, following: number }
+//   hives     = COUNT of hives where userId matches across all apiaries
+//   inspections = COUNT of inspection documents with userId
+//   posts     = COUNT of post documents with userId
+//   following = COUNT of club memberships for userId
+//
+// TODO [API]: Clubs shown here re-use the same response as GET /api/clubs?userId=:userId
+//   (same data as Community tab CLUBS array — can share a React context or re-fetch here)
+//
+// TODO [API]: GET /api/accounts/:userId/activity?limit=10
+//   Returns recent cross-app activity feed for this user.
+//   Response shape: { emoji: string, text: string, time: string }[]
+//   Events to include: inspection logged, comment posted, weight logged, club joined, journal entry added.
+//   Build this as a server-side aggregation across inspections, posts, comments, and club_members collections.
 const PROFILE = {
   name: 'John Doe',
   username: 'BestBeekeepr',
